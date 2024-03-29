@@ -2,7 +2,7 @@ import { type Wallet } from '@near-wallet-selector/core';
 import { Button, ModalContent, Text, VStack } from '@chakra-ui/react';
 
 import keypomInstance from '@/lib/keypom';
-import { KEYPOM_EVENTS_CONTRACT } from '@/constants/common';
+import { KEYPOM_EVENTS_CONTRACT, KEYPOM_MARKETPLACE_CONTRACT } from '@/constants/common';
 import { type EventDrop, type TicketInfoMetadata } from '@/lib/eventsHelpers';
 
 import ProgressModalContent from './ProgessModalContent';
@@ -26,6 +26,23 @@ export const performDeletionLogic = async ({
   if (!wallet) return;
 
   try {
+
+    await wallet.signAndSendTransaction({
+      signerId: accountId,
+      receiverId: KEYPOM_MARKETPLACE_CONTRACT,
+      actions: [
+        {
+          type: 'FunctionCall',
+          params: {
+            methodName: 'delete_event',
+            args: { event_id: eventId },
+            gas: '300000000000000',
+            deposit: '0',
+          },
+        },
+      ],
+    })
+
     let totalSupplyTickets = 0;
     const ticketSupplies: number[] = [];
     for (let i = 0; i < ticketData.length; i++) {

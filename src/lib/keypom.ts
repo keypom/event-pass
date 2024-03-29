@@ -1148,6 +1148,9 @@ class KeypomJS {
   }) => {
     try {
       // Initialize the cache for this drop if it doesn't exist
+      console.log(dropId)
+      console.log(this.keyStore[dropId])
+      console.log(this.keyStore)
       if (this.keyStore[dropId] == null || this.keyStore[dropId] === undefined)
         throw new Error('Drop is null or undefined');
 
@@ -1179,7 +1182,8 @@ class KeypomJS {
       // Return the requested slice from the cache
       return this.keyStore[dropId].dropKeyItems.slice(start, endIndex);
     } catch (e) {
-      throw new Error('Failed to get keys info.');
+      console.log("Error getting key info: ", e)
+      throw new Error('Failed to get keys info.', e);
     }
   };
 

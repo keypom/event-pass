@@ -175,6 +175,8 @@ export default function Event() {
   const [resaleTicketList, setResaleTicketList] = useState<TicketInterface[]>([]);
   const [areTicketsLoading, setAreTicketsLoading] = useState(true);
   const [doKeyModal, setDoKeyModal] = useState(false);
+  const [buyPromiseResult, setBuyPromiseResult] = useState(false);
+  const [purchaseLoading, setPurchaseLoading] = useState(false);
 
   const [loadingModal, setLoadingModal] = useState(false);
   const [loadingModalText, setLoadingModalText] = useState<{
@@ -228,7 +230,7 @@ export default function Event() {
     if (keypomInstance == null || keypomInstance === undefined || !eventId || !funderId) return;
 
     CheckForNearRedirect();
-  }, [keypomInstance, eventId, funderId]);
+  }, [keypomInstance, eventId, funderId, buyPromiseResult]);
 
   useEffect(() => {
     CheckForSellSuccessToast();
@@ -551,7 +553,7 @@ export default function Event() {
         console.log('workerPayload before signandsend', JSON.stringify(workerPayload));
         localStorage.setItem('workerPayload', JSON.stringify(workerPayload));
 
-        await wallet.signAndSendTransaction({
+        wallet.signAndSendTransaction({
           signerId: accountId || undefined,
           receiverId: KEYPOM_MARKETPLACE_CONTRACT,
           actions: [
@@ -572,7 +574,17 @@ export default function Event() {
               },
             },
           ],
-        });
+        })
+        .then( () => {
+          if(wallet.type == "injected"){
+            setBuyPromiseResult(true)
+          }
+         })
+        .catch((err) => {
+          console.log("error", err)
+          TicketPurchaseFailure("", err);
+          setPurchaseLoading(false);
+        });;
       }
     } else if (purchaseType === 'near') {
       // put the workerPayload in local storage
@@ -619,8 +631,8 @@ export default function Event() {
         }
 
         localStorage.setItem('purchaseType', 'primary');
-
-        await wallet.signAndSendTransaction({
+        console.log("local storage worker payload", localStorage.getItem('workerPayload'));
+        wallet.signAndSendTransaction({
           signerId: accountId || undefined,
           receiverId: KEYPOM_MARKETPLACE_CONTRACT,
           actions: [
@@ -638,6 +650,15 @@ export default function Event() {
               },
             },
           ],
+        })
+        .then( () => {
+          if(wallet.type == "injected"){
+            setBuyPromiseResult(true)
+          }
+         })
+        .catch((err) => {
+          TicketPurchaseFailure("", err);
+          setPurchaseLoading(false);
         });
       } else {
         // secondary
@@ -675,7 +696,7 @@ export default function Event() {
         console.log('workerPayload before signandsend', JSON.stringify(workerPayload));
         localStorage.setItem('workerPayload', JSON.stringify(workerPayload));
 
-        await wallet.signAndSendTransaction({
+        wallet.signAndSendTransaction({
           signerId: accountId || undefined,
           receiverId: KEYPOM_MARKETPLACE_CONTRACT,
           actions: [
@@ -695,6 +716,15 @@ export default function Event() {
               },
             },
           ],
+        })
+        .then( () => {
+          if(wallet.type == "injected"){
+            setBuyPromiseResult(true)
+          }
+         })
+        .catch((err) => {
+          TicketPurchaseFailure("", err);
+          setPurchaseLoading(false);
         });
       }
     } else if (purchaseType === 'stripe') {
@@ -738,12 +768,15 @@ export default function Event() {
   };
 
   const CheckForNearRedirect = async () => {
-    if (nearRedirect == null) {
+    if (nearRedirect == null && !buyPromiseResult) {
       return;
     }
+    console.log("first bit")
     // get workerpayload from local storage
     const workerPayloadStringified = localStorage.getItem('workerPayload');
     const purchaseType = localStorage.getItem('purchaseType');
+    console.log("workerPayloadStringified: ", workerPayloadStringified)
+    console.log("purchaseType: ", purchaseType)
     if (workerPayloadStringified == null || purchaseType == null) {
       return;
     }
@@ -768,6 +801,7 @@ export default function Event() {
     }
     const ticketPubKey = getPubFromSecret(workerPayload.ticketKeys[0]);
     const keyInfo = await keypomInstance.getTicketKeyInformation({ publicKey: ticketPubKey });
+    console.log("keyInfo: ", keyInfo)
     if (keyInfo === null) {
       return;
     }
@@ -892,10 +926,10 @@ export default function Event() {
   };
 
   const TicketPurchaseFailure = (workerPayload, responseBody) => {
-    const responseLog: string = responseBody.toString();
+    const responseLog: string = typeof responseBody === 'string' ? responseBody : JSON.stringify(responseBody);
     toast({
       title: 'Purchase failed',
-      description: 'Not purchase was made due to the error: ' + responseLog,
+      description: 'No purchase was made due to the error: ' + responseLog,
       status: 'error',
       duration: 5000,
       isClosable: true,
@@ -1306,6 +1340,8 @@ export default function Event() {
       </Box>
       <PurchaseModal
         amount={ticketAmount}
+        loading={purchaseLoading}
+        setLoading={setPurchaseLoading}
         event={event}
         isOpen={isOpen}
         selector={selector}
