@@ -66,7 +66,6 @@ export const AppContextProvider = ({ children }: PropsWithChildren) => {
   useEffect(() => {
     const setPriceWithFallback = async () => {
       // if (fetchAttempts < 10) {
-      if(true){
         const binancePrice = await fetchPrice(
           'https://api.binance.com/api/v3/ticker/price?symbol=NEARUSDT',
           (data) => data.price,
@@ -112,7 +111,7 @@ export const AppContextProvider = ({ children }: PropsWithChildren) => {
         //   setNearPrice(coingeckoPrice);
         //   return;
         // }
-      }
+      // }
     };
 
     if (triggerPriceFetch) {

@@ -1,6 +1,6 @@
 import { type IconProps } from '@chakra-ui/react';
 
-import { MyNearLogoIcon, HereWalletIcon, NearIcon } from '../Icons';
+import { MyNearLogoIcon, NearIcon } from '../Icons';
 import { MintbaseWalletIcon } from '../Icons/wallets/MintbaseWalletIcon';
 import { MeterWalletIcon } from '../Icons/wallets/MeteorWalletIcon';
 

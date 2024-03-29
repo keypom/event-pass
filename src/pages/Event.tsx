@@ -576,7 +576,7 @@ export default function Event() {
           ],
         })
         .then( () => {
-          if(wallet.type == "injected"){
+          if(wallet.type === "injected"){
             setBuyPromiseResult(true)
           }
          })
@@ -652,7 +652,7 @@ export default function Event() {
           ],
         })
         .then( () => {
-          if(wallet.type == "injected"){
+          if(wallet.type === "injected"){
             setBuyPromiseResult(true)
           }
          })
@@ -718,7 +718,7 @@ export default function Event() {
           ],
         })
         .then( () => {
-          if(wallet.type == "injected"){
+          if(wallet.type === "injected"){
             setBuyPromiseResult(true)
           }
          })
@@ -752,7 +752,7 @@ export default function Event() {
   const CheckForSellSuccessToast = () => {
     const price = localStorage.getItem('sellsuccessful');
 
-    if (price == null || price === undefined) {
+    if (price === null || price === undefined) {
       return;
     }
 
@@ -1340,12 +1340,12 @@ export default function Event() {
       </Box>
       <PurchaseModal
         amount={ticketAmount}
-        loading={purchaseLoading}
-        setLoading={setPurchaseLoading}
         event={event}
         isOpen={isOpen}
+        loading={purchaseLoading}
         selector={selector}
         setAmount={setTicketAmount}
+        setLoading={setPurchaseLoading}
         stripeEnabledEvent={stripeEnabledEvent}
         ticket={ticketBeingPurchased}
         onClose={ClosePurchaseModal}

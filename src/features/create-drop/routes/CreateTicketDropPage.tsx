@@ -331,9 +331,10 @@ export default function NewTicketDrop() {
         setTxnSuccess(true);
       })
       .catch((err) => {
+        const description_string: string = `Error: ${err}.`
         toast({
           title: 'Event Creation Failed',
-          description: `Error: ${err}.`,
+          description: description_string,
           status: 'error',
           duration: 5000,
           isClosable: true,
