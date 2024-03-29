@@ -8,9 +8,9 @@ import { setupModal, type WalletSelectorModal } from '@near-wallet-selector/moda
 import { setupMyNearWallet } from '@near-wallet-selector/my-near-wallet';
 import { setupMintbaseWallet } from '@near-wallet-selector/mintbase-wallet';
 import { setupMeteorWallet } from '@near-wallet-selector/meteor-wallet';
-//import { setupHereWallet } from '@near-wallet-selector/here-wallet';
-//import { setupSender } from '@near-wallet-selector/sender';
-//import { setupNightly } from '@near-wallet-selector/nightly';
+// import { setupHereWallet } from '@near-wallet-selector/here-wallet';
+// import { setupSender } from '@near-wallet-selector/sender';
+// import { setupNightly } from '@near-wallet-selector/nightly';
 // import { setupNearSnap } from "@near-wallet-selector/near-snap";
 
 import { KEYPOM_EVENTS_CONTRACT } from '@/constants/common';
@@ -34,8 +34,8 @@ export class NearWalletSelector {
           walletUrl: config.networkId === "mainnnet" ? 'https://wallet.mintbase.xyz': 'https://testnet.wallet.mintbase.xyz',
         }),
         setupMeteorWallet(),
-        //setupNightly(),
-        //setupNearSnap(),
+        // setupNightly(),
+        // setupNearSnap(),
         // setupSender(),
         setupMyNearWallet(), 
         // setupHereWallet(),
