@@ -4,6 +4,7 @@ dist
 
 # dependencies
 /node_modules
+/OLD_node_modules
 
 # production
 /build

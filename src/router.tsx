@@ -62,6 +62,8 @@ const Event = React.lazy(async () => await import('@/pages/Event'));
 
 const ScannerPage = React.lazy(async () => await import('@/features/scanner/routes/ScannerPage'));
 
+const IPFSTest = React.lazy(async () => await import('@/features/ipfs-test/routes/ipfs-test'));
+
 export const router = createBrowserRouter([
   {
     element: <CoreLayout />,
@@ -201,6 +203,15 @@ export const router = createBrowserRouter([
               {
                 path: 'event/:funderAndEventId',
                 element: <ScannerPage />,
+              },
+            ],
+          },
+          {
+            path: 'ipfs',
+            children: [
+              {
+                path: 'test1',
+                element: <IPFSTest />,
               },
             ],
           },
