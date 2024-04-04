@@ -211,6 +211,25 @@ export const CreateTokenDropProvider = ({ children }: PropsWithChildren) => {
       }
     }
 
+    // createDrop({
+    //   dropId,
+    //   wallet: await window.selector.wallet(),
+    //   depositPerUseNEAR: amountPerLink,
+    //   publicKeys: publicKeys || [],
+    //   numKeys: totalLinks,
+    //   metadata: JSON.stringify({ dropName }),
+    //   successUrl: `${window.location.origin}/drop/token/${dropId}`,
+    // })
+    // .then(() => {
+    //   window.location.href = `${window.location.origin}/drop/token/${dropId}`;
+    // })
+    // .catch((err) => {
+    //   alert("Failed to add message");
+    //   console.log("Failed to add message");
+
+    //   throw err;
+    // });
+
     setTimeout(() => {
       navigate('/drops');
     }, 1000);

@@ -174,6 +174,7 @@ export default function NewTicketDrop() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [eventCreationSuccess, setEventCreationSuccess] = useState<boolean | undefined>();
+  const [txnSuccess, setTxnSuccess] = useState(false);
   const [prevEventData, setPrevEventData] = useState<
     | { priceByDropId?: Record<string, number>; eventId: string; stripeAccountId?: string }
     | undefined
@@ -224,7 +225,7 @@ export default function NewTicketDrop() {
     }
 
     checkForEventCreation();
-  }, []);
+  }, [txnSuccess]);
 
   const handleClearForm = () => {
     switch (currentStep) {
@@ -321,10 +322,24 @@ export default function NewTicketDrop() {
         localStorage.setItem('EVENT_INFO_SUCCESS_DATA', JSON.stringify({ eventId }));
       }
 
-      await wallet.signAndSendTransaction({
+      wallet.signAndSendTransaction({
         signerId: accountId!,
         receiverId: KEYPOM_EVENTS_CONTRACT,
         actions,
+      })
+      .then(() => {
+        setTxnSuccess(true);
+      })
+      .catch((err) => {
+        const error: string = err.toString();
+        const description_string = `Error: ` + error
+        toast({
+          title: 'Event Creation Failed',
+          description: description_string,
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        })
       });
     } else {
       toast({

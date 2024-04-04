@@ -26,6 +26,8 @@ import { TicketIncrementer } from './TicketIncrementer';
 
 interface PurchaseModalProps {
   isOpen: boolean;
+  loading: boolean;
+  setLoading: (loading: boolean) => void;
   onClose: () => void;
   ticket: any;
   onSubmit: (
@@ -43,6 +45,8 @@ interface PurchaseModalProps {
 
 export const PurchaseModal = ({
   isOpen,
+  loading,
+  setLoading,
   onClose,
   ticket,
   event,
@@ -56,7 +60,6 @@ export const PurchaseModal = ({
   const [email, setEmail] = useState('');
   const [questionResponses, setQuestionResponses] = useState({});
   const [currentTicket, setCurrentTicket] = useState(ticket);
-  const [loading, setLoading] = useState(false);
   const [numPurchased, setNumPurchased] = useState(0);
 
   useEffect(() => {

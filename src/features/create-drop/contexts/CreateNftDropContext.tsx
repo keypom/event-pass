@@ -199,12 +199,30 @@ export const CreateNftDropProvider = ({ children }: PropsWithChildren) => {
     const totalRequired = paymentData.costsData[3].total;
 
     await update(NFT_ATTEMPT_KEY, (val) => ({ ...val, confirmed: true }));
+    const wallet = await window.selector.wallet();
+    
+    // Injected wallets return promises
+    if(wallet.type === "injected"){
+      try{
+        await addToBalance({
+          wallet: await window.selector.wallet(),
+          amountYocto: totalRequired.toString(),
+          successUrl: window.location.origin + '/drop/nft/new',
+        });
+        
+        window.location.assign(window.location.origin + '/drop/nft/new');
+      }catch(e){
+        alert("Something went wrong. Please try again.");
+      }
+    }
+    else{
+      await addToBalance({
+        wallet: await window.selector.wallet(),
+        amountYocto: totalRequired.toString(),
+        successUrl: window.location.origin + '/drop/nft/new',
+      });
+    }
 
-    await addToBalance({
-      wallet: await window.selector.wallet(),
-      amountYocto: totalRequired.toString(),
-      successUrl: window.location.origin + '/drop/nft/new',
-    });
   };
 
   const createLinksSWR = {

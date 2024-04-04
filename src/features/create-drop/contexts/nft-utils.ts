@@ -41,6 +41,7 @@ export const createDropsForNFT = async (dropId, returnTransactions, data, setApp
 
   let keys, requiredDeposit;
   if (!data.seriesSecret) {
+    console.log(wallet)
     try {
       const res = await createDrop({
         wallet,
@@ -73,6 +74,8 @@ export const createDropsForNFT = async (dropId, returnTransactions, data, setApp
         useBalance: !returnTransactions,
         returnTransactions,
       });
+
+      console.log(res)
 
       keys = res.keys;
       requiredDeposit = res.requiredDeposit;
@@ -220,6 +223,7 @@ export const handleFinishNFTDrop = async (setAppModal) => {
     console.warn(e);
   }
 
+  console.log(res);
   const { responses } = res;
   if (responses?.length > 0) {
     del(NFT_ATTEMPT_KEY);

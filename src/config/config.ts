@@ -11,16 +11,17 @@ console.log(
 
 const SUPPORTED_WALLET_OPTIONS: IWalletOption[] = [
   {
+    name: 'mintbasewallet',
+    title: 'Mintbase Wallet',
+  },
+  {
+    name: 'meteorwallet',
+    title: 'Meteor Wallet',
+  },
+  {
     name: 'mynearwallet',
     title: 'My Near Wallet',
   },
-  // support only mynearwallet for now
-  // https://docs.keypom.xyz/docs/next/keypom-sdk/modules#supportedlinkdropclaimpages
-  // {
-  //   title: 'HERE',
-  //   walletName: 'My HERE',
-  //   id: 'herewallet',
-  // },
 ];
 
 const DEFAULT_WALLET = SUPPORTED_WALLET_OPTIONS[0];
