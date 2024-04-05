@@ -38,6 +38,8 @@ const AcceptPaymentForm = (props: EventStepFormProps) => {
   const toast = useToast();
   const { fetchAttempts, nearPrice, setTriggerPriceFetch } = useAppContext();
 
+  const [tempStripeId, setTempStripeId] = useState<string | undefined>(undefined);
+
   const handleToggle = (isStripe) => {
     let curVal = isStripe ? formData.acceptStripePayments : formData.acceptNearPayments;
     curVal = !curVal;
@@ -51,13 +53,23 @@ const AcceptPaymentForm = (props: EventStepFormProps) => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const checkForPriorStripeConnected = () => {
-    const stripeAccountId = localStorage.getItem('STRIPE_ACCOUNT_ID');
-    if (stripeAccountId) {
-      setFormData({ ...formData, stripeAccountId, acceptStripePayments: false });
+  const checkForPriorStripeConnected = (accountID) => {
+    if(!accountId){
+      return null
     }
-
-    return stripeAccountId;
+    const stripeAccountId = localStorage.getItem('STRIPE_ACCOUNT_ID');
+    if (!stripeAccountId) {
+      return stripeAccountId;
+    }else{
+      const stripeAccountIdObj = JSON.parse(stripeAccountId);
+      const loggedInStripeAccountId = stripeAccountIdObj[`${accountId}`];
+      if(loggedInStripeAccountId) {
+        setFormData({ ...formData, stripeAccountId: loggedInStripeAccountId, acceptStripePayments: false });
+      }else{
+        return null
+      }
+      return loggedInStripeAccountId;
+    }
   };
 
   useEffect(() => {
@@ -66,16 +78,29 @@ const AcceptPaymentForm = (props: EventStepFormProps) => {
       const { stripeAccountId, uuid } = JSON.parse(body);
       if (window.location.href.includes(`successMessage=${uuid as string}`)) {
         localStorage.removeItem('STRIPE_ACCOUNT_INFO');
-
-        localStorage.setItem('STRIPE_ACCOUNT_ID', stripeAccountId);
         setFormData({ ...formData, stripeAccountId, acceptStripePayments: true });
+        // make returned stripe account id temporarily available for local storage. Will be removed once saved
+        setTempStripeId(stripeAccountId);
       }
     }
   }, []);
 
   useEffect(() => {
-    checkForPriorStripeConnected();
-  }, []);
+    if(accountId){
+      let existingStripeAccoountInfo = localStorage.getItem('STRIPE_ACCOUNT_ID');
+      if (!existingStripeAccoountInfo) {
+        existingStripeAccoountInfo = "{}";
+      }
+      let existingStripeAccoountInfoObj = JSON.parse(existingStripeAccoountInfo);
+      existingStripeAccoountInfoObj[`${accountId}`] = tempStripeId;
+      setTempStripeId(undefined);
+      localStorage.setItem('STRIPE_ACCOUNT_ID', JSON.stringify(existingStripeAccoountInfoObj));
+    }
+  }, [accountId]);
+
+  useEffect(() => {
+    checkForPriorStripeConnected(accountId);
+  }, [accountId]);
 
   useEffect(() => {
     if (!nearPrice) {
@@ -95,7 +120,7 @@ const AcceptPaymentForm = (props: EventStepFormProps) => {
         isClosable: true,
       });
     }
-    if (checkForPriorStripeConnected()) {
+    if (checkForPriorStripeConnected(accountId)) {
       return;
     }
 
@@ -105,6 +130,16 @@ const AcceptPaymentForm = (props: EventStepFormProps) => {
     if (stripeAccountId) {
       setFormData({ ...formData, stripeAccountId, acceptStripePayments: true });
       setIsLoading(false);
+      
+      // Update local storage
+      let existingStripeAccoountInfo = localStorage.getItem('STRIPE_ACCOUNT_ID');
+      if (!existingStripeAccoountInfo) {
+        existingStripeAccoountInfo = "{}";
+      }
+      let existingStripeAccoountInfoObj = JSON.parse(existingStripeAccoountInfo);
+      existingStripeAccoountInfoObj[`${accountId}`] = stripeAccountId;
+
+      localStorage.setItem('STRIPE_ACCOUNT_ID', JSON.stringify(existingStripeAccoountInfoObj));
       return;
     }
 
