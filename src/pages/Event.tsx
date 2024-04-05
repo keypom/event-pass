@@ -504,13 +504,17 @@ export default function Event() {
           },
         );
 
+        const responseBody = await response.json();
         if (response.ok) {
-          const responseBody = await response.json();
           TicketPurchaseSuccessful(workerPayload, responseBody);
         } else {
-          const responseBody = await response.json();
-          console.error('responseBody', responseBody);
-          TicketPurchaseFailure(workerPayload, await response.json());
+          console.log("error: ", responseBody.error)
+          if (typeof responseBody.error === 'object') {
+            const near_error = JSON.parse(responseBody.error.message)
+            TicketPurchaseFailure(workerPayload,  near_error);
+          }else{
+            TicketPurchaseFailure(workerPayload, responseBody.error);
+          }
         }
       } else {
         // secondary
@@ -736,15 +740,17 @@ export default function Event() {
         body: JSON.stringify(workerPayload),
       });
       if (response.ok) {
-        // Account created successfully
+        // Checkout created successfully
         const responseBody = await response.json();
 
         const stripeUrl = responseBody.stripe_url;
         window.location.href = stripeUrl;
         TicketPurchaseSuccessful(workerPayload, responseBody);
       } else {
-        // Error creating account
-        TicketPurchaseFailure(workerPayload, await response.json());
+        // Error creating checkout
+        const responseBody = await response.json();
+        console.log("error: ", responseBody.error)
+        TicketPurchaseFailure(workerPayload, responseBody.error);
       }
     }
   };
@@ -832,12 +838,13 @@ export default function Event() {
 
         currentLoadedKey++;
 
+        const responseBody = await response.json();
         if (response.ok) {
-          const responseBody = await response.json();
           TicketPurchaseSuccessful(newWorkerPayload, responseBody);
         } else {
           // Error creating account
-          TicketPurchaseFailure(newWorkerPayload, await response.json());
+          const error = responseBody.error;
+          TicketPurchaseFailure(newWorkerPayload, error);
         }
       }
     } else if (purchaseType === 'secondary') {
