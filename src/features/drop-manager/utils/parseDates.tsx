@@ -1,6 +1,11 @@
 import { type DateAndTimeInfo } from '@/lib/eventsHelpers';
 
-export const dateAndTimeToText = (date: DateAndTimeInfo, placeholder = '') => {
+export const dateAndTimeToText = (
+  date: DateAndTimeInfo,
+  placeholder = '',
+  includeTimezone = true,
+  excludeDash = false,
+) => {
   if (!date.startDate) {
     return placeholder;
   }
@@ -33,7 +38,7 @@ export const dateAndTimeToText = (date: DateAndTimeInfo, placeholder = '') => {
 
     // Check if start and end date are the same to avoid repeating the same date
     if (date.startDate !== date.endDate) {
-      formattedDate += ` - ${endMonth} ${endDay}`;
+      formattedDate += ` ${excludeDash ? `to` : `-`} ${endMonth} ${endDay}`;
       if (date.endTime) {
         formattedDate += ` at ${date.endTime}`;
       }
@@ -43,7 +48,7 @@ export const dateAndTimeToText = (date: DateAndTimeInfo, placeholder = '') => {
       }
     } else if (date.endTime) {
       // If it's the same day but with an end time
-      formattedDate += ` - ${date.endTime}`;
+      formattedDate += ` ${excludeDash ? `to` : `-`} ${date.endTime}`;
     }
   }
 
@@ -57,7 +62,9 @@ export const dateAndTimeToText = (date: DateAndTimeInfo, placeholder = '') => {
   }
 
   // Append the time zone at the end
-  formattedDate += `, ${timeZone}`;
+  if (includeTimezone && timeZone) {
+    formattedDate += `, ${timeZone}`;
+  }
 
   return formattedDate;
 };

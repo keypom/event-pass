@@ -39,10 +39,36 @@ export interface FunderEventMetadata {
 
   // EXTRA
   qrPage?: {
-    background?: string;
-    boxContent?: {
-      border?: string;
+    showTitle?: boolean;
+    showLocation?: boolean;
+    showDate?: boolean;
+    dateUnderQR?: boolean;
+    title?: {
+      color?: string;
+      fontFamily?: string;
+      fontSize?: any;
     };
+    content?: {
+      border?: string;
+      helperText?: {
+        fontFamily?: string;
+        fontWeight?: string;
+        text?: string;
+      };
+      sellButton?: {
+        bg?: string;
+        fontFamily?: string;
+        fontSize?: any;
+        fontWeight?: string;
+        color?: string;
+        helperText?: boolean;
+        h?: string;
+        sx?: any;
+        text?: string;
+      };
+      downloadButton: false;
+    };
+    background?: string;
     boxIcon?: {
       bg?: string;
       border?: string;

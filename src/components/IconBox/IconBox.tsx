@@ -5,13 +5,23 @@ import { RoundIcon } from './RoundIcon';
 
 interface IconBoxProps extends BoxProps {
   icon?: ReactNode;
+  bg?: string;
+  iconBg?: string;
+  iconBorder?: string;
 }
 
-export const IconBox = ({ children, icon, ...props }: PropsWithChildren<IconBoxProps>) => {
+export const IconBox = ({
+  children,
+  icon,
+  bg = 'border.box',
+  iconBg = 'blue.100',
+  iconBorder = 'border.round',
+  ...props
+}: PropsWithChildren<IconBoxProps>) => {
   return (
     <Box
       // https://dev.to/rumansaleem/gradient-borders-with-css-3mnk
-      bg="linear-gradient(white, white) padding-box, linear-gradient(0deg, rgba(255,101, 175,1) 0%, rgba(132,74,255,0.27) 100%) border-box"
+      bg={bg}
       border="2px solid transparent"
       borderRadius="8xl"
       p={{ base: '6', md: '16' }}
@@ -22,7 +32,7 @@ export const IconBox = ({ children, icon, ...props }: PropsWithChildren<IconBoxP
     >
       {icon !== undefined && (
         <Box left="50%" position="absolute" top="0" transform="translate(-50%, -50%)" zIndex="11">
-          <RoundIcon icon={icon} />
+          <RoundIcon bg={iconBg} border={iconBorder} icon={icon} />
         </Box>
       )}
       {children}
