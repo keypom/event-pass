@@ -109,7 +109,6 @@ export const AppContextProvider = ({ children }: PropsWithChildren) => {
 
         if (coingeckoPrice !== null) {
           setNearPrice(coingeckoPrice);
-          return;
         }
       }
     };
