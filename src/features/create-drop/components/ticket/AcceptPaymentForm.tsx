@@ -77,8 +77,8 @@ const AcceptPaymentForm = (props: EventStepFormProps) => {
     const temp_stripe_account_id = localStorage.getItem('TEMP_STRIPE_ACCOUNT_ID');
     if (temp_stripe_account_id) {
       setFormData({ ...formData, stripeAccountId: temp_stripe_account_id});
-      localStorage.removeItem('TEMP_STRIPE_ACCOUNT_ID');
     }
+    localStorage.removeItem('TEMP_STRIPE_ACCOUNT_ID');
   }, []);
 
   useEffect(() => {
