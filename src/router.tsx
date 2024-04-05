@@ -55,6 +55,7 @@ const TicketDropManagerPage = React.lazy(
   async () => await import('@/features/drop-manager/routes/ticket/TicketDropManagerPage'),
 );
 const EthDenverLandingPage = React.lazy(async () => await import('@/pages/EthDenver'));
+const EthDenverTicketPage = React.lazy(async () => await import('@/pages/EthDenverTicketPage'));
 
 const Gallery = React.lazy(async () => await import('@/pages/Gallery'));
 
@@ -129,6 +130,15 @@ export const router = createBrowserRouter([
               {
                 path: 'ticket/:id', // Match /events/event/:id
                 element: <TicketQRPage />,
+              },
+            ],
+          },
+          {
+            path: 'tickets',
+            children: [
+              {
+                path: 'denver/:id', // Match /events/event/:id
+                element: <EthDenverTicketPage />,
               },
             ],
           },

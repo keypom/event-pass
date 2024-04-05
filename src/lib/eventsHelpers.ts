@@ -36,6 +36,19 @@ export interface FunderEventMetadata {
   encPrivKey?: string;
   iv?: string;
   salt?: string;
+
+  // EXTRA
+  qrPage?: {
+    background?: string;
+    boxContent?: {
+      border?: string;
+    };
+    boxIcon?: {
+      bg?: string;
+      border?: string;
+      image?: string;
+    };
+  };
 }
 
 export interface EventDrop {

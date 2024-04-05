@@ -27,6 +27,7 @@ import {
   type TicketInfoMetadata,
   type TicketMetadataExtra,
 } from '@/lib/eventsHelpers';
+import { CLOUDFLARE_IPFS } from '@/constants/common';
 
 import { dateAndTimeToText } from '../drop-manager/utils/parseDates';
 
@@ -74,6 +75,9 @@ export default function TicketQRPage() {
         setEventInfo(eventInfo);
         setEventId(ticketExtra.eventId);
         setFunderId(drop.funder_id);
+        console.log('eventInfo', eventInfo);
+        console.log('Ticket Metadata', ticketMetadata);
+        console.log('Ticket Metadata Extra', ticketExtra);
         setIsLoading(false);
       } catch (e) {
         // eslint-disable-next-line no-console
@@ -105,7 +109,17 @@ export default function TicketQRPage() {
   };
 
   return (
-    <VStack py="10">
+    <VStack
+      backgroundImage={
+        eventInfo?.qrPage?.background && `${CLOUDFLARE_IPFS}/${eventInfo.qrPage.background}`
+      }
+      backgroundPosition="center"
+      backgroundRepeat="no-repeat"
+      backgroundSize="cover"
+      minH="100vh"
+      py="10"
+      width="100vw"
+    >
       <Box alignItems="center" display="flex" flexDirection="column" px={4} width="100%">
         <Heading mb={8} textAlign="center">
           You're attending {eventInfo?.name}!

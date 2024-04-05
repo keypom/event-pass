@@ -38,7 +38,7 @@ export const CoreLayout = () => {
         zIndex="0"
       />
       <Navbar w="full" />
-      <Box as="main" flex="1" maxW="75rem" mx="auto" px="5" w="full" zIndex="2">
+      <Box as="main" flex="1" mx="auto" w="full" zIndex="2">
         <Outlet />
       </Box>
       <Footer w="full" />
