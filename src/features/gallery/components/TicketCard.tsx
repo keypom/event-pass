@@ -20,7 +20,11 @@ import { type EventInterface } from '@/pages/Event';
 import { type DataItem } from '@/components/Table/types';
 import { PURCHASED_LOCAL_STORAGE_PREFIX } from '@/constants/common';
 
+
 import { TicketIncrementer } from './TicketIncrementer';
+import { DateAndTimeInfo } from '@/lib/eventsHelpers';
+import { validateEndDateAndTime, validateStartDateAndTime } from '@/features/scanner/components/helpers';
+import { dateAndTimeToText } from '@/features/drop-manager/utils/parseDates';
 
 interface TicketCardProps {
   onSubmit?: (ticket: any, ticketAmount: any) => Promise<void>;
@@ -179,6 +183,33 @@ export const TicketCard = ({ event, loading, surroundingNavLink, onSubmit }: Tic
   if (typeof event.price === 'string' && event?.price != null && amount != null) {
     multPrice = parseFloat(event.price) * amount;
   }
+
+  let saleTimeString = "";
+  let saleTimeValid = true;
+  if (event?.salesValidThrough != null && event?.salesValidThrough !== undefined) {
+    const salesValidInfo = event.salesValidThrough.valueOf();
+    if(typeof salesValidInfo === "object"){
+      const salesValidInfoObj = salesValidInfo as DateAndTimeInfo;
+      let noEndDate = salesValidInfoObj.endDate === undefined || salesValidInfoObj.endDate === null;
+
+      if (noEndDate) {
+        saleTimeString = `Tickets sales open: ${dateAndTimeToText(
+          salesValidInfoObj,
+        )}.`
+      }else{
+        saleTimeString = `Tickets be can bought during: ${dateAndTimeToText(
+          salesValidInfoObj,
+        )}.`
+      }
+
+      const ticketSellStartDateValid = validateStartDateAndTime(salesValidInfoObj);
+      const ticketSellEndDateValid = validateEndDateAndTime(salesValidInfoObj);
+
+      saleTimeValid = ticketSellStartDateValid && ticketSellEndDateValid;
+    }
+  }
+
+
   return (
     <IconBox
       key={event.id}
@@ -322,10 +353,15 @@ export const TicketCard = ({ event, loading, surroundingNavLink, onSubmit }: Tic
             </>
           ) : (
             <>
-              <Box h="14"></Box>
+            {!saleTimeValid && (
+              <Text color="red" fontSize="xs" fontWeight="400" align="left">
+                {`${saleTimeString}`}
+              </Text>
+              )}
+              {saleTimeValid ? <Box h="14"></Box> : <Box h="8"></Box>}
               <Button
                 bottom="35"
-                isDisabled={event.numTickets === '0'}
+                isDisabled={event.numTickets === '0' || !saleTimeValid}
                 left="0"
                 mt="2"
                 position="absolute"
