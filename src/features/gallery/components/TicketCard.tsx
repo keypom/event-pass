@@ -22,7 +22,7 @@ import { PURCHASED_LOCAL_STORAGE_PREFIX } from '@/constants/common';
 
 
 import { TicketIncrementer } from './TicketIncrementer';
-import { DateAndTimeInfo } from '@/lib/eventsHelpers';
+import { type DateAndTimeInfo } from '@/lib/eventsHelpers';
 import { validateEndDateAndTime, validateStartDateAndTime } from '@/features/scanner/components/helpers';
 import { dateAndTimeToText } from '@/features/drop-manager/utils/parseDates';
 
@@ -190,7 +190,7 @@ export const TicketCard = ({ event, loading, surroundingNavLink, onSubmit }: Tic
     const salesValidInfo = event.salesValidThrough.valueOf();
     if(typeof salesValidInfo === "object"){
       const salesValidInfoObj = salesValidInfo as DateAndTimeInfo;
-      let noEndDate = salesValidInfoObj.endDate === undefined || salesValidInfoObj.endDate === null;
+      const noEndDate = salesValidInfoObj.endDate === undefined || salesValidInfoObj.endDate === null;
 
       if (noEndDate) {
         saleTimeString = `Tickets sales open: ${dateAndTimeToText(
@@ -354,7 +354,7 @@ export const TicketCard = ({ event, loading, surroundingNavLink, onSubmit }: Tic
           ) : (
             <>
             {!saleTimeValid && (
-              <Text color="red" fontSize="xs" fontWeight="400" align="left">
+              <Text align="left" color="red" fontSize="xs" fontWeight="400" >
                 {`${saleTimeString}`}
               </Text>
               )}
