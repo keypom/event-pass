@@ -193,11 +193,11 @@ export const TicketCard = ({ event, loading, surroundingNavLink, onSubmit }: Tic
       const noEndDate = salesValidInfoObj.endDate === undefined || salesValidInfoObj.endDate === null;
 
       if (noEndDate) {
-        saleTimeString = `Tickets sales open: ${dateAndTimeToText(
+        saleTimeString = `Ticket sales open: ${dateAndTimeToText(
           salesValidInfoObj,
         )}.`
       }else{
-        saleTimeString = `Tickets be can bought during: ${dateAndTimeToText(
+        saleTimeString = `Sales: ${dateAndTimeToText(
           salesValidInfoObj,
         )}.`
       }
