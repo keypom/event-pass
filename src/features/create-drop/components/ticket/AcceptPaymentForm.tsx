@@ -55,22 +55,17 @@ const AcceptPaymentForm = (props: EventStepFormProps) => {
       return null
     }
     const stripeAccountId = localStorage.getItem('STRIPE_ACCOUNT_ID');
-    console.log("check for prior ", formData)
     if (!stripeAccountId) {
       return null;
     } else {
       const stripeAccountIdObj = JSON.parse(stripeAccountId);
-      let loggedInStripeAccountId = stripeAccountIdObj[`${accountId}`];
-      console.log("check for prior1 ", loggedInStripeAccountId)
+      const loggedInStripeAccountId = stripeAccountIdObj[`${accountId}`];
       setFormData({ ...formData, stripeAccountId: loggedInStripeAccountId, acceptStripePayments: false });
-      console.log("check for prior2 ", loggedInStripeAccountId)
-      console.log("check again: ", formData)
       return stripeAccountIdObj[`${accountId}`] || null;
     }
   };
 
   useEffect(() => {
-    console.log("useEffect 1: ", formData)
     const body = localStorage.getItem('STRIPE_ACCOUNT_INFO');
     if (body) {
       const { stripeAccountId, uuid } = JSON.parse(body);
@@ -79,7 +74,7 @@ const AcceptPaymentForm = (props: EventStepFormProps) => {
         setFormData({ ...formData, stripeAccountId, acceptStripePayments: true });
       }
     }
-    let temp_stripe_account_id = localStorage.getItem('TEMP_STRIPE_ACCOUNT_ID');
+    const temp_stripe_account_id = localStorage.getItem('TEMP_STRIPE_ACCOUNT_ID');
     if (temp_stripe_account_id) {
       setFormData({ ...formData, stripeAccountId: temp_stripe_account_id});
       localStorage.removeItem('TEMP_STRIPE_ACCOUNT_ID');
@@ -88,8 +83,8 @@ const AcceptPaymentForm = (props: EventStepFormProps) => {
 
   useEffect(() => {
     if(accountId){
-      let existingStripeAccountInfo = localStorage.getItem('STRIPE_ACCOUNT_ID');
-      let existingStripeAccountInfoObj = existingStripeAccountInfo ? JSON.parse(existingStripeAccountInfo) : {};
+      const existingStripeAccountInfo = localStorage.getItem('STRIPE_ACCOUNT_ID');
+      const existingStripeAccountInfoObj = existingStripeAccountInfo ? JSON.parse(existingStripeAccountInfo) : {};
 
       if(existingStripeAccountInfoObj[`${accountId}`] === undefined){
         // Update existing object with new stripeAccountId
@@ -146,10 +141,10 @@ const AcceptPaymentForm = (props: EventStepFormProps) => {
       if (!existingStripeAccoountInfo) {
         existingStripeAccoountInfo = "{}";
       }
-      let existingStripeAccoountInfoObj = JSON.parse(existingStripeAccoountInfo);
-      existingStripeAccoountInfoObj[`${accountId}`] = stripeAccountId;
+      const existingStripeAccountInfoObj = JSON.parse(existingStripeAccoountInfo);
+      existingStripeAccountInfoObj[`${accountId}`] = stripeAccountId;
 
-      localStorage.setItem('STRIPE_ACCOUNT_ID', JSON.stringify(existingStripeAccoountInfoObj));
+      localStorage.setItem('STRIPE_ACCOUNT_ID', JSON.stringify(existingStripeAccountInfoObj));
       return;
     }
 
