@@ -37,7 +37,6 @@ const AcceptPaymentForm = (props: EventStepFormProps) => {
   const { accountId, formData, setFormData } = props;
   const toast = useToast();
   const { fetchAttempts, nearPrice, setTriggerPriceFetch } = useAppContext();
-
   const handleToggle = (isStripe) => {
     let curVal = isStripe ? formData.acceptStripePayments : formData.acceptNearPayments;
     curVal = !curVal;
@@ -51,13 +50,19 @@ const AcceptPaymentForm = (props: EventStepFormProps) => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const checkForPriorStripeConnected = () => {
-    const stripeAccountId = localStorage.getItem('STRIPE_ACCOUNT_ID');
-    if (stripeAccountId) {
-      setFormData({ ...formData, stripeAccountId, acceptStripePayments: false });
+  const checkForPriorStripeConnected = (accountId: string | undefined | null) => {
+    if(!accountId){
+      return null
     }
-
-    return stripeAccountId;
+    const stripeAccountId = localStorage.getItem('STRIPE_ACCOUNT_ID');
+    if (!stripeAccountId) {
+      return null;
+    } else {
+      const stripeAccountIdObj = JSON.parse(stripeAccountId);
+      const loggedInStripeAccountId = stripeAccountIdObj[`${accountId}`];
+      setFormData({ ...formData, stripeAccountId: loggedInStripeAccountId, acceptStripePayments: false });
+      return stripeAccountIdObj[`${accountId}`] || null;
+    }
   };
 
   useEffect(() => {
@@ -66,16 +71,42 @@ const AcceptPaymentForm = (props: EventStepFormProps) => {
       const { stripeAccountId, uuid } = JSON.parse(body);
       if (window.location.href.includes(`successMessage=${uuid as string}`)) {
         localStorage.removeItem('STRIPE_ACCOUNT_INFO');
-
-        localStorage.setItem('STRIPE_ACCOUNT_ID', stripeAccountId);
         setFormData({ ...formData, stripeAccountId, acceptStripePayments: true });
       }
     }
+    const temp_stripe_account_id = localStorage.getItem('TEMP_STRIPE_ACCOUNT_ID');
+    if (temp_stripe_account_id) {
+      setFormData({ ...formData, stripeAccountId: temp_stripe_account_id});
+    }
+    localStorage.removeItem('TEMP_STRIPE_ACCOUNT_ID');
   }, []);
 
   useEffect(() => {
-    checkForPriorStripeConnected();
-  }, []);
+    if(accountId){
+      const existingStripeAccountInfo = localStorage.getItem('STRIPE_ACCOUNT_ID');
+      const existingStripeAccountInfoObj = existingStripeAccountInfo ? JSON.parse(existingStripeAccountInfo) : {};
+
+      if(existingStripeAccountInfoObj[`${accountId}`] === undefined){
+        // Update existing object with new stripeAccountId
+        existingStripeAccountInfoObj[`${accountId}`] = formData.stripeAccountId;
+
+        // Store the updated object back to local storage
+        localStorage.setItem('STRIPE_ACCOUNT_ID', JSON.stringify(existingStripeAccountInfoObj));
+      }
+    }
+
+  }, [accountId, formData.stripeAccountId]);
+
+  // UseEffects to keep user stripe account ID connected
+  useEffect(() => { 
+    if(formData.stripeAccountId){
+      localStorage.setItem('TEMP_STRIPE_ACCOUNT_ID', formData.stripeAccountId);
+    }
+  }, [formData.stripeAccountId]);
+
+  useEffect(() => {
+    checkForPriorStripeConnected(accountId);
+  }, [accountId]);
 
   useEffect(() => {
     if (!nearPrice) {
@@ -95,16 +126,25 @@ const AcceptPaymentForm = (props: EventStepFormProps) => {
         isClosable: true,
       });
     }
-    if (checkForPriorStripeConnected()) {
+    if (checkForPriorStripeConnected(accountId)) {
       return;
     }
 
     setIsLoading(true);
     const stripeAccountId = await keypomInstance.getStripeAccountId(accountId || '');
-
     if (stripeAccountId) {
       setFormData({ ...formData, stripeAccountId, acceptStripePayments: true });
       setIsLoading(false);
+      
+      // Update local storage
+      let existingStripeAccoountInfo = localStorage.getItem('STRIPE_ACCOUNT_ID');
+      if (!existingStripeAccoountInfo) {
+        existingStripeAccoountInfo = "{}";
+      }
+      const existingStripeAccountInfoObj = JSON.parse(existingStripeAccoountInfo);
+      existingStripeAccountInfoObj[`${accountId}`] = stripeAccountId;
+
+      localStorage.setItem('STRIPE_ACCOUNT_ID', JSON.stringify(existingStripeAccountInfoObj));
       return;
     }
 
