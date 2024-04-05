@@ -510,7 +510,7 @@ export default function Event() {
         } else {
           console.log("error: ", responseBody.error)
           if (typeof responseBody.error === 'object') {
-            let near_error = JSON.parse(responseBody.error.message)
+            const near_error = JSON.parse(responseBody.error.message)
             TicketPurchaseFailure(workerPayload,  near_error);
           }else{
             TicketPurchaseFailure(workerPayload, responseBody.error);
@@ -843,7 +843,7 @@ export default function Event() {
           TicketPurchaseSuccessful(newWorkerPayload, responseBody);
         } else {
           // Error creating account
-          let error = responseBody.error;
+          const error = responseBody.error;
           TicketPurchaseFailure(newWorkerPayload, error);
         }
       }
