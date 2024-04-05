@@ -12,7 +12,6 @@ export const dateAndTimeToText = (date: DateAndTimeInfo, placeholder = '') => {
   const startYear = start.getFullYear();
   const startMonth = start.toLocaleDateString(undefined, { month: 'short' });
   const startDay = start.toLocaleDateString(undefined, { day: 'numeric' });
-  console.log(date.startDate)
   // Extract the time zone from the start date and use it at the end
   timeZone = start.toLocaleDateString(undefined, { timeZoneName: 'short' }).split(', ').pop() || '';
 
