@@ -118,6 +118,7 @@ export interface EventInterface {
   dateString: string | undefined;
   price: number | undefined;
   dateForPastCheck: Date | undefined;
+  salesValidThrough: DateAndTimeInfo | undefined;
 }
 
 export interface ResaleTicketInfo {
@@ -1184,6 +1185,7 @@ export default function Event() {
           dateString: '',
           price: 0,
           dateForPastCheck: new Date(),
+          salesValidThrough: undefined,
         });
         setIsLoading(false);
       } catch (error) {
