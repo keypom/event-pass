@@ -381,7 +381,7 @@ class KeypomJS {
     }
   };
 
-  onEventTicketScanned = async (secretKey: string) => {
+  claimEventTicket = async (secretKey: string, args: any, createAccount = false) => {
     const pubKey = getPubFromSecret(secretKey);
 
     const keypomGlobalSecretKey = await this.GetGlobalKey();
@@ -414,9 +414,9 @@ class KeypomJS {
 
     await keypomAccount.functionCall({
       contractId: KEYPOM_EVENTS_CONTRACT,
-      methodName: 'claim',
+      methodName: !createAccount ? 'claim' : 'create_account_and_claim',
       args: {
-        account_id: KEYPOM_EVENTS_CONTRACT,
+        ...args,
         signature: base64Signature,
         linkdrop_pk: pubKey,
       },
@@ -1148,9 +1148,9 @@ class KeypomJS {
   }) => {
     try {
       // Initialize the cache for this drop if it doesn't exist
-      console.log(dropId)
-      console.log(this.keyStore[dropId])
-      console.log(this.keyStore)
+      console.log(dropId);
+      console.log(this.keyStore[dropId]);
+      console.log(this.keyStore);
       if (this.keyStore[dropId] == null || this.keyStore[dropId] === undefined)
         throw new Error('Drop is null or undefined');
 
@@ -1182,7 +1182,7 @@ class KeypomJS {
       // Return the requested slice from the cache
       return this.keyStore[dropId].dropKeyItems.slice(start, endIndex);
     } catch (e) {
-      console.log("Error getting key info: ", e)
+      console.log('Error getting key info: ', e);
       throw new Error('Failed to get keys info.', e);
     }
   };

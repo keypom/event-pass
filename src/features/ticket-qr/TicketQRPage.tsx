@@ -11,90 +11,39 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
-import { getPubFromSecret } from 'keypom-js';
 
 import { IconBox } from '@/components/IconBox';
 import { TicketIcon } from '@/components/Icons';
 import { BoxWithShape } from '@/components/BoxWithShape';
 import { QrDetails } from '@/features/claim/components/ticket/QrDetails';
-import { useTicketClaimParams } from '@/hooks/useTicketClaimParams';
-import { NotFound404 } from '@/components/NotFound404';
-import keypomInstance from '@/lib/keypom';
+import { CLOUDFLARE_IPFS } from '@/constants/common';
 import {
-  type FunderEventMetadata,
-  type EventDrop,
   type TicketInfoMetadata,
   type TicketMetadataExtra,
+  type FunderEventMetadata,
 } from '@/lib/eventsHelpers';
-import { CLOUDFLARE_IPFS } from '@/constants/common';
 
 import { dateAndTimeToText } from '../drop-manager/utils/parseDates';
 
-export default function TicketQRPage() {
-  const { secretKey } = useTicketClaimParams();
+interface TicketQRPageProps {
+  eventInfo?: FunderEventMetadata;
+  ticketInfo?: TicketInfoMetadata;
+  ticketInfoExtra?: TicketMetadataExtra;
+  isLoading: boolean;
+  eventId: string;
+  funderId: string;
+  secretKey: string;
+}
 
-  const [isValid, setIsValid] = useState(true);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const [eventInfo, setEventInfo] = useState<FunderEventMetadata>();
-  const [ticketInfo, setTicketInfo] = useState<TicketInfoMetadata>();
-  const [ticketInfoExtra, setTicketInfoExtra] = useState<TicketMetadataExtra>();
-
-  const [eventId, setEventId] = useState('');
-  const [funderId, setFunderId] = useState('');
-
-  useEffect(() => {
-    const getEventInfo = async () => {
-      try {
-        setIsLoading(true);
-        const pubKey = getPubFromSecret(secretKey);
-        const keyInfo: { drop_id: string } = await keypomInstance.viewCall({
-          methodName: 'get_key_information',
-          args: { key: pubKey },
-        });
-        const drop: EventDrop = await keypomInstance.viewCall({
-          methodName: 'get_drop_information',
-          args: { drop_id: keyInfo.drop_id },
-        });
-        const ticketMetadata: TicketInfoMetadata = drop.drop_config.nft_keys_config.token_metadata;
-        setTicketInfo(ticketMetadata);
-
-        const ticketExtra: TicketMetadataExtra = JSON.parse(ticketMetadata.extra);
-        setTicketInfoExtra(ticketExtra);
-
-        const eventInfo: FunderEventMetadata | null = await keypomInstance.getEventInfo({
-          accountId: drop.funder_id,
-          eventId: ticketExtra.eventId,
-        });
-        if (!eventInfo) {
-          setIsValid(false);
-          setIsLoading(false);
-          return;
-        }
-        setEventInfo(eventInfo);
-        setEventId(ticketExtra.eventId);
-        setFunderId(drop.funder_id);
-        console.log('eventInfo', eventInfo);
-        console.log('Ticket Metadata', ticketMetadata);
-        console.log('Ticket Metadata Extra', ticketExtra);
-        setIsLoading(false);
-      } catch (e) {
-        // eslint-disable-next-line no-console
-        console.error('Error getting event info: ', e);
-        setIsValid(false);
-        setIsLoading(false);
-      }
-    };
-    getEventInfo();
-  }, []);
-
-  if (!isValid) {
-    return (
-      <NotFound404 header="Ticket not found" subheader="Please check your email and try again" />
-    );
-  }
-
+export default function TicketQRPage({
+  eventInfo,
+  ticketInfoExtra,
+  ticketInfo,
+  isLoading,
+  eventId,
+  funderId,
+  secretKey,
+}: TicketQRPageProps) {
   const ticketDetails = () => {
     return (
       <VStack spacing="0">

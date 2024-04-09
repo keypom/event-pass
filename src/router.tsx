@@ -24,7 +24,7 @@ const AllDropsPage = React.lazy(
 const AllEventsPage = React.lazy(
   async () => await import('./features/all-drops/routes/AllEventsPage'),
 );
-const TicketQRPage = React.lazy(async () => await import('@/features/ticket-qr/TicketQRPage'));
+const TicketPage = React.lazy(async () => await import('@/features/ticket-qr/TicketPage'));
 const ClaimPage = React.lazy(async () => await import('@/features/claim/routes/ClaimRouter'));
 const ClaimTokenPage = React.lazy(
   async () => await import('@/features/claim/routes/TokenClaimPage'),
@@ -55,7 +55,6 @@ const TicketDropManagerPage = React.lazy(
   async () => await import('@/features/drop-manager/routes/ticket/TicketDropManagerPage'),
 );
 const EthDenverLandingPage = React.lazy(async () => await import('@/pages/EthDenver'));
-const EthDenverTicketPage = React.lazy(async () => await import('@/pages/EthDenverTicketPage'));
 
 const Gallery = React.lazy(async () => await import('@/pages/Gallery'));
 
@@ -129,16 +128,7 @@ export const router = createBrowserRouter([
             children: [
               {
                 path: 'ticket/:id', // Match /events/event/:id
-                element: <TicketQRPage />,
-              },
-            ],
-          },
-          {
-            path: 'tickets',
-            children: [
-              {
-                path: 'denver/:id', // Match /events/event/:id
-                element: <EthDenverTicketPage />,
+                element: <TicketPage />,
               },
             ],
           },
@@ -223,3 +213,4 @@ export const router = createBrowserRouter([
     ],
   },
 ]);
+
