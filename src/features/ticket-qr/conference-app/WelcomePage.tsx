@@ -81,6 +81,7 @@ export default function WelcomePage({
         true,
       );
       setIsClaiming(false);
+      window.location.reload();
     } catch (e) {
       setIsClaiming(false);
       toast({

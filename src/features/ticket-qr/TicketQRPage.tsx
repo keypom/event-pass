@@ -11,6 +11,8 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
+import { useEffect } from 'react';
+import { getPubFromSecret } from 'keypom-js';
 
 import { IconBox } from '@/components/IconBox';
 import { TicketIcon } from '@/components/Icons';
@@ -22,6 +24,7 @@ import {
   type TicketMetadataExtra,
   type FunderEventMetadata,
 } from '@/lib/eventsHelpers';
+import keypomInstance from '@/lib/keypom';
 
 import { dateAndTimeToText } from '../drop-manager/utils/parseDates';
 
@@ -29,6 +32,7 @@ interface TicketQRPageProps {
   eventInfo?: FunderEventMetadata;
   ticketInfo?: TicketInfoMetadata;
   ticketInfoExtra?: TicketMetadataExtra;
+  maxKeyUses?: number;
   isLoading: boolean;
   eventId: string;
   funderId: string;
@@ -42,8 +46,37 @@ export default function TicketQRPage({
   isLoading,
   eventId,
   funderId,
+  maxKeyUses,
   secretKey,
 }: TicketQRPageProps) {
+  // Inside your component
+  useEffect(() => {
+    if (!maxKeyUses) return;
+
+    const checkForQRScanned = async () => {
+      const pubKey = getPubFromSecret(secretKey);
+      const keyInfo: { drop_id: string; uses_remaining: number } = await keypomInstance.viewCall({
+        methodName: 'get_key_information',
+        args: { key: pubKey },
+      });
+      const curUse = maxKeyUses - keyInfo.uses_remaining + 1;
+      if (curUse !== 1) {
+        window.location.reload();
+      }
+    };
+
+    // Set up an interval to call recoverAccount every 3 seconds
+    const intervalId = setInterval(() => {
+      checkForQRScanned();
+    }, 3000);
+
+    // Clean up function to clear the interval when the component unmounts
+    // or when the dependencies change
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [maxKeyUses]); // Dependencies array. recoverAccount will re-run if dropInfo changes.
+
   const ticketDetails = () => {
     return (
       <VStack spacing="0">

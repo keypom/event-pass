@@ -13,7 +13,7 @@ import {
 
 import TicketQRPage from './TicketQRPage';
 import WelcomePage from './conference-app/WelcomePage';
-import HomePage from './conference-app/HomePage';
+import InConferenceApp from './conference-app/InConferenceApp';
 
 export default function TicketPage() {
   const { secretKey } = useTicketClaimParams();
@@ -25,6 +25,8 @@ export default function TicketPage() {
   const [dropInfo, setDropInfo] = useState<EventDrop>();
   const [ticketInfo, setTicketInfo] = useState<TicketInfoMetadata>();
   const [ticketInfoExtra, setTicketInfoExtra] = useState<TicketMetadataExtra>();
+
+  const [maxKeyUses, setMaxKeyUses] = useState<number>();
   const [curKeyStep, setCurKeyStep] = useState<number>(1);
 
   const [eventId, setEventId] = useState('');
@@ -44,6 +46,7 @@ export default function TicketPage() {
           args: { drop_id: keyInfo.drop_id },
         });
         setDropInfo(drop);
+        setMaxKeyUses(drop.max_key_uses);
         setCurKeyStep(drop.max_key_uses - keyInfo.uses_remaining + 1);
         const ticketMetadata: TicketInfoMetadata = drop.drop_config.nft_keys_config.token_metadata;
         setTicketInfo(ticketMetadata);
@@ -91,6 +94,7 @@ export default function TicketPage() {
           eventInfo={eventInfo}
           funderId={funderId}
           isLoading={isLoading}
+          maxKeyUses={maxKeyUses}
           secretKey={secretKey}
           ticketInfo={ticketInfo}
           ticketInfoExtra={ticketInfoExtra}
@@ -111,7 +115,7 @@ export default function TicketPage() {
       );
     case 3:
       return (
-        <HomePage
+        <InConferenceApp
           dropInfo={dropInfo}
           eventId={eventId}
           eventInfo={eventInfo}

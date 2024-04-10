@@ -1,11 +1,11 @@
-import { Box, type BoxProps } from '@chakra-ui/react';
+import { Box, type ResponsiveValue, type BoxProps } from '@chakra-ui/react';
 import { type PropsWithChildren, type ReactNode } from 'react';
 
 import { RoundIcon } from './RoundIcon';
 
 interface IconBoxProps extends BoxProps {
   icon?: ReactNode;
-  bg?: string;
+  bg?: ResponsiveValue<string>;
   iconBg?: string;
   iconBorder?: string;
 }
