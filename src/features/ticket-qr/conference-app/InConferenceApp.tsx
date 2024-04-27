@@ -1,6 +1,7 @@
 import { Box, Flex, HStack, Text, VStack } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { getPubFromSecret } from 'keypom-js';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { CLOUDFLARE_IPFS } from '@/constants/common';
 import {
@@ -16,6 +17,8 @@ import { FooterCalendarIcon } from '@/components/Icons/FooterCalendarIcon';
 import { ScanIcon } from '@/components/Icons/ScanIcon';
 
 import ProfilePage from './ProfilePage';
+import ScanningPage from './ScanningPage';
+import AssetsPage, { type ScavengerHunt } from './AssetsPage';
 
 const footerMenuItems = [
   { label: 'Profile', icon: ProfileIcon },
@@ -50,7 +53,55 @@ export default function InConferenceApp({
 }: InConferenceAppProps) {
   const [accountId, setAccountId] = useState<string>('');
   const [tokensAvailable, setTokensAvailable] = useState<string>('0');
-  const [selectedTab, setSelectedTab] = useState<number>(0);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const queryParams = new URLSearchParams(location.search);
+  const hash = location.hash;
+  const initialTab = parseInt(queryParams.get('tab') || '0', 10);
+  const [selectedTab, setSelectedTab] = useState<number>(initialTab);
+  const [liveScavengers, setLiveScavengers] = useState<ScavengerHunt[]>([]);
+
+  const currentTab = () => {
+    switch (selectedTab) {
+      case 0:
+        return (
+          <ProfilePage
+            accountId={accountId}
+            dropInfo={dropInfo}
+            eventId={eventId}
+            eventInfo={eventInfo}
+            funderId={funderId}
+            isLoading={isLoading || accountId.length === 0}
+            secretKey={secretKey}
+            ticketInfo={ticketInfo}
+            ticketInfoExtra={ticketInfoExtra}
+            tokensAvailable={tokensAvailable}
+          />
+        );
+      case 1:
+        return <AssetsPage isLoading={isLoading} nfts={[]} scavengerHunts={liveScavengers} />;
+      case 2:
+        return <div />;
+      case 3:
+        return (
+          <ScanningPage
+            accountId={accountId}
+            dropInfo={dropInfo}
+            eventId={eventId}
+            eventInfo={eventInfo}
+            funderId={funderId}
+            isLoading={isLoading || accountId.length === 0}
+            secretKey={secretKey}
+            setSelectedTab={setSelectedTab}
+            ticketInfo={ticketInfo}
+            ticketInfoExtra={ticketInfoExtra}
+            tokensAvailable={tokensAvailable}
+          />
+        );
+      default:
+        return <div />;
+    }
+  };
 
   useEffect(() => {
     const recoverAccount = async () => {
@@ -66,13 +117,27 @@ export default function InConferenceApp({
           methodName: 'ft_balance_of',
           args: { account_id: recoveredAccountId },
         });
+        const scavs = await keypomInstance.viewCall({
+          contractId: factoryAccount,
+          methodName: 'get_scavengers_for_account',
+          args: { account_id: recoveredAccountId },
+        });
+        console.log('Scavs: ', scavs);
         setTokensAvailable(keypomInstance.yoctoToNear(balance));
         setAccountId(recoveredAccountId);
         console.log('Recovered account ID', recoveredAccountId);
       }
     };
     recoverAccount();
-  }, [dropInfo]);
+  }, [dropInfo, selectedTab]);
+
+  useEffect(() => {
+    // This will run when `selectedTab` changes and update the URL only if it differs from the initial tab.
+    if (initialTab !== selectedTab) {
+      // Append the current hash back onto the URL when navigating
+      navigate(`?tab=${selectedTab}${hash}`, { replace: true });
+    }
+  }, [selectedTab, navigate, initialTab, hash]);
 
   return (
     <VStack
@@ -86,18 +151,7 @@ export default function InConferenceApp({
       py="2"
       width="100vw"
     >
-      <ProfilePage
-        accountId={accountId}
-        dropInfo={dropInfo}
-        eventId={eventId}
-        eventInfo={eventInfo}
-        funderId={funderId}
-        isLoading={isLoading}
-        secretKey={secretKey}
-        ticketInfo={ticketInfo}
-        ticketInfoExtra={ticketInfoExtra}
-        tokensAvailable={tokensAvailable}
-      />
+      {currentTab()}
       <HStack
         as="footer"
         backgroundColor="#844AFF" // change the background color as needed

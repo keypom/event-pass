@@ -381,6 +381,32 @@ class KeypomJS {
     }
   };
 
+  claimEventTokenDrop = async ({
+    secretKey,
+    accountId,
+    dropId,
+    scavId,
+    factoryAccount,
+  }: {
+    secretKey: string;
+    accountId: string;
+    dropId: string;
+    scavId: string | null;
+    factoryAccount: string;
+  }) => {
+    const keyPair = nearAPI.KeyPair.fromString(secretKey);
+    await myKeyStore.setKey(networkId, accountId, keyPair);
+    const userAccount = new nearAPI.Account(this.nearConnection.connection, accountId);
+    await userAccount.functionCall({
+      contractId: factoryAccount,
+      methodName: 'claim_drop',
+      args: {
+        drop_id: dropId,
+        scavenger_id: scavId,
+      },
+    });
+  };
+
   claimEventTicket = async (secretKey: string, args: any, createAccount = false) => {
     const pubKey = getPubFromSecret(secretKey);
 
