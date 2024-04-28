@@ -150,7 +150,7 @@ export const PurchaseModal = ({
         Get Free Ticket
       </Button>
     );
-  } else if (stripeRegistered && signedIn) {
+  } else if (stripeRegistered && signedIn && !currentTicket?.isSecondary ) {
     // purchaseType = 2;
     PurchaseButton = (
       <>
@@ -173,7 +173,7 @@ export const PurchaseModal = ({
         </Button>
       </>
     );
-  } else if (stripeRegistered) {
+  } else if (stripeRegistered && !currentTicket?.isSecondary) {
     // purchaseType = 1;
     PurchaseButton = (
       <>
@@ -286,7 +286,7 @@ export const PurchaseModal = ({
                         </Text>
                       )}
                     </VStack>
-                    {availableTickets > 1 ? (
+                    {availableTickets >= 1 ? (
                       <TicketIncrementer
                         amount={amount}
                         decrementAmount={decrementAmount}
@@ -417,7 +417,7 @@ export const PurchaseModal = ({
                     <Text color="gray.800" fontSize="lg" fontWeight="semibold">
                       Ticket Amount
                     </Text>
-                    {availableTickets > 1 ? (
+                    {availableTickets >= 1 ? (
                       <TicketIncrementer
                         amount={amount}
                         decrementAmount={decrementAmount}
