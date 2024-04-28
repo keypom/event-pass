@@ -24,6 +24,7 @@ interface EventCreationStatusModalProps {
   prevEventData?: {
     priceByDropId?: Record<string, number>;
     eventId: string;
+    eventName: string;
     stripeAccountId?: string;
   };
 }
@@ -50,6 +51,7 @@ export const EventCreationStatusModal = ({
             priceByDropId: prevEventData.priceByDropId,
             stripeAccountId: prevEventData.stripeAccountId,
             eventId: prevEventData.eventId,
+            eventName: prevEventData.eventName
           };
           response = await fetch(url, {
             method: 'POST',
