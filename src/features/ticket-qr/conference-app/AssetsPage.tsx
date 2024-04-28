@@ -15,9 +15,9 @@ import {
   VStack,
   Progress,
   SimpleGrid,
-  Button,
   Spinner,
   Badge,
+  HStack,
 } from '@chakra-ui/react';
 import { CheckIcon, LockIcon } from '@chakra-ui/icons';
 
@@ -27,6 +27,7 @@ import { BoxWithShape } from '@/components/BoxWithShape';
 import { CLOUDFLARE_IPFS } from '@/constants/common';
 import { type EventDrop, type FunderEventMetadata } from '@/lib/eventsHelpers';
 import keypomInstance from '@/lib/keypom';
+import ToggleSwitch from '@/components/ToggleSwitch/ToggleSwitch';
 
 export interface ScavengerHunt {
   id: string;
@@ -229,13 +230,7 @@ const AssetsPage = ({ dropInfo, eventInfo, accountId, isLoading }: AssetsPagePro
       // Resolve all promises and set the state
       Promise.all(scavengerHuntPromises)
         .then((hunts) => {
-          setLiveScavengers([
-            ...hunts,
-            ...hunts,
-            ...hunts,
-            ...hunts,
-            ...hunts, // Repeat as many times as you want to multiply the array
-          ]);
+          setLiveScavengers(hunts);
         })
         .catch((error) => {
           console.error('Error fetching scavenger hunts:', error);
@@ -256,17 +251,22 @@ const AssetsPage = ({ dropInfo, eventInfo, accountId, isLoading }: AssetsPagePro
         methodName: 'get_nfts_for_account',
         args: { account_id: accountId }, // Use accountId directly
       });
+      console.log('NFT Drops', nftDrops);
 
       // Assuming nftDrops is an array of objects with an is_owned property
       // Sort the array so that owned NFTs come first
-      const sortedNFTDrops = nftDrops.sort((a, b) => {
+      let sortedNFTDrops = nftDrops.sort((a, b) => {
         return b.is_owned - a.is_owned; // This will sort owned NFTs to the beginning
       });
+
+      if (!showUnowned) {
+        sortedNFTDrops = sortedNFTDrops.filter((nft) => nft.is_owned);
+      }
 
       const parsedNFTs = sortedNFTDrops.map((nftData) => {
         return {
           nft: nftData.nft,
-          owned: nftData.is_owned, 
+          owned: nftData.is_owned,
         };
       });
 
@@ -290,6 +290,7 @@ const AssetsPage = ({ dropInfo, eventInfo, accountId, isLoading }: AssetsPagePro
         gap={{ base: 'calc(24px + 8px)', md: 'calc(32px + 10px)' }}
         maxW="1200px"
         p={4}
+        pb="96px"
         width="full"
       >
         <Skeleton fadeDuration={1} isLoaded={!isLoading}>
@@ -362,42 +363,45 @@ const AssetsPage = ({ dropInfo, eventInfo, accountId, isLoading }: AssetsPagePro
                 </Flex>
               )}
             </BoxWithShape>
-            <Flex
-              align="center"
-              bg="gray.50"
-              borderRadius="8xl"
-              direction="column"
-              maxH="50vh"
-              p="6"
-            >
-              <Text
-                color="#844AFF"
-                fontFamily="denverBody"
-                fontWeight="600"
-                size={{ base: 'xl', md: '2xl' }}
+            <Flex align="center" bg="gray.50" borderRadius="8xl" direction="column" p="6">
+              <Box
+                mb="2" // Margin bottom to separate from the toggle
                 textAlign="center"
+                w="full" // Making the heading take the full width
               >
-                Unlockables
-              </Text>
+                <Text
+                  color="#844AFF"
+                  fontFamily="denverBody"
+                  fontSize={{ base: 'xl', md: '2xl' }}
+                  fontWeight="600"
+                >
+                  Unlockables
+                </Text>
+              </Box>
+              <HStack justifyContent="center" mb="2" w="full">
+                <Text fontSize={{ base: 'md', md: 'lg' }} fontWeight="500">
+                  Show Unowned
+                </Text>
+                <ToggleSwitch
+                  handleToggle={() => {
+                    setShowUnowned(!showUnowned);
+                  }}
+                  toggle={showUnowned}
+                />
+              </HStack>
               {isLoading ? (
-                <Spinner />
+                <Spinner size="xl" />
               ) : nfts.length > 0 ? (
-                <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} spacing={4} w="full">
+                <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} mt="4" spacing={4} w="full">
                   {nfts.map((nft) => (
-                    <NFTCard key={nft.id} isOwned={nft.owned} nft={nft.nft} />
+                    <NFTCard key={nft.nft.name} isOwned={nft.owned} nft={nft.nft} />
                   ))}
                 </SimpleGrid>
               ) : (
-                <Text>You haven't received any NFTs yet.</Text>
+                <Text fontSize={{ base: 'md', md: 'lg' }} fontWeight="500" mt="4">
+                  You haven't received any NFTs yet.
+                </Text>
               )}
-              <Button
-                mt="4"
-                onClick={() => {
-                  setShowUnowned(!showUnowned);
-                }}
-              >
-                {showUnowned ? 'Hide Unowned NFTs' : 'Show All NFTs'}
-              </Button>
             </Flex>
           </Box>
         </IconBox>

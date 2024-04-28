@@ -11,7 +11,7 @@ import {
   useToast,
   VStack,
 } from '@chakra-ui/react';
-import { type OnResultFunction, QrReader } from 'react-qr-reader';
+import { QrReader } from 'react-qr-reader';
 import { useEffect, useRef, useState } from 'react';
 
 import { IconBox } from '@/components/IconBox';
@@ -27,7 +27,9 @@ import {
 import { ViewFinder } from '@/components/ViewFinder';
 import { LoadingOverlay } from '@/features/scanner/components/LoadingOverlay';
 import keypomInstance from '@/lib/keypom';
-import EventPrizeClaimedModal from '@/components/AppModal/EventPrizeClaimedModal';
+
+import EventPrizeClaimedModal from './EventPrizeClaimedModal';
+import { claimEventDrop } from './helpers';
 
 interface StateRefObject {
   isScanning: boolean;
@@ -111,112 +113,80 @@ export default function ScanningPage({
     }
   }, [scanStatus, statusMessage, toast]);
 
-  const handleScanResult: OnResultFunction = async (result) => {
+  // Helper function to process the claim event drop
+  async function processClaimEventDrop(qrDataSplit, setModalContent, setClaimModalOpen) {
+    const { shouldBreak, isScavenger, numFound, numRequired, numClaimed } = await claimEventDrop({
+      dropInfo,
+      qrDataSplit,
+      accountId,
+      setScanStatus,
+      setStatusMessage,
+      secretKey,
+    });
+
+    if (shouldBreak) {
+      return true;
+    }
+
+    if (isScavenger) {
+      let content = {
+        title: 'Piece Found',
+        body: `${numFound} / ${numRequired} QRs found for scavenger hunt.`,
+      };
+
+      if (numFound === numRequired) {
+        content = {
+          title: 'Scavenger Hunt Complete',
+          body: 'You have completed the scavenger hunt!',
+        };
+      }
+      setModalContent(content);
+      setClaimModalOpen(true);
+    } else {
+      setScanStatus('success');
+      setStatusMessage(`Successfully claimed ${keypomInstance.yoctoToNear(numClaimed)} tokens.`);
+    }
+
+    return false;
+  }
+
+  // The refactored handleScanResult function
+  const handleScanResult = async (result) => {
     if (result && !stateRef.current.isScanning && !stateRef.current.isOnCooldown) {
-      setIsScanning(true); // Start scanning
-      setScanStatus(undefined); // Reset the status message
+      setIsScanning(true);
+      setScanStatus(undefined);
+
       try {
         const qrData = result.getText();
         console.log('QR Data: ', qrData);
 
-        const split = qrData.split(':');
-        const type = split[0];
-        const data = split[1];
+        const qrDataSplit = qrData.split(':');
+        const type = qrDataSplit[0];
+        const data = qrDataSplit[1];
 
-        if (type && data) {
-          switch (type) {
-            case 'token':
-              const factoryAccount = dropInfo?.asset_data[1].config.root_account_id;
-              console.log('Data: ', data);
-
-              let scavId = data;
-              let isScavenger = false;
-              if (split.length >= 3) {
-                isScavenger = true;
-                scavId = split[2];
-              }
-              console.log('Scavenger ID:', scavId, 'Is scavenger:', isScavenger);
-              console.log('Split:', split);
-
-              const tokenDropInfo = await keypomInstance.viewCall({
-                contractId: factoryAccount,
-                methodName: 'get_drop_information',
-                args: { drop_id: data },
-              });
-              console.log('Token drop info:', tokenDropInfo);
-              const claimsForAccount: string[] = await keypomInstance.viewCall({
-                contractId: factoryAccount,
-                methodName: 'claims_for_account',
-                args: { account_id: accountId, drop_id: data },
-              });
-              console.log('Claims for account:', claimsForAccount);
-
-              // If it's a scavenger hunt, the scavID will be in the claims for account when claimed
-              // If it's a regular drop, when claiming, the drop ID will be in the list as well
-              // So all we need to check is if the scavenger ID is in the list (since it defaults to the drop ID)
-              if (claimsForAccount.includes(scavId)) {
-                setScanStatus('error');
-                setStatusMessage('You already scanned this drop');
-                return;
-              }
-
-              console.log('Token drop info:', tokenDropInfo);
-              await keypomInstance.claimEventTokenDrop({
-                secretKey,
-                accountId,
-                dropId: data,
-                scavId,
-                factoryAccount,
-              });
-
-              if (isScavenger) {
-                let content = {
-                  title: 'Piece Found',
-                  body: `${claimsForAccount.length + 1} / ${
-                    tokenDropInfo?.scavenger_ids.length as string
-                  } QRs found for scavenger hunt.`,
-                };
-
-                if (claimsForAccount.length + 1 === tokenDropInfo?.scavenger_ids.length) {
-                  content = {
-                    title: 'Scavenger Hunt Complete',
-                    body: 'You have completed the scavenger hunt!',
-                  };
-                }
-                setModalContent(content);
-                setClaimModalOpen(true);
-              } else {
-                setScanStatus('success');
-                setStatusMessage(
-                  `Successfully claimed ${keypomInstance.yoctoToNear(
-                    tokenDropInfo?.amount,
-                  )} tokens.`,
-                );
-              }
-
-              break;
-            case 'food':
-              console.log('Handling food type with data:', data);
-              // Handle food type logic here
-              break;
-            case 'merch':
-              console.log('Handling merch type with data:', data);
-              // Handle merch type logic here
-              break;
-            default:
-              console.error('Unhandled QR data type:', type);
-              throw new Error('Invalid QR data type');
-          }
-        } else {
+        if (!type || !data) {
           throw new Error('QR data format is incorrect');
+        }
+
+        if (type === 'token' || type === 'nft') {
+          await processClaimEventDrop(qrDataSplit, setModalContent, setClaimModalOpen);
+        } else if (type === 'food') {
+          console.log('Handling food type with data:', data);
+          // Handle food type logic here
+        } else if (type === 'merch') {
+          console.log('Handling merch type with data:', data);
+          // Handle merch type logic here
+        } else {
+          console.error('Unhandled QR data type:', type);
+          throw new Error('Invalid QR data type');
         }
       } catch (error) {
         console.error('Scan failed', error);
         setScanStatus('error');
         setStatusMessage('Error scanning item');
       } finally {
-        setIsScanning(false); // End scanning regardless of success or error
-        enableCooldown(); // Enable cooldown to prevent multiple scans
+        setIsScanning(false);
+        enableCooldown();
       }
     }
   };
