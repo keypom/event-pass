@@ -138,7 +138,7 @@ export const PurchaseModal = ({
         Processing
       </Button>
     );
-  } else if (currentTicket?.price && parseInt(currentTicket.price) === 0) {
+  } else if (currentTicket?.price && parseFloat(currentTicket.price) === 0) {
     // purchaseType = 3;
     PurchaseButton = (
       <Button
