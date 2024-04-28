@@ -16,7 +16,7 @@ export const claimEventDrop = async ({
     scavId = qrDataSplit[2];
   }
 
-  const tokenDropInfo = await keypomInstance.viewCall({
+  const claimedDropInfo = await keypomInstance.viewCall({
     contractId: factoryAccount,
     methodName: 'get_drop_information',
     args: { drop_id: dropId },
@@ -50,7 +50,9 @@ export const claimEventDrop = async ({
     shouldBreak: false,
     isScavenger: scavId !== undefined,
     numFound: claimsForAccount.length + 1,
-    numRequired: tokenDropInfo?.scavenger_ids?.length || 0,
-    numClaimed: tokenDropInfo?.amount,
+    numRequired: claimedDropInfo?.scavenger_ids?.length || 0,
+    image: claimedDropInfo?.image,
+    name: claimedDropInfo?.name,
+    amount: claimedDropInfo?.amount,
   };
 };

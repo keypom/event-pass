@@ -28,7 +28,7 @@ import { ViewFinder } from '@/components/ViewFinder';
 import { LoadingOverlay } from '@/features/scanner/components/LoadingOverlay';
 import keypomInstance from '@/lib/keypom';
 
-import EventPrizeClaimedModal from './EventPrizeClaimedModal';
+import EventPrizeClaimedModal, { type EventPrizeModalContent } from './EventPrizeClaimedModal';
 import { claimEventDrop } from './helpers';
 
 interface StateRefObject {
@@ -67,15 +67,19 @@ export default function ScanningPage({
   const toast = useToast();
 
   const [facingMode, setFacingMode] = useState('user'); // default to rear camera
-  const [isErr, setIsErr] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
   const [isOnCooldown, setIsOnCooldown] = useState(false); // New state to manage cooldown
   const [scanStatus, setScanStatus] = useState<'success' | 'error'>();
   const [statusMessage, setStatusMessage] = useState('');
   const [claimModalOpen, setClaimModalOpen] = useState(false);
-  const [modalContent, setModalContent] = useState({
-    title: 'title',
-    body: 'body',
+  const [modalContent, setModalContent] = useState<EventPrizeModalContent>({
+    title: '',
+    subtitle: '',
+    image: ``,
+    name: '',
+    body: '',
+    showConfetti: false,
+    showAssetsButton: false,
   });
 
   const stateRef = useRef<StateRefObject>({
@@ -115,37 +119,75 @@ export default function ScanningPage({
 
   // Helper function to process the claim event drop
   async function processClaimEventDrop(qrDataSplit, setModalContent, setClaimModalOpen) {
-    const { shouldBreak, isScavenger, numFound, numRequired, numClaimed } = await claimEventDrop({
-      dropInfo,
-      qrDataSplit,
-      accountId,
-      setScanStatus,
-      setStatusMessage,
-      secretKey,
-    });
+    const { shouldBreak, isScavenger, numFound, numRequired, name, image, amount } =
+      await claimEventDrop({
+        dropInfo,
+        qrDataSplit,
+        accountId,
+        setScanStatus,
+        setStatusMessage,
+        secretKey,
+      });
 
     if (shouldBreak) {
       return true;
     }
 
-    if (isScavenger) {
-      let content = {
-        title: 'Piece Found',
-        body: `${numFound} / ${numRequired} QRs found for scavenger hunt.`,
-      };
+    const tokenAmount: string | undefined = amount ? keypomInstance.yoctoToNear(amount) : undefined;
 
-      if (numFound === numRequired) {
-        content = {
-          title: 'Scavenger Hunt Complete',
-          body: 'You have completed the scavenger hunt!',
-        };
+    const content = {
+      title: '',
+      subtitle: '',
+      image: `${CLOUDFLARE_IPFS}/${image as string}`,
+      name,
+      body: '',
+      showConfetti: false,
+      showAssetsButton: false,
+      showCloseButton: true, // Default to show only close button
+    };
+
+    if (isScavenger) {
+      if (numFound === 1 && numRequired > 1) {
+        // Case 2: Scavenger hunt started
+        content.title = 'Scavenger Hunt Started';
+        content.subtitle = `${parseInt(numRequired) - 1} piece(s) left.`;
+        content.body = `When you find all the pieces, you'll receive ${
+          tokenAmount ? `${tokenAmount} tokens!` : `an exclusive NFT!`
+        }`;
+        content.showConfetti = false;
+      } else if (numFound < numRequired) {
+        // Case 3: Piece found but scavenger hunt not completed
+        content.title = 'Piece Found';
+        content.subtitle = `Found ${Number(numFound)}/${numRequired as string} pieces. Keep going!`;
+        content.showConfetti = false;
+      } else if (numFound === numRequired) {
+        // Case 4: Scavenger hunt completed
+        content.title = 'Scavenger Hunt Completed';
+        content.subtitle = 'Congratulations! You have found all the pieces!';
+        content.body = `You've received ${
+          tokenAmount ? `${tokenAmount} tokens!` : `an exclusive NFT!`
+        }`;
+        content.showConfetti = true;
+        content.showAssetsButton = true; // Assume they get rewards that can be viewed on assets page
       }
-      setModalContent(content);
-      setClaimModalOpen(true);
     } else {
-      setScanStatus('success');
-      setStatusMessage(`Successfully claimed ${keypomInstance.yoctoToNear(numClaimed)} tokens.`);
+      if (amount) {
+        // Case 5: Tokens claimed with no scavenger involvement
+        content.title = 'Tokens Claimed';
+        content.subtitle = `Successfully claimed ${keypomInstance.yoctoToNear(amount)} tokens.`;
+        content.showConfetti = true;
+        content.showAssetsButton = true; // Link to assets page as tokens are involved
+      } else {
+        // Case 1: NFT claimed with no scavenger involvement
+        content.title = 'NFT Claimed';
+        content.subtitle = `Successfully claimed ${name as string}.`;
+        content.showAssetsButton = true;
+        content.showConfetti = true; // Celebratory confetti for claiming an NFT
+      }
     }
+
+    setModalContent(content);
+    setClaimModalOpen(true);
 
     return false;
   }
@@ -194,10 +236,10 @@ export default function ScanningPage({
   return (
     <>
       <EventPrizeClaimedModal
-        body={modalContent.body}
+        eventInfo={eventInfo}
         isOpen={claimModalOpen}
-        showConfetti={true}
-        title={modalContent.title}
+        modalContent={modalContent}
+        onAssetsClicked={() => setSelectedTab(1)}
         onClose={() => {
           setClaimModalOpen(false);
         }}
@@ -298,6 +340,14 @@ export default function ScanningPage({
                         />
                       </VStack>
                       <Button
+                        backgroundColor={eventInfo?.qrPage?.content?.sellButton?.bg}
+                        color={eventInfo?.qrPage?.content?.sellButton?.color}
+                        fontFamily={eventInfo?.qrPage?.content?.sellButton?.fontFamily}
+                        fontSize={eventInfo?.qrPage?.content?.sellButton?.fontSize}
+                        fontWeight={eventInfo?.qrPage?.content?.sellButton?.fontWeight}
+                        h={eventInfo?.qrPage?.content?.sellButton?.h}
+                        sx={eventInfo?.qrPage?.content?.sellButton?.sx}
+                        variant="outline"
                         w="full"
                         onClick={() => {
                           setFacingMode((prevMode) =>
@@ -305,7 +355,7 @@ export default function ScanningPage({
                           );
                         }}
                       >
-                        Flip Camera
+                        FLIP
                       </Button>
                     </VStack>
                   </Flex>
@@ -397,7 +447,7 @@ export default function ScanningPage({
                     textDecoration: 'underline', // Underline on hover like a typical hyperlink
                     color: 'blue.600', // Optional: Change color on hover for better user feedback
                   }}
-                  color="#C5C5C5" // Use your theme's blue or any color that indicates interactivity
+                  color="gray.600" // Use your theme's blue or any color that indicates interactivity
                   cursor="pointer" // Makes the text behave like a clickable link
                   textDecoration="underline" // Remove underline from text
                   transition="color 0.2s, text-decoration 0.2s" // Smooth transition for hover effects

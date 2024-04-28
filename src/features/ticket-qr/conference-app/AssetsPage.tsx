@@ -114,36 +114,59 @@ const NFTCard = ({ nft, isOwned }) => {
   );
 };
 
-const ScavengerCard = ({ scavenger }) => (
-  <Box
-    bg="white"
-    borderRadius="md" // Smaller border radius for a "stamp" look
-    boxShadow="md"
-    maxW="120px" // Smaller maximum width
-    p={2} // Less padding for a tighter card
-  >
-    <VStack align="stretch" spacing={2}>
-      <Center>
-        <Image
-          alt={scavenger.name}
-          borderRadius="md"
-          boxSize="60px" // Smaller image size
-          objectFit="contain"
-          src={scavenger.imageUrl}
-        />
-      </Center>
-      <VStack align="stretch" spacing={1}>
-        <Text fontSize="xs" fontWeight="bold">
-          {scavenger.name}
-        </Text>
-        <Progress hasStripe size="xs" value={(scavenger.found / scavenger.needed) * 100} />
-        <Text fontSize="xs" p={1}>
-          Found: {scavenger.found}/{scavenger.needed}
-        </Text>
+const ScavengerCard = ({ scavenger }) => {
+  const isCompleted = scavenger.found >= scavenger.needed;
+
+  return (
+    <Box
+      bg={isCompleted ? 'green.50' : 'white'}
+      borderRadius="md"
+      boxShadow="md"
+      maxW="120px"
+      p={2}
+      position="relative"
+    >
+      <VStack align="stretch" spacing={2}>
+        <Center>
+          <Image
+            alt={scavenger.name}
+            borderRadius="md"
+            boxSize="60px"
+            objectFit="contain"
+            src={scavenger.imageUrl}
+          />
+        </Center>
+        <VStack align="stretch" spacing={1}>
+          <Text fontSize="xs" fontWeight="bold" textAlign="center">
+            {scavenger.name}
+          </Text>
+          <Progress
+            hasStripe
+            isAnimated={isCompleted}
+            size="xs"
+            value={(scavenger.found / scavenger.needed) * 100}
+          />
+          <HStack justify="space-between" px={1}>
+            <Text fontSize="xs">Found:</Text>
+            <Text fontSize="xs" fontWeight="semibold">
+              {scavenger.found}/{scavenger.needed}
+            </Text>
+          </HStack>
+        </VStack>
+        {isCompleted && (
+          <Box position="absolute" right="2" top="2">
+            <CheckIcon color="green.500" />
+          </Box>
+        )}
+        {isCompleted && (
+          <Badge borderRadius="4" colorScheme="blue" left="2" position="absolute" size="sm" top="2">
+            Complete
+          </Badge>
+        )}
       </VStack>
-    </VStack>
-  </Box>
-);
+    </Box>
+  );
+};
 // Update the CollapsibleSection to accept a list of scavenger hunts and render them inside a Flex container
 const CollapsibleSection = ({ title, itemList, index, emptyMessage }) => (
   <Accordion allowMultiple allowToggle defaultIndex={[0]} maxW="345px" w="100%">
