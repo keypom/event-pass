@@ -176,7 +176,7 @@ export default function NewTicketDrop() {
   const [eventCreationSuccess, setEventCreationSuccess] = useState<boolean | undefined>();
   const [txnSuccess, setTxnSuccess] = useState(false);
   const [prevEventData, setPrevEventData] = useState<
-    | { priceByDropId?: Record<string, number>; eventId: string; stripeAccountId?: string }
+    | { priceByDropId?: Record<string, number>; eventId: string; eventName: string; stripeAccountId?: string }
     | undefined
   >();
 
@@ -206,8 +206,8 @@ export default function NewTicketDrop() {
       const eventData = localStorage.getItem('EVENT_INFO_SUCCESS_DATA');
 
       if (eventData) {
-        const { eventId, stripeAccountId, priceByDropId } = JSON.parse(eventData);
-        setPrevEventData({ priceByDropId, eventId, stripeAccountId });
+        const { eventId, eventName, stripeAccountId, priceByDropId } = JSON.parse(eventData);
+        setPrevEventData({ priceByDropId, eventId, eventName, stripeAccountId });
 
         try {
           await keypomInstance.viewCall({
@@ -315,6 +315,7 @@ export default function NewTicketDrop() {
         const stripeAccountInfo = {
           stripeAccountId,
           eventId,
+          eventName: formData.eventName.value,
           priceByDropId,
         };
         localStorage.setItem('EVENT_INFO_SUCCESS_DATA', JSON.stringify(stripeAccountInfo));
