@@ -14,13 +14,12 @@ import {
 } from '@chakra-ui/react';
 import { NavLink } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { CheckIcon } from '@chakra-ui/icons';
 
 import { IconBox } from '@/components/IconBox';
 import { type EventInterface } from '@/pages/Event';
 import { type DataItem } from '@/components/Table/types';
 import { PURCHASED_LOCAL_STORAGE_PREFIX } from '@/constants/common';
-
-import { TicketIncrementer } from './TicketIncrementer';
 
 interface TicketCardProps {
   onSubmit?: (ticket: any, ticketAmount: any) => Promise<void>;
@@ -118,6 +117,62 @@ export const TicketCard = ({ event, loading, surroundingNavLink, onSubmit }: Tic
     ) : (
       <Box height="100%">{children}</Box>
     );
+  };
+
+  const renderPrice = () => {
+    // Ensure that we have numbers to work with
+    const numTickets = Number(event.numTickets);
+    const maxTickets = Number(event.maxTickets);
+    const price = Number(event.price);
+    const priceUSD = Number(event.priceUSD);
+
+    if (numTickets === 0 || isNaN(maxTickets) || isNaN(price)) {
+      return 'Sold Out';
+    }
+
+    if (multPrice === 0) {
+      return 'Get for free';
+    }
+
+    if (!isNaN(priceUSD)) {
+      // Divide by 100 to convert cents to dollars and fix to 2 decimal places
+      const formattedPriceUSD = (priceUSD / 100).toFixed(2);
+      return `Buy for $${formattedPriceUSD}`;
+    }
+
+    // Assuming multPrice is a number
+    return `Buy for ${multPrice} NEAR`;
+  };
+
+  const parseChecklist = (description: string) => {
+    const checklistStart = description.indexOf('%CHECKLIST%');
+    const checklistEnd = description.indexOf('%END%');
+
+    if (checklistStart !== -1 && checklistEnd !== -1) {
+      const beforeChecklist = description.slice(0, checklistStart);
+      const afterChecklist = description.slice(checklistEnd + '%END%'.length);
+      const checklistString = description.slice(
+        checklistStart + '%CHECKLIST%'.length,
+        checklistEnd,
+      );
+      const checklistItems = checklistString.split('%ITEM%').map((item) => item.trim());
+
+      return (
+        <>
+          {beforeChecklist}
+          <ul style={{ listStyleType: 'none', paddingLeft: '0' }}>
+            {checklistItems.map((item, index) => (
+              <li key={index} style={{ display: 'flex', alignItems: 'center' }}>
+                <CheckIcon color="green.500" mr="2" />
+                {item}
+              </li>
+            ))}
+          </ul>
+          {afterChecklist}
+        </>
+      );
+    }
+    return description;
   };
 
   const navButton = onSubmit == null;
@@ -262,47 +317,34 @@ export const TicketCard = ({ event, loading, surroundingNavLink, onSubmit }: Tic
             </>
           )}
 
-          <Box color="black">
-            <Text
-              align="left"
-              as="h2"
-              color="black.800"
-              fontSize="xl"
-              fontWeight="medium"
-              mt="3"
-              size="sm"
-            >
-              {event.name}
-            </Text>
-          </Box>
-          <Box>
-            <Text align="left" color="gray.400" fontSize="xs" mt="2px">
-              {event.dateString}
-            </Text>
-            <Text align="left" color="gray.400" fontSize="sm">
-              {event.location}
-            </Text>
-            <Text align="left" color="black" fontSize="sm" mt="5px">
-              {event.description}
-            </Text>
-          </Box>
-          {!navButton && amount && event.numTickets !== '0' && event.numTickets !== '1' ? (
-            <VStack align="left" spacing="0" textAlign="left" w="full">
-              <TicketIncrementer
-                amount={amount}
-                decrementAmount={decrementAmount}
-                incrementAmount={incrementAmount}
-                maxAmount={Math.min(limitPerUser - numPurchased, availableTickets)}
-              />
-              {showLimit && (
-                <Text color="gray.400" fontSize="sm" fontWeight="400">
-                  {`Limit of ${limitPerUser} per customer${
-                    numPurchased > 0 ? ` (${numPurchased} owned)` : ''
-                  }`}
-                </Text>
-              )}
-            </VStack>
-          ) : null}
+          <VStack align="stretch" spacing={2}>
+            {/* Header content */}
+            <Box color="black">
+              <Text
+                align="left"
+                as="h2"
+                color="black.800"
+                fontSize="xl"
+                fontWeight="medium"
+                mt="3"
+                size="sm"
+              >
+                {event.name}
+              </Text>
+              <Text align="left" color="gray.400" fontSize="xs">
+                {event.dateString}
+              </Text>
+            </Box>
+            {/* Middle content */}
+            <Box>
+              <Text align="left" color="gray.400" fontSize="sm">
+                {event.location}
+              </Text>
+              <Text align="left" color="black" fontSize="sm" mt="5px">
+                {parseChecklist(event.description as string)}
+              </Text>
+            </Box>
+          </VStack>
           {navButton ? (
             <>
               <Box h="14"></Box>
@@ -334,14 +376,7 @@ export const TicketCard = ({ event, loading, surroundingNavLink, onSubmit }: Tic
                   onSubmit(event, amount);
                 }}
               >
-                {event.numTickets === '0' ||
-                event.maxTickets === undefined ||
-                event.supply === undefined ||
-                event.price === undefined ? (
-                  <> Sold Out </>
-                ) : (
-                  <> {multPrice === 0 ? `Get for free` : `Buy for ${multPrice} NEAR`} </>
-                )}
+                {renderPrice()}
               </Button>
             </>
           )}

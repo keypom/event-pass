@@ -117,6 +117,7 @@ export interface EventInterface {
   supply: number | undefined;
   dateString: string | undefined;
   price: number | undefined;
+  priceUSD: string | undefined;
   dateForPastCheck: Date | undefined;
 }
 
@@ -553,38 +554,39 @@ export default function Event() {
         console.log('workerPayload before signandsend', JSON.stringify(workerPayload));
         localStorage.setItem('workerPayload', JSON.stringify(workerPayload));
 
-        wallet.signAndSendTransaction({
-          signerId: accountId || undefined,
-          receiverId: KEYPOM_MARKETPLACE_CONTRACT,
-          actions: [
-            {
-              type: 'FunctionCall',
-              params: {
-                methodName: 'buy_resale',
-                args: {
-                  drop_id: ticketBeingPurchased.id,
-                  memo,
-                  new_owner: accountId,
-                  seller_new_linkdrop_pk: linkdrop_keys.publicKeys[0],
-                  seller_linkdrop_drop_id: Date.now().toString(),
+        wallet
+          .signAndSendTransaction({
+            signerId: accountId || undefined,
+            receiverId: KEYPOM_MARKETPLACE_CONTRACT,
+            actions: [
+              {
+                type: 'FunctionCall',
+                params: {
+                  methodName: 'buy_resale',
+                  args: {
+                    drop_id: ticketBeingPurchased.id,
+                    memo,
+                    new_owner: accountId,
+                    seller_new_linkdrop_pk: linkdrop_keys.publicKeys[0],
+                    seller_linkdrop_drop_id: Date.now().toString(),
+                  },
+                  gas: '300000000000000',
+                  // 0.1NEAR if not defined
+                  deposit: nearSendPrice,
                 },
-                gas: '300000000000000',
-                // 0.1NEAR if not defined
-                deposit: nearSendPrice,
               },
-            },
-          ],
-        })
-        .then( () => {
-          if(wallet.type === "injected"){
-            setBuyPromiseResult(true)
-          }
-         })
-        .catch((err) => {
-          console.log("error", err)
-          TicketPurchaseFailure("", err);
-          setPurchaseLoading(false);
-        });;
+            ],
+          })
+          .then(() => {
+            if (wallet.type === 'injected') {
+              setBuyPromiseResult(true);
+            }
+          })
+          .catch((err) => {
+            console.log('error', err);
+            TicketPurchaseFailure('', err);
+            setPurchaseLoading(false);
+          });
       }
     } else if (purchaseType === 'near') {
       // put the workerPayload in local storage
@@ -631,35 +633,36 @@ export default function Event() {
         }
 
         localStorage.setItem('purchaseType', 'primary');
-        console.log("local storage worker payload", localStorage.getItem('workerPayload'));
-        wallet.signAndSendTransaction({
-          signerId: accountId || undefined,
-          receiverId: KEYPOM_MARKETPLACE_CONTRACT,
-          actions: [
-            {
-              type: 'FunctionCall',
-              params: {
-                methodName: 'buy_initial_sale',
-                args: {
-                  event_id: meta.eventId,
-                  drop_id: ticketBeingPurchased.id,
-                  new_keys: newKeys,
+        console.log('local storage worker payload', localStorage.getItem('workerPayload'));
+        wallet
+          .signAndSendTransaction({
+            signerId: accountId || undefined,
+            receiverId: KEYPOM_MARKETPLACE_CONTRACT,
+            actions: [
+              {
+                type: 'FunctionCall',
+                params: {
+                  methodName: 'buy_initial_sale',
+                  args: {
+                    event_id: meta.eventId,
+                    drop_id: ticketBeingPurchased.id,
+                    new_keys: newKeys,
+                  },
+                  gas: '300000000000000',
+                  deposit: nearSendPrice,
                 },
-                gas: '300000000000000',
-                deposit: nearSendPrice,
               },
-            },
-          ],
-        })
-        .then( () => {
-          if(wallet.type === "injected"){
-            setBuyPromiseResult(true)
-          }
-         })
-        .catch((err) => {
-          TicketPurchaseFailure("", err);
-          setPurchaseLoading(false);
-        });
+            ],
+          })
+          .then(() => {
+            if (wallet.type === 'injected') {
+              setBuyPromiseResult(true);
+            }
+          })
+          .catch((err) => {
+            TicketPurchaseFailure('', err);
+            setPurchaseLoading(false);
+          });
       } else {
         // secondary
         if (wallet == null) {
@@ -696,36 +699,37 @@ export default function Event() {
         console.log('workerPayload before signandsend', JSON.stringify(workerPayload));
         localStorage.setItem('workerPayload', JSON.stringify(workerPayload));
 
-        wallet.signAndSendTransaction({
-          signerId: accountId || undefined,
-          receiverId: KEYPOM_MARKETPLACE_CONTRACT,
-          actions: [
-            {
-              type: 'FunctionCall',
-              params: {
-                methodName: 'buy_resale',
-                args: {
-                  drop_id: ticketBeingPurchased.id,
-                  memo,
-                  new_owner: accountId,
-                  seller_new_linkdrop_pk: linkdrop_keys.publicKeys[0],
-                  seller_linkdrop_drop_id: Date.now().toString(),
+        wallet
+          .signAndSendTransaction({
+            signerId: accountId || undefined,
+            receiverId: KEYPOM_MARKETPLACE_CONTRACT,
+            actions: [
+              {
+                type: 'FunctionCall',
+                params: {
+                  methodName: 'buy_resale',
+                  args: {
+                    drop_id: ticketBeingPurchased.id,
+                    memo,
+                    new_owner: accountId,
+                    seller_new_linkdrop_pk: linkdrop_keys.publicKeys[0],
+                    seller_linkdrop_drop_id: Date.now().toString(),
+                  },
+                  gas: '300000000000000',
+                  deposit: nearSendPrice,
                 },
-                gas: '300000000000000',
-                deposit: nearSendPrice,
               },
-            },
-          ],
-        })
-        .then( () => {
-          if(wallet.type === "injected"){
-            setBuyPromiseResult(true)
-          }
-         })
-        .catch((err) => {
-          TicketPurchaseFailure("", err);
-          setPurchaseLoading(false);
-        });
+            ],
+          })
+          .then(() => {
+            if (wallet.type === 'injected') {
+              setBuyPromiseResult(true);
+            }
+          })
+          .catch((err) => {
+            TicketPurchaseFailure('', err);
+            setPurchaseLoading(false);
+          });
       }
     } else if (purchaseType === 'stripe') {
       const response = await fetch(EVENTS_WORKER_BASE + '/stripe/create-checkout-session', {
@@ -771,12 +775,12 @@ export default function Event() {
     if (nearRedirect == null && !buyPromiseResult) {
       return;
     }
-    console.log("first bit")
+    console.log('first bit');
     // get workerpayload from local storage
     const workerPayloadStringified = localStorage.getItem('workerPayload');
     const purchaseType = localStorage.getItem('purchaseType');
-    console.log("workerPayloadStringified: ", workerPayloadStringified)
-    console.log("purchaseType: ", purchaseType)
+    console.log('workerPayloadStringified: ', workerPayloadStringified);
+    console.log('purchaseType: ', purchaseType);
     if (workerPayloadStringified == null || purchaseType == null) {
       return;
     }
@@ -801,7 +805,7 @@ export default function Event() {
     }
     const ticketPubKey = getPubFromSecret(workerPayload.ticketKeys[0]);
     const keyInfo = await keypomInstance.getTicketKeyInformation({ publicKey: ticketPubKey });
-    console.log("keyInfo: ", keyInfo)
+    console.log('keyInfo: ', keyInfo);
     if (keyInfo === null) {
       return;
     }
@@ -926,7 +930,8 @@ export default function Event() {
   };
 
   const TicketPurchaseFailure = (workerPayload, responseBody) => {
-    const responseLog: string = typeof responseBody === 'string' ? responseBody : JSON.stringify(responseBody);
+    const responseLog: string =
+      typeof responseBody === 'string' ? responseBody : JSON.stringify(responseBody);
     toast({
       title: 'Purchase failed',
       description: 'No purchase was made due to the error: ' + responseLog,
@@ -1046,6 +1051,7 @@ export default function Event() {
         salesValidThrough: extra.salesValidThrough,
         passValidThrough: extra.passValidThrough,
         limitPerUser: extra.limitPerUser,
+        priceUSD: extra.priceUSD,
         supply,
         maxTickets: extra.maxSupply,
         soldTickets: supply,
