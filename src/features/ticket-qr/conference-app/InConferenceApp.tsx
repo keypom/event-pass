@@ -18,7 +18,7 @@ import { ScanIcon } from '@/components/Icons/ScanIcon';
 
 import ProfilePage from './ProfilePage';
 import ScanningPage from './ScanningPage';
-import AssetsPage, { type ScavengerHunt } from './AssetsPage';
+import AssetsPage from './AssetsPage';
 
 const footerMenuItems = [
   { label: 'Profile', icon: ProfileIcon },
@@ -59,7 +59,6 @@ export default function InConferenceApp({
   const hash = location.hash;
   const initialTab = parseInt(queryParams.get('tab') || '0', 10);
   const [selectedTab, setSelectedTab] = useState<number>(initialTab);
-  const [liveScavengers, setLiveScavengers] = useState<ScavengerHunt[]>([]);
 
   const currentTab = () => {
     switch (selectedTab) {
@@ -79,7 +78,14 @@ export default function InConferenceApp({
           />
         );
       case 1:
-        return <AssetsPage isLoading={isLoading} nfts={[]} scavengerHunts={liveScavengers} />;
+        return (
+          <AssetsPage
+            accountId={accountId}
+            dropInfo={dropInfo}
+            eventInfo={eventInfo}
+            isLoading={isLoading || accountId.length === 0}
+          />
+        );
       case 2:
         return <div />;
       case 3:
@@ -117,12 +123,6 @@ export default function InConferenceApp({
           methodName: 'ft_balance_of',
           args: { account_id: recoveredAccountId },
         });
-        const scavs = await keypomInstance.viewCall({
-          contractId: factoryAccount,
-          methodName: 'get_scavengers_for_account',
-          args: { account_id: recoveredAccountId },
-        });
-        console.log('Scavs: ', scavs);
         setTokensAvailable(keypomInstance.yoctoToNear(balance));
         setAccountId(recoveredAccountId);
         console.log('Recovered account ID', recoveredAccountId);
