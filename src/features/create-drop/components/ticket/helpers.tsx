@@ -307,7 +307,7 @@ export const createPayload = async ({
     marketTicketInfo: ticket_information,
   });
 
-  var change_user_metadata = {};
+  let change_user_metadata = {};
   change_user_metadata[eventId] = eventMetadata;
 
   const actions: Action[] = [
