@@ -307,6 +307,9 @@ export const createPayload = async ({
     marketTicketInfo: ticket_information,
   });
 
+  var change_user_metadata = {};
+  change_user_metadata[eventId] = eventMetadata;
+
   const actions: Action[] = [
     {
       type: 'FunctionCall',
@@ -316,7 +319,7 @@ export const createPayload = async ({
           drop_ids,
           drop_configs,
           asset_datas,
-          change_user_metadata: JSON.stringify(funderMetadata),
+          change_user_metadata: JSON.stringify(change_user_metadata),
           on_success: {
             receiver_id: KEYPOM_MARKETPLACE_CONTRACT,
             method_name: 'create_event',
