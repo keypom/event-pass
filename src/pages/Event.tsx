@@ -978,15 +978,27 @@ export default function Event() {
 
     const yoctoPrice = keypomInstance.nearToYocto(nearPrice);
 
-    const signature = await keypomInstance.GenerateResellSignature({
-      secretKey: sellInfo.secretKey,
-      publicKey: sellInfo.publicKey,
-    });
-
     const marketplaceMemo = {
       public_key: sellInfo.publicKey,
       price: yoctoPrice,
     };
+
+    // Memo for generating resell signature
+    const memo_no_sig = JSON.stringify({
+      account_id: KEYPOM_MARKETPLACE_CONTRACT,
+      msg: JSON.stringify({
+        linkdrop_pk: sellInfo.publicKey,
+        msg: JSON.stringify(marketplaceMemo),
+      }),
+    })
+
+    console.log("signing: ", memo_no_sig)
+
+    const signature = await keypomInstance.GenerateSignature({
+      secretKey: sellInfo.secretKey,
+      publicKey: sellInfo.publicKey,
+      message: memo_no_sig
+    });
 
     const base64Signature = signature[0];
 
@@ -998,7 +1010,7 @@ export default function Event() {
 
     let sellsuccessful = false;
     try {
-      await keypomInstance.ListUnownedTickets({ msg: memo });
+      await keypomInstance.ListTicketForSecondarySale({ msg: memo });
       sellsuccessful = true;
     } catch (error) {
       toast({
