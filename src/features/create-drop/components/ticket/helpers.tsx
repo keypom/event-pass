@@ -207,8 +207,7 @@ export const createPayload = async ({
     methodName: 'get_funder_info',
     args: { account_id: accountId },
   });
-  const funderMetadata: FunderMetadata =
-    funderInfo === undefined || funderInfo === null ? {} : JSON.parse(funderInfo.metadata);
+  const funderMetadata: FunderMetadata = {};
 
   const eventMetadata: FunderEventMetadata = {
     nearCheckout: formData.acceptNearPayments,
