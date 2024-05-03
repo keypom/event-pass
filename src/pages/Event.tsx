@@ -495,7 +495,7 @@ export default function Event() {
         }
 
         const response = await fetch(
-          'https://stripe-worker.kp-capstone.workers.dev/purchase-free-tickets',
+          `${EVENTS_WORKER_BASE}/purchase-free-tickets`,
           {
             method: 'POST',
             headers: {
