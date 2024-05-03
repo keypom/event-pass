@@ -203,12 +203,7 @@ export const createPayload = async ({
 }): Promise<{ actions: Action[]; dropIds: string[] }> => {
   const masterKey = get('MASTER_KEY');
 
-  const funderInfo = await keypomInstance.viewCall({
-    methodName: 'get_funder_info',
-    args: { account_id: accountId },
-  });
-  const funderMetadata: FunderMetadata =
-    funderInfo === undefined || funderInfo === null ? {} : JSON.parse(funderInfo.metadata);
+  const funderMetadata: FunderMetadata = {};
 
   const eventMetadata: FunderEventMetadata = {
     nearCheckout: formData.acceptNearPayments,

@@ -31,6 +31,7 @@ import {
   CLOUDFLARE_IPFS,
   DROP_TYPE,
   KEYPOM_EVENTS_CONTRACT,
+  KEYPOM_GLOBAL_SIGNING_KEYS,
   KEYPOM_MARKETPLACE_CONTRACT,
   MASTER_KEY,
 } from '@/constants/common';
@@ -176,19 +177,15 @@ class KeypomJS {
     });
   };
 
-  GetGlobalKey = async () => {
-    return await this.viewAccount.viewFunctionV2({
-      contractId: KEYPOM_EVENTS_CONTRACT,
-      methodName: 'get_global_secret_key',
-      args: {},
-    });
+  GetSigningKey(){
+    const randomIndex = Math.floor(Math.random() * (KEYPOM_GLOBAL_SIGNING_KEYS.length + 1));
+    return KEYPOM_GLOBAL_SIGNING_KEYS[randomIndex]
   };
 
-  ListUnownedTickets = async ({ msg }) => {
-    // const publicKey = JSON.parse(msg).linkdrop_pk;
-    const keypomGlobalSecretKey = await this.GetGlobalKey();
-    const keypomKeypair = nearAPI.KeyPair.fromString(keypomGlobalSecretKey);
-    myKeyStore.setKey(networkId, KEYPOM_EVENTS_CONTRACT, keypomKeypair);
+  ListTicketForSecondarySale = async ({ msg }) => {
+    const signingSecretKey = this.GetSigningKey()
+    const signingKeypair = nearAPI.KeyPair.fromString(signingSecretKey);
+    myKeyStore.setKey(networkId, KEYPOM_EVENTS_CONTRACT, signingKeypair);
     const keypomAccount = new nearAPI.Account(
       this.nearConnection.connection,
       KEYPOM_EVENTS_CONTRACT,
@@ -204,24 +201,19 @@ class KeypomJS {
     });
   };
 
-  GenerateResellSignature = async (keypair) => {
-    const sk_bytes = bs58.decode(keypair.secretKey);
+  GenerateSignature = async (keypairAndSigningMsg: {publicKey: string, secretKey: string, message: string}) => {
+    const sk_bytes = bs58.decode(keypairAndSigningMsg.secretKey);
 
-    const signing_message = await this.viewAccount.viewFunctionV2({
-      contractId: KEYPOM_EVENTS_CONTRACT,
-      methodName: 'get_signing_message',
-      args: {},
-    });
     const key_info = await this.viewAccount.viewFunctionV2({
       contractId: KEYPOM_EVENTS_CONTRACT,
       methodName: 'get_key_information',
       args: {
-        key: keypair.publicKey.toString(),
+        key: keypairAndSigningMsg.publicKey.toString(),
       },
     });
     const message_nonce = key_info.message_nonce;
 
-    const message = `${String(signing_message)}${String(message_nonce.toString())}`;
+    const message = `${String(keypairAndSigningMsg.message)}${String(message_nonce.toString())}`;
     const message_bytes = new TextEncoder().encode(`${message}`);
 
     const signature = nacl.sign.detached(message_bytes, sk_bytes);
@@ -384,20 +376,15 @@ class KeypomJS {
   onEventTicketScanned = async (secretKey: string) => {
     const pubKey = getPubFromSecret(secretKey);
 
-    const keypomGlobalSecretKey = await this.GetGlobalKey();
-    const keypomKeypair = nearAPI.KeyPair.fromString(keypomGlobalSecretKey);
-    await myKeyStore.setKey(networkId, KEYPOM_EVENTS_CONTRACT, keypomKeypair);
+    const signingKey = this.GetSigningKey();
+    console.log(signingKey)
+    const signingKeypair = nearAPI.KeyPair.fromString(signingKey);
+    await myKeyStore.setKey(networkId, KEYPOM_EVENTS_CONTRACT, signingKeypair);
     const keypomAccount = new nearAPI.Account(
       this.nearConnection.connection,
       KEYPOM_EVENTS_CONTRACT,
     );
 
-    const sk_bytes = bs58.decode(secretKey);
-    const signingMessage = await this.viewAccount.viewFunctionV2({
-      contractId: KEYPOM_EVENTS_CONTRACT,
-      methodName: 'get_signing_message',
-      args: {},
-    });
     const keyInfo = await this.viewAccount.viewFunctionV2({
       contractId: KEYPOM_EVENTS_CONTRACT,
       methodName: 'get_key_information',
@@ -405,19 +392,24 @@ class KeypomJS {
         key: pubKey,
       },
     });
-    const message_nonce = keyInfo.message_nonce;
-    const message = `${String(signingMessage)}${String(message_nonce.toString())}`;
-    const message_bytes = new TextEncoder().encode(`${message}`);
-    const signature = nacl.sign.detached(message_bytes, sk_bytes);
-    const base64Signature = naclUtil.encodeBase64(signature);
     const gasToAttach = keyInfo.required_gas;
+
+    const args_to_sign = {
+      account_id: KEYPOM_EVENTS_CONTRACT,
+      linkdrop_pk: pubKey,
+    };
+
+    const signature = await this.GenerateSignature({publicKey: pubKey, secretKey, message: JSON.stringify(args_to_sign)})
+
+    console.log(signature)
 
     await keypomAccount.functionCall({
       contractId: KEYPOM_EVENTS_CONTRACT,
       methodName: 'claim',
       args: {
         account_id: KEYPOM_EVENTS_CONTRACT,
-        signature: base64Signature,
+        // base 64 encoded signature
+        signature: signature[0],
         linkdrop_pk: pubKey,
       },
       gas: gasToAttach,
