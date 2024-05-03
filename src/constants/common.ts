@@ -30,8 +30,8 @@ export const EMAIL_WORKER_BASE = 'https://email-worker.keypom.workers.dev';
 export const PAGE_SIZE_LIMIT = 5;
 export const NFT_ATTEMPT_KEY = 'NFT_ATTEMPT';
 export const PAGE_QUERY_PARAM = 'page';
-export const KEYPOM_EVENTS_CONTRACT = '1714636850887-kp-ticketing.testnet';
-export const KEYPOM_MARKETPLACE_CONTRACT = '1714636850887-marketplace.testnet';
+export const KEYPOM_EVENTS_CONTRACT = '1714765021155-kp-ticketing.testnet';
+export const KEYPOM_MARKETPLACE_CONTRACT = '1714765021155-marketplace.testnet';
 export const KEYPOM_GLOBAL_SIGNING_KEYS = [
   "ed25519:3SoKRJxQj29Kczj6TiMNNxq3c6S3WcA4MUb6oBEcHMEDyhLWxzJyWxXn69sKt3RKCs8akb5KHkNvjdq4mJLYCYGA",
   "ed25519:36s6Po4JAJVhQdZLmXx8gJh4HP6T4AtMYJb5UgWhiYLntxpTX5piAc2pGExdUYrFJujYi18ZevU1z52CRkL6kpLF",
