@@ -31,7 +31,7 @@
     "@near-wallet-selector/core": "^8.9.1",
     "@near-wallet-selector/here-wallet": "^8.6.1",
     "@near-wallet-selector/meteor-wallet": "^8.9.5",
-    "@near-wallet-selector/mintbase-wallet": "^8.9.5",
+    "@near-wallet-selector/mintbase-wallet": "^8.9.7",
     "@near-wallet-selector/modal-ui": "^8.6.1",
     "@near-wallet-selector/my-near-wallet": "^8.8.2",
     "@near-wallet-selector/near-snap": "^8.9.5",

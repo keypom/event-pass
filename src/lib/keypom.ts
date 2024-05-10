@@ -933,15 +933,19 @@ class KeypomJS {
   getDropSupplyForOwner = async ({ accountId }) => await getDropSupplyForOwner({ accountId });
 
   getDropMetadata = (metadata: string | undefined) => {
-    const parsedObj = JSON.parse(metadata || '{}');
-    if (Object.hasOwn(parsedObj, 'drop_name')) {
-      parsedObj.dropName = parsedObj.drop_name;
+    try{
+      const parsedObj = JSON.parse(metadata || '{}');
+      if (Object.hasOwn(parsedObj, 'drop_name')) {
+        parsedObj.dropName = parsedObj.drop_name;
+      }
+  
+      if (!Object.hasOwn(parsedObj, 'dropName')) {
+        parsedObj.dropName = 'Untitled';
+      }
+      return parsedObj;
+    }catch(e){
+      return { };
     }
-
-    if (!Object.hasOwn(parsedObj, 'dropName')) {
-      parsedObj.dropName = 'Untitled';
-    }
-    return parsedObj;
   };
 
   getDropData = async ({
@@ -964,11 +968,12 @@ class KeypomJS {
     const claimedKeys = await this.getAvailableKeys(id);
     const claimedText = `${totalKeys - claimedKeys} / ${totalKeys}`;
 
+    console.log(typeof metadata, metadata)
     const { dropName } = this.getDropMetadata(metadata);
 
     let type: string | null = '';
     try {
-      if (drop == null || drop === undefined) throw new Error('Drop is null or undefined');
+      if (drop == null || drop === undefined || dropName == undefined) throw new Error('Drop is null or undefined');
       type = this.getDropType(drop);
     } catch (_) {
       type = DROP_TYPE.OTHER;

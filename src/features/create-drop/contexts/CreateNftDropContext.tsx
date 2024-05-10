@@ -1,11 +1,11 @@
-import { createContext, type PropsWithChildren, useContext } from 'react';
+import { createContext, type PropsWithChildren, useContext, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import useSWRMutation from 'swr/mutation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import BN from 'bn.js';
-import { formatNearAmount, addToBalance } from 'keypom-js';
-import { set, update } from 'idb-keyval';
+import { formatNearAmount } from 'keypom-js';
+import { set, update, get, del } from 'idb-keyval';
 
 import { urlRegex, MAX_FILE_SIZE, NFT_ATTEMPT_KEY } from '@/constants/common';
 import {
@@ -14,7 +14,7 @@ import {
   type SummaryItem,
 } from '@/features/create-drop/types/types';
 
-import { createDropsForNFT } from './nft-utils';
+import { getCostForNFTDrop } from './nft-utils';
 
 const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/gif', 'image/png', 'image/webp'];
 
@@ -130,6 +130,8 @@ export const CreateNftDropProvider = ({ children }: PropsWithChildren) => {
   const getPaymentData = async (): Promise<PaymentData> => {
     const { title, description, number, artwork } = methods.getValues();
 
+    
+
     const numKeys = parseInt(Math.floor(number).toString());
     if (!numKeys || Number.isNaN(numKeys)) {
       throw new Error('incorrect number');
@@ -138,6 +140,9 @@ export const CreateNftDropProvider = ({ children }: PropsWithChildren) => {
     const media = artwork[0];
 
     const dropId = Date.now().toString();
+
+    // quick timeout to prevent indexeddb from updating before page reload on injected wallets
+    await new Promise((resolve) => setTimeout(resolve, 300));
 
     // json -> indexeddb NOT localStorage (see import above)
     await set(NFT_ATTEMPT_KEY, {
@@ -151,15 +156,14 @@ export const CreateNftDropProvider = ({ children }: PropsWithChildren) => {
       media,
     });
 
-    const { requiredDeposit, requiredDeposit2 } = await createDropsForNFT(
+    console.log("getting cost")
+    const { requiredDeposit, requiredDeposit2 } = await getCostForNFTDrop(
       dropId,
-      true,
       {
         title,
         description,
         numKeys,
       },
-      null,
     );
 
     const totalRequired = new BN(requiredDeposit).add(new BN(requiredDeposit2)).toString();
@@ -199,29 +203,94 @@ export const CreateNftDropProvider = ({ children }: PropsWithChildren) => {
     const totalRequired = paymentData.costsData[3].total;
 
     await update(NFT_ATTEMPT_KEY, (val) => ({ ...val, confirmed: true }));
+    get(NFT_ATTEMPT_KEY).then((val) => console.log("Updated NFT_ATTEMPT_KEY", val));
     const wallet = await window.selector.wallet();
-    
-    // Injected wallets return promises
-    if(wallet.type === "injected"){
-      try{
-        await addToBalance({
-          wallet: await window.selector.wallet(),
-          amountYocto: totalRequired.toString(),
-          successUrl: window.location.origin + '/drop/nft/new',
-        });
+
+    try{
+      let add2bal_res = await wallet.signAndSendTransaction({
+        callbackUrl: window.location.origin + '/drop/nft/new',
+        actions: [
+          {
+            type: 'FunctionCall',
+            params: {
+              methodName: 'add_to_balance',
+              args: {},
+              gas: '300000000000000',
+              deposit: totalRequired.toString(),
+            },
+          },
+        ],
+      })
+
+      console.log("data: ", data);
+
+      console.log("add to balanace result: ", add2bal_res)
+      
+      window.location.assign(window.location.origin + '/drop/nft/new');
+    }catch(e){
+      console.log(e)
+    }
+
+    // half second delay to allow for indexeddb to update
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    // wallet.signAndSendTransaction({
+    //   callbackUrl: window.location.origin + '/drop/nft/new',
+    //   actions: [
+    //     {
+    //       type: 'FunctionCall',
+    //       params: {
+    //         methodName: 'add_to_balance',
+    //         args: {},
+    //         gas: '300000000000000',
+    //         deposit: totalRequired.toString(),
+    //       },
+    //     },
+    //   ],
+    // }).then(async (result) => {
+    //   get(NFT_ATTEMPT_KEY).then((val) => console.log("Updated NFT_ATTEMPT_KEY after signing", val));
+    //   window.location.reload();
+      // OBSERVSATIONS:
+      // Currently, NFT_ATTEMPT_KEY.confirmed is being updated to true but then overwritten to false somehow, causing confirmation not to proceed
+      // when i redirect, NFT_ATTEMPT_KEY.confirmed gets reset to false
+      // if I don't redirect, it automatically goes back to getPaymentData, which resets the NFT_ATTEMPT_KEY.confirmed to false
+      // for some reason, browser wallet redirect does maintain the NFT_ATTEMPT_KEY.confirmed to true
+
+      // window.location.assign(window.location.origin + '/drop/nft/new?transactionHashes=' + result?.transaction.hash);
+      // FOR SOME REASON, THIS IS NOT BEING UPDATED with injected wallets...
+      // console.log(result)
+      // if(result && wallet.type == "injected"){
+      //   window.location.assign(window.location.origin + '/drop/nft/new?transactionHashes=' + result.transaction.hash);
+      // }
+    //   console.log("sweet, finished add_to_balance")
+    //   // if(wallet.type == "injected"){
+    //   //   window.location.assign(window.location.origin + '/drop/nft/new');
+    //   // }
+    // }).catch(() => {
+    //   alert("Something went wrong. Please try again.");
+    // })
+
+    // // Injected wallets return promises
+    // if(wallet.type === "injected"){
+    //   try{
+    //     await addToBalance({
+    //       wallet: await window.selector.wallet(),
+    //       amountYocto: totalRequired.toString(),
+    //       successUrl: window.location.origin + '/drop/nft/new',
+    //     });
         
-        window.location.assign(window.location.origin + '/drop/nft/new');
-      }catch(e){
-        alert("Something went wrong. Please try again.");
-      }
-    }
-    else{
-      await addToBalance({
-        wallet: await window.selector.wallet(),
-        amountYocto: totalRequired.toString(),
-        successUrl: window.location.origin + '/drop/nft/new',
-      });
-    }
+    //     window.location.assign(window.location.origin + '/drop/nft/new');
+    //   }catch(e){
+    //     alert("Something went wrong. Please try again.");
+    //   }
+    // }
+    // else{
+    //   await addToBalance({
+    //     wallet: await window.selector.wallet(),
+    //     amountYocto: totalRequired.toString(),
+    //     successUrl: window.location.origin + '/drop/nft/new',
+    //   });
+    // }
 
   };
 

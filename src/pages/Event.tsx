@@ -16,7 +16,8 @@ import {
 import { useParams, useNavigate } from 'react-router-dom';
 import { ExternalLinkIcon } from '@chakra-ui/icons';
 import { useCallback, useEffect, useState } from 'react';
-import { generateKeys, getPubFromSecret, formatNearAmount } from 'keypom-js';
+import { generateKeys, getPubFromSecret } from 'keypom-js';
+import { formatNearAmount } from 'near-api-js/lib/utils/format';
 import { type Wallet } from '@near-wallet-selector/core';
 
 import { SellModal } from '@/features/gallery/components/SellModal';

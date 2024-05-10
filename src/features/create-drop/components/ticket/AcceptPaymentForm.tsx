@@ -74,11 +74,6 @@ const AcceptPaymentForm = (props: EventStepFormProps) => {
         setFormData({ ...formData, stripeAccountId, acceptStripePayments: true });
       }
     }
-    const temp_stripe_account_id = localStorage.getItem('TEMP_STRIPE_ACCOUNT_ID');
-    if (temp_stripe_account_id) {
-      setFormData({ ...formData, stripeAccountId: temp_stripe_account_id});
-    }
-    localStorage.removeItem('TEMP_STRIPE_ACCOUNT_ID');
   }, []);
 
   useEffect(() => {
@@ -97,12 +92,6 @@ const AcceptPaymentForm = (props: EventStepFormProps) => {
 
   }, [accountId, formData.stripeAccountId]);
 
-  // UseEffects to keep user stripe account ID connected
-  useEffect(() => { 
-    if(formData.stripeAccountId){
-      localStorage.setItem('TEMP_STRIPE_ACCOUNT_ID', formData.stripeAccountId);
-    }
-  }, [formData.stripeAccountId]);
 
   useEffect(() => {
     checkForPriorStripeConnected(accountId);

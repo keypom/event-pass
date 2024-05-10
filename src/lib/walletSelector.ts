@@ -32,6 +32,7 @@ export class NearWalletSelector {
       modules: [
         setupMintbaseWallet({
           walletUrl: config.networkId === "mainnnet" ? 'https://wallet.mintbase.xyz': 'https://testnet.wallet.mintbase.xyz',
+          contractId: config.contractId,
         }),
         setupMeteorWallet(),
         // setupNightly(),
@@ -41,7 +42,7 @@ export class NearWalletSelector {
         // setupHereWallet(),
       ],
       });
-    const _modal = setupModal(_selector, { contractId: KEYPOM_EVENTS_CONTRACT, theme: 'light' });
+    const _modal = setupModal(_selector, { contractId: config.contractId, theme: 'light' });
     const state = _selector.store.getState();
 
     this.accounts = state.accounts;
