@@ -1019,10 +1019,41 @@ class KeypomJS {
     };
   };
 
-  deleteDrops = async ({ wallet, dropIds }) => await deleteDrops({ wallet, dropIds });
+  getAccountFromWallet = async (wallet: Wallet) : Promise<nearAPI.Account | undefined> => {
+    // Connection
+    let env = getEnv();
+    let near = env.near;
+    let connection = near?.connection;
 
-  deleteKeys = async ({ wallet, dropId, publicKeys }) =>
-    await deleteKeys({ wallet, dropId, publicKeys });
+    // Account ID
+    let accounts = await wallet.getAccounts();
+    let accountId = accounts[0].accountId;
+    if(connection == null){
+      console.log("Connection is null")
+      return undefined;
+    } 
+    let account = new nearAPI.Account(connection, accountId);
+    return account
+  }
+
+
+  deleteDrops = async ({ wallet, dropIds }) => {
+    let account = await this.getAccountFromWallet(wallet);
+    if(account){
+      await deleteDrops({ account, dropIds });
+    }else{
+      throw new Error('Account could not be derived from wallet');
+    }
+  }
+
+  deleteKeys = async ({ wallet, dropId, publicKeys }) => {
+    let account = await this.getAccountFromWallet(wallet);
+    if(account){
+      await deleteKeys({ wallet, dropId, publicKeys });
+    }else{
+      throw new Error('Account could not be derived from wallet');
+    }
+  }
 
   getDropInfo = async ({
     dropId,

@@ -166,10 +166,18 @@ export const CreateNftDropProvider = ({ children }: PropsWithChildren) => {
       },
     );
 
-    const totalRequired = new BN(requiredDeposit).add(new BN(requiredDeposit2)).toString();
+    const adjustedDeposit = new BN(requiredDeposit).mul(new BN(125)).div(new BN(100)).toString();
+    const adjustedDeposit2 = new BN(requiredDeposit2).mul(new BN(125)).div(new BN(100)).toString();
 
-    const totalLinkCost = parseFloat(formatNearAmount(requiredDeposit, 4));
-    const totalStorageCost = parseFloat(formatNearAmount(requiredDeposit2, 4));
+    const totalRequired = new BN(requiredDeposit).add(new BN(requiredDeposit2)).toString();
+    const adjustedTotal = new BN(totalRequired).mul(new BN(125)).div(new BN(100)).toString();
+
+    console.log("required: ", totalRequired)
+    console.log("adjusted: ", adjustedTotal)
+
+
+    const totalLinkCost = parseFloat(formatNearAmount(adjustedDeposit, 4));
+    const totalStorageCost = parseFloat(formatNearAmount(adjustedDeposit2, 4));
     const totalCost = Number(totalLinkCost + totalStorageCost).toFixed(4);
     const costsData: PaymentItem[] = [
       {
@@ -189,7 +197,7 @@ export const CreateNftDropProvider = ({ children }: PropsWithChildren) => {
       },
       {
         name: 'Total Required',
-        total: totalRequired,
+        total: adjustedTotal,
         doNotRender: true,
       },
     ];

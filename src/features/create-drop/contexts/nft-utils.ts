@@ -211,12 +211,17 @@ export const createDropsForNFT = async (dropId, returnTransactions, data, setApp
                   dropName: title,
                 }),
                 public_keys: keys.publicKeys,
+                config: {
+                  usage: {
+                    auto_delete_drop: true
+                  }
+                },
                 fc: {
                   methods: [
                     [
                       {
-                        receiverId: 'nft-v2.keypom.' + networkSuffix,
-                        methodName: 'create_series',
+                        receiver_id: 'nft-v2.keypom.' + networkSuffix,
+                        method_name: 'create_series',
                         args: JSON.stringify({
                           mint_id: parseInt(dropId),
                           metadata: {
@@ -227,7 +232,7 @@ export const createDropsForNFT = async (dropId, returnTransactions, data, setApp
                           },
                           // royalty?
                         }),
-                        attachedDeposit: parseNearAmount('0.1')!,
+                        attached_deposit: parseNearAmount('0.1')!,
                       },
                     ],
                   ],
@@ -348,12 +353,12 @@ export const createDropsForNFT = async (dropId, returnTransactions, data, setApp
                 methods: [
                   [
                     {
-                      receiverId: 'nft-v2.keypom.' + networkSuffix,
-                      methodName: 'nft_mint',
+                      receiver_id: 'nft-v2.keypom.' + networkSuffix,
+                      method_name: 'nft_mint',
                       args: '',
-                      dropIdField: 'mint_id',
-                      accountIdField: 'receiver_id',
-                      attachedDeposit: parseNearAmount('0.1')!,
+                      drop_id_field: 'mint_id',
+                      account_id_field: 'receiver_id',
+                      attached_deposit: parseNearAmount('0.1')!,
                     },
                   ],
                 ],

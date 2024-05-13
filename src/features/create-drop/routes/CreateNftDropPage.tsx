@@ -65,7 +65,6 @@ const NewNftDrop = () => {
         },
       ],
     });
-    console.log("trying to enter handleFinishNFTDrop")
     const dropId = await handleFinishNFTDrop(setAppModal);
     setAppModal({
       isOpen: false,
