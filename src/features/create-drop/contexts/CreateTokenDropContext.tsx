@@ -4,7 +4,8 @@ import { FormProvider, useForm } from 'react-hook-form';
 import useSWRMutation from 'swr/mutation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { createDrop, formatNearAmount, generateKeys } from 'keypom-js';
+import { createDrop, generateKeys } from '@keypom/core';
+import { formatNearAmount } from 'near-api-js/lib/utils/format';
 import { type NavigateFunction } from 'react-router-dom';
 
 import { get } from '@/utils/localStorage';

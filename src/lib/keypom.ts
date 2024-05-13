@@ -8,7 +8,6 @@ import {
   claim,
   getKeyInformation,
   getPubFromSecret,
-  formatNearAmount,
   formatLinkdropUrl,
   generateKeys,
   getKeyInformationBatch,
@@ -19,8 +18,9 @@ import {
   getDropSupplyForOwner,
   getDrops,
   type ProtocolReturnedKeyInfo,
-} from 'keypom-js';
+} from '@keypom/core';
 import * as nearAPI from 'near-api-js';
+import { formatNearAmount } from 'near-api-js/lib/utils/format';
 import { type Wallet } from '@near-wallet-selector/core';
 import * as bs58 from 'bs58';
 import * as nacl from 'tweetnacl';
@@ -161,7 +161,7 @@ class KeypomJS {
   nearToYocto = (near: string) => nearAPI.utils.format.parseNearAmount(near);
 
   viewCall = async ({ contractId = KEYPOM_EVENTS_CONTRACT, methodName, args }) => {
-    const res = await this.viewAccount.viewFunctionV2({
+    const res = await this.viewAccount.viewFunction({
       contractId,
       methodName,
       args,
@@ -170,7 +170,7 @@ class KeypomJS {
   };
 
   getResalesForEvent = async ({ eventId }) => {
-    return await this.viewAccount.viewFunctionV2({
+    return await this.viewAccount.viewFunction({
       contractId: KEYPOM_MARKETPLACE_CONTRACT,
       methodName: 'get_resales_per_event',
       args: { event_id: eventId },
@@ -204,7 +204,7 @@ class KeypomJS {
   GenerateSignature = async (keypairAndSigningMsg: {publicKey: string, secretKey: string, message: string}) => {
     const sk_bytes = bs58.decode(keypairAndSigningMsg.secretKey);
 
-    const key_info = await this.viewAccount.viewFunctionV2({
+    const key_info = await this.viewAccount.viewFunction({
       contractId: KEYPOM_EVENTS_CONTRACT,
       methodName: 'get_key_information',
       args: {
@@ -251,7 +251,7 @@ class KeypomJS {
         const batchEnd = Math.min(i + MARKETPLACE_ITEMS_PER_QUERY, endIndex);
         if (this.allEventsGallery.slice(batchStart, batchEnd).some((item) => item === null)) {
           // If any item in the range is null, fetch the batch
-          const answer: MarketListing[] = await this.viewAccount.viewFunctionV2({
+          const answer: MarketListing[] = await this.viewAccount.viewFunction({
             contractId: KEYPOM_MARKETPLACE_CONTRACT,
             methodName: 'get_events',
             args: { from_index: batchStart, limit: batchEnd - batchStart },
@@ -294,7 +294,7 @@ class KeypomJS {
   //     return cached;
   //   }
 
-  //   const answer: MarketListing[] = await this.viewAccount.viewFunctionV2({
+  //   const answer: MarketListing[] = await this.viewAccount.viewFunction({
   //     contractId,
   //     methodName: 'get_events',
   //     args: { limit, from_index },
@@ -350,7 +350,7 @@ class KeypomJS {
   };
 
   getCurrentKeyOwner = async (contractId: string, publicKey: string) => {
-    const keyInfo = await this.viewAccount.viewFunctionV2({
+    const keyInfo = await this.viewAccount.viewFunction({
       contractId: KEYPOM_EVENTS_CONTRACT,
       methodName: 'get_key_information',
       args: { key: publicKey },
@@ -385,7 +385,7 @@ class KeypomJS {
       KEYPOM_EVENTS_CONTRACT,
     );
 
-    const keyInfo = await this.viewAccount.viewFunctionV2({
+    const keyInfo = await this.viewAccount.viewFunction({
       contractId: KEYPOM_EVENTS_CONTRACT,
       methodName: 'get_key_information',
       args: {
@@ -513,7 +513,7 @@ class KeypomJS {
   };
 
   getEventSupply = async () => {
-    return await this.viewAccount.viewFunctionV2({
+    return await this.viewAccount.viewFunction({
       contractId: KEYPOM_MARKETPLACE_CONTRACT,
       methodName: 'get_event_supply',
       args: {},
@@ -790,7 +790,7 @@ class KeypomJS {
   };
 
   getTicketKeyInformation = async ({ publicKey }: { publicKey: string }) => {
-    const fetchedinfo = await this.viewAccount.viewFunctionV2({
+    const fetchedinfo = await this.viewAccount.viewFunction({
       contractId: KEYPOM_EVENTS_CONTRACT,
       methodName: 'get_key_information',
       args: {

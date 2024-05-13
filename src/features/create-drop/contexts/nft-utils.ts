@@ -1,10 +1,12 @@
-import { getEnv, generateKeys, createDrop, parseNearAmount } from 'keypom-js';
+import { getEnv, generateKeys, createDrop } from '@keypom/core';
+import { parseNearAmount } from 'near-api-js/lib/utils/format';
 import { get, update, del } from 'idb-keyval';
 import { pack } from 'ipfs-car/dist/esm/pack';
 import { MemoryBlockStore } from 'ipfs-car/dist/esm/blockstore/memory';
 
 import { MASTER_KEY, NFT_ATTEMPT_KEY, WORKER_BASE_URL } from '@/constants/common';
 import getConfig from '@/config/config';
+import { Account } from 'near-api-js';
 
 export const DEBUG_DEL_NFT_ATTEMPT = async () => {
   await del(NFT_ATTEMPT_KEY);
@@ -28,11 +30,24 @@ export const getCostForNFTDrop = async (dropId, data) => {
 
   const wallet = await window.selector.wallet();
 
+  // Connection
+  let env = getEnv();
+  let near = env.near;
+  let connection = near?.connection;
+
+  // Account ID
+  let accounts = await wallet.getAccounts();
+  let accountId = accounts[0].accountId;
+  if(connection == null) return {};
+  let account = new Account(connection, accountId);
+
+  console.log(account)
+
   let requiredDeposit, requiredDeposit2;
   if (!data.seriesSecret) {
     try {
       const res = await createDrop({
-        wallet,
+        account,
         numKeys: 1,
         metadata: JSON.stringify({
           dropName: title,
@@ -84,7 +99,7 @@ export const getCostForNFTDrop = async (dropId, data) => {
     });
 
     const res2 = await createDrop({
-      wallet,
+      account,
       dropId,
       numKeys,
       publicKeys,
