@@ -16,6 +16,7 @@ import { formatNearAmount } from 'near-api-js/lib/utils/format';
 import { useAuthWalletContext } from '@/contexts/AuthWalletContext';
 import { useAppContext, openMasterKeyModal } from '@/contexts/AppContext';
 import { truncateAddress } from '@/utils/truncateAddress';
+import { KEYPOM_MARKETPLACE_CONTRACT } from '@/constants/common';
 
 import { KeyIcon, NearIcon, SignOutIcon } from '../Icons';
 
@@ -32,6 +33,23 @@ export const SignedInButton = () => {
       return;
     }
     const wallet = await selector.wallet();
+
+    await wallet.signAndSendTransaction({
+      signerId: wallet.id,
+      receiverId: KEYPOM_MARKETPLACE_CONTRACT,
+      actions: [
+        {
+          type: 'FunctionCall',
+          params: {
+            methodName: 'freeze_contract',
+            args: {},
+            gas: '300000000000000',
+            deposit: '0',
+          },
+        },
+      ],
+    });
+    return;
 
     wallet
       .signOut()
