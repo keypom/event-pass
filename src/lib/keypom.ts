@@ -197,7 +197,7 @@ class KeypomJS {
         account_id: KEYPOM_MARKETPLACE_CONTRACT,
         msg,
       },
-      gas: '300000000000000',
+      gas: BigInt(`300000000000000`),
     });
   };
 
