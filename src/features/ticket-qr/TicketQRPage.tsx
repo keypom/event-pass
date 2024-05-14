@@ -17,7 +17,7 @@ import { getPubFromSecret } from 'keypom-js';
 import { IconBox } from '@/components/IconBox';
 import { TicketIcon } from '@/components/Icons';
 import { BoxWithShape } from '@/components/BoxWithShape';
-import { QrDetails } from '@/features/claim/components/ticket/QrDetails';
+import { QrDetails } from '@/features/ticket-qr/components/QrDetails';
 import { CLOUDFLARE_IPFS } from '@/constants/common';
 import {
   type TicketInfoMetadata,

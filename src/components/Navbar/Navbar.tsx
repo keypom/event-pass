@@ -30,20 +30,6 @@ export const Navbar = (props: NavbarProps) => {
 
   const MENU_ITEMS = [
     {
-      name: 'Gallery',
-      href: '/gallery',
-    },
-    {
-      name: 'Docs',
-      href: 'https://docs.keypom.xyz',
-      isExternal: true,
-    },
-    {
-      name: 'My Drops',
-      href: '/drops',
-      isProtected: !isLoggedIn,
-    },
-    {
       name: 'My Events',
       href: '/events',
       isProtected: !isLoggedIn,
@@ -51,13 +37,7 @@ export const Navbar = (props: NavbarProps) => {
   ];
 
   const menuItems = MENU_ITEMS.map((item) => (
-    <Link
-      key={item.name}
-      as={RouterLink}
-      hidden={item.isProtected}
-      isExternal={item.isExternal}
-      to={item.href}
-    >
+    <Link key={item.name} as={RouterLink} hidden={item.isProtected} to={item.href}>
       <Box fontSize={{ base: 'sm', md: 'md' }}>{item.name}</Box>
     </Link>
   ));
