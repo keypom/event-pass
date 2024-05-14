@@ -25,36 +25,26 @@ type NavbarProps = BoxProps;
 
 export const Navbar = (props: NavbarProps) => {
   const { isLoggedIn } = useAuthWalletContext();
+  const isTicketSubdirectory =
+    location.pathname.startsWith('/tickets/') || location.pathname.startsWith('/claim/');
 
   const MENU_ITEMS = [
     {
-      name: 'Docs',
-      href: 'https://docs.keypom.xyz',
-      isExternal: true,
-    },
-    {
-      name: 'Get in touch',
-      href: 'https://twitter.com/keypomxyz',
-      isExternal: true,
-    },
-    {
-      name: 'My Drops',
-      href: '/drops',
+      name: 'My Events',
+      href: '/events',
       isProtected: !isLoggedIn,
     },
   ];
 
   const menuItems = MENU_ITEMS.map((item) => (
-    <Link
-      key={item.name}
-      as={RouterLink}
-      hidden={item.isProtected}
-      isExternal={item.isExternal}
-      to={item.href}
-    >
+    <Link key={item.name} as={RouterLink} hidden={item.isProtected} to={item.href}>
       <Box fontSize={{ base: 'sm', md: 'md' }}>{item.name}</Box>
     </Link>
   ));
+
+  if (isTicketSubdirectory) {
+    return null;
+  }
 
   return (
     <Box position="sticky" zIndex={100} {...props}>
@@ -72,7 +62,7 @@ export const Navbar = (props: NavbarProps) => {
         {/* Menu Items */}
         <HStack display={{ base: 'none', md: 'flex' }} spacing={{ sm: '4', md: '10' }}>
           {menuItems}
-          {isLoggedIn ? <SignedInButton /> : <ConnectWalletButton />}
+          {!isTicketSubdirectory && (isLoggedIn ? <SignedInButton /> : <ConnectWalletButton />)}
         </HStack>
         <Box display={{ base: 'block', md: 'none' }}>
           <MobileMenu menuItems={MENU_ITEMS} />

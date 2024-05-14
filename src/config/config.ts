@@ -3,20 +3,25 @@ import { type IToken, type IWalletOption } from '@/types/common';
 const contractName = process.env.REACT_APP_CONTRACT_ID ?? 'v2.keypom.testnet';
 const cloudflareIfps = process.env.REACT_APP_CLOUDFLARE_IFPS ?? 'https://cloudflare-ipfs.com/ipfs';
 // eslint-disable-next-line no-console
-console.log(process.env.REACT_APP_NETWORK_ID, process.env.REACT_APP_CONTRACT_ID);
+console.log(
+  'Network and Contract IDs: ',
+  process.env.REACT_APP_NETWORK_ID,
+  process.env.REACT_APP_CONTRACT_ID,
+);
 
 const SUPPORTED_WALLET_OPTIONS: IWalletOption[] = [
+  {
+    name: 'mintbasewallet',
+    title: 'Mintbase Wallet',
+  },
+  {
+    name: 'meteorwallet',
+    title: 'Meteor Wallet',
+  },
   {
     name: 'mynearwallet',
     title: 'My Near Wallet',
   },
-  // support only mynearwallet for now
-  // https://docs.keypom.xyz/docs/next/keypom-sdk/modules#supportedlinkdropclaimpages
-  // {
-  //   title: 'HERE',
-  //   walletName: 'My HERE',
-  //   id: 'herewallet',
-  // },
 ];
 
 const DEFAULT_WALLET = SUPPORTED_WALLET_OPTIONS[0];

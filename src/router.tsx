@@ -17,40 +17,16 @@ const ProtectedRoute = React.lazy(
     await import('./components/ProtectedRoutes').then((mod) => ({ default: mod.ProtectedRoute })),
 );
 
-const AllDropsPage = React.lazy(
-  async () => await import('./features/all-drops/routes/AllDropsPage'),
+const AllEventsPage = React.lazy(
+  async () => await import('./features/all-events/routes/AllEventsPage'),
 );
-const ClaimPage = React.lazy(async () => await import('@/features/claim/routes/ClaimRouter'));
-const ClaimTokenPage = React.lazy(
-  async () => await import('@/features/claim/routes/TokenClaimPage'),
-);
-const ClaimNftPage = React.lazy(async () => await import('@/features/claim/routes/NFTClaimPage'));
-const ClaimTicketPage = React.lazy(
-  async () => await import('@/features/claim/routes/TicketClaimPage'),
-);
-const ClaimTrialPage = React.lazy(
-  async () => await import('@/features/claim/routes/TrialClaimPage'),
-);
-const CreateTokenDropPage = React.lazy(
-  async () => await import('@/features/create-drop/routes/CreateTokenDropPage'),
-);
-const CreateNftDropPage = React.lazy(
-  async () => await import('@/features/create-drop/routes/CreateNftDropPage'),
-);
-const CreateTicketDropPage = React.lazy(
-  async () => await import('@/features/create-drop/routes/CreateTicketDropPage'),
-);
-
-const TokenDropManagerPage = React.lazy(
-  async () => await import('@/features/drop-manager/routes/token/TokenDropManagerPage'),
-);
-const NFTDropManagerPage = React.lazy(
-  async () => await import('@/features/drop-manager/routes/nft/NFTDropManagerPage'),
+const TicketPage = React.lazy(async () => await import('@/features/ticket-qr/TicketPage'));
+const EventManagerPage = React.lazy(
+  async () => await import('@/features/drop-manager/routes/events/EventManagerPage'),
 );
 const TicketDropManagerPage = React.lazy(
   async () => await import('@/features/drop-manager/routes/ticket/TicketDropManagerPage'),
 );
-const EthDenverLandingPage = React.lazy(async () => await import('@/pages/EthDenver'));
 
 const ScannerPage = React.lazy(async () => await import('@/features/scanner/routes/ScannerPage'));
 
@@ -63,10 +39,6 @@ export const router = createBrowserRouter([
         element: <LandingPage />,
       },
       {
-        path: 'ethdenver',
-        element: <EthDenverLandingPage />,
-      },
-      {
         loader: () => {
           import('@/lib/keypom').then(async (keypomLib) => {
             await keypomLib.default.init();
@@ -75,91 +47,42 @@ export const router = createBrowserRouter([
         },
         children: [
           {
-            path: 'drops',
-            element: (
-              <ProtectedRoute>
-                <AllDropsPage />
-              </ProtectedRoute>
-            ),
-          },
-          {
-            path: 'drop',
-            element: <ProtectedRoute />,
+            path: 'events',
+            element: <ProtectedRoute />, // Wrap the AllEventsPage and its dynamic children with ProtectedRoute
             children: [
               {
-                path: 'token',
-                children: [
-                  {
-                    path: 'new',
-                    element: <CreateTokenDropPage />,
-                  },
-                  {
-                    path: ':id',
-                    element: <TokenDropManagerPage />,
-                  },
-                ],
+                index: true,
+                element: <AllEventsPage />, // Display AllEventsPage at /events
               },
               {
-                path: 'nft',
-                children: [
-                  {
-                    path: 'new',
-                    element: <CreateNftDropPage />,
-                  },
-                  {
-                    path: ':id',
-                    element: <NFTDropManagerPage />,
-                  },
-                ],
+                path: 'event/:id', // Match /events/event/:id
+                element: <EventManagerPage />,
               },
               {
-                path: 'ticket',
-                children: [
-                  {
-                    path: 'new',
-                    element: <CreateTicketDropPage />,
-                  },
-                  {
-                    path: ':id',
-                    element: <TicketDropManagerPage />,
-                  },
-                ],
+                path: 'ticket/:id', // Match /events/ticket/:id
+                element: <TicketDropManagerPage />,
+              },
+              // Add other paths as needed...
+            ],
+          },
+          {
+            path: 'tickets',
+            children: [
+              {
+                path: 'ticket/:id', // Match /events/event/:id
+                element: <TicketPage />,
               },
             ],
           },
           //  claim structure should be claim/:contractId#secretKey
           {
-            path: 'claim',
+            path: 'scan',
             children: [
               {
-                path: 'token/:contractId',
-                element: <ClaimTokenPage />,
-              },
-              {
-                path: 'nft/:contractId',
-                element: <ClaimNftPage />,
-              },
-              {
-                path: 'gift/:contractId',
-                element: <ClaimTicketPage />,
-              },
-              {
-                path: 'ticket/:contractId',
-                element: <ClaimTicketPage />,
-              },
-              {
-                path: 'trial/:contractId',
-                element: <ClaimTrialPage />,
-              },
-              {
-                path: ':contractId',
-                element: <ClaimPage />,
+                path: 'event/:funderAndEventId',
+                element: <ScannerPage />,
               },
             ],
-          },
-          {
-            path: 'scanner',
-            element: <ScannerPage />,
           },
         ],
       },
