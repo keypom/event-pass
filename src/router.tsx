@@ -18,7 +18,7 @@ const ProtectedRoute = React.lazy(
 );
 
 const AllEventsPage = React.lazy(
-  async () => await import('./features/all-drops/routes/AllEventsPage'),
+  async () => await import('./features/all-events/routes/AllEventsPage'),
 );
 const TicketPage = React.lazy(async () => await import('@/features/ticket-qr/TicketPage'));
 const EventManagerPage = React.lazy(

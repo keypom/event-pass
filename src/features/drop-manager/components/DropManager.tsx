@@ -30,17 +30,17 @@ import { useValidMasterKey } from '@/hooks/useValidMasterKey';
 import { share } from '@/utils/share';
 import { setMasterKeyValidityModal } from '@/features/drop-manager/components/MasterKeyValidityModal';
 import { PAGE_SIZE_LIMIT } from '@/constants/common';
-import { DropManagerPagination } from '@/features/all-drops/components/DropManagerPagination';
-import { DropDownButton } from '@/features/all-drops/components/DropDownButton';
-import { FilterOptionsMobileButton } from '@/features/all-drops/components/FilterOptionsMobileButton';
-import { MobileDrawerMenu } from '@/features/all-drops/components/MobileDrawerMenu';
+import { DropManagerPagination } from '@/features/all-events/components/DropManagerPagination';
+import { DropDownButton } from '@/features/all-events/components/DropDownButton';
+import { FilterOptionsMobileButton } from '@/features/all-events/components/FilterOptionsMobileButton';
+import { MobileDrawerMenu } from '@/features/all-events/components/MobileDrawerMenu';
 
 import {
   KEY_CLAIM_STATUS_OPTIONS,
   KEY_CLAIM_STATUS_ITEMS,
   PAGE_SIZE_ITEMS,
   createMenuItems,
-} from '../../../features/all-drops/config/menuItems';
+} from '../../all-events/config/menuItems';
 
 import { setConfirmationModalHelper } from './ConfirmationModal';
 

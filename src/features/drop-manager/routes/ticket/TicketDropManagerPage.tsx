@@ -40,18 +40,18 @@ import {
 } from '@/lib/eventsHelpers';
 import { type ColumnItem, type DataItem } from '@/components/Table/types';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
-import { DropDownButton } from '@/features/all-drops/components/DropDownButton';
-import { FilterOptionsMobileButton } from '@/features/all-drops/components/FilterOptionsMobileButton';
+import { DropDownButton } from '@/features/all-events/components/DropDownButton';
+import { FilterOptionsMobileButton } from '@/features/all-events/components/FilterOptionsMobileButton';
 import { DataTable } from '@/components/Table';
-import { DropManagerPagination } from '@/features/all-drops/components/DropManagerPagination';
-import { MobileDrawerMenu } from '@/features/all-drops/components/MobileDrawerMenu';
+import { DropManagerPagination } from '@/features/all-events/components/DropManagerPagination';
+import { MobileDrawerMenu } from '@/features/all-events/components/MobileDrawerMenu';
 import { CLOUDFLARE_IPFS, MASTER_KEY, PAGE_SIZE_LIMIT } from '@/constants/common';
 import {
   createMenuItems,
   PAGE_SIZE_ITEMS,
   TICKET_CLAIM_STATUS_ITEMS,
   TICKET_CLAIM_STATUS_OPTIONS,
-} from '@/features/all-drops/config/menuItems';
+} from '@/features/all-events/config/menuItems';
 import { useAppContext } from '@/contexts/AppContext';
 import { NotFound404 } from '@/components/NotFound404';
 

@@ -4,7 +4,6 @@ import { ChakraProvider } from '@chakra-ui/react';
 
 import { theme } from '@/theme';
 import { router } from '@/router';
-import { router as storybookRouter } from '@/storybook-router';
 import { Loading } from '@/components/Loading';
 import { Fonts } from '@/components/Fonts';
 import { AuthWalletContextProvider } from '@/contexts/AuthWalletContext';
@@ -32,21 +31,15 @@ import { AppContextProvider } from '@/contexts/AppContext';
 // );
 
 export const App = () => {
-  const isStorybook = !!process.env.IS_STORYBOOK_VIEW;
-
   return (
     <React.Suspense fallback={<Loading />}>
       <ChakraProvider theme={theme}>
         <Fonts />
-        {isStorybook ? (
-          <RouterProvider router={storybookRouter} />
-        ) : (
-          <AuthWalletContextProvider>
-            <AppContextProvider>
-              <RouterProvider router={router} />
-            </AppContextProvider>
-          </AuthWalletContextProvider>
-        )}
+        <AuthWalletContextProvider>
+          <AppContextProvider>
+            <RouterProvider router={router} />
+          </AppContextProvider>
+        </AuthWalletContextProvider>
       </ChakraProvider>
     </React.Suspense>
   );

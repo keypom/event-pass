@@ -69,14 +69,14 @@ export const DropManagerPagination = ({
           {curPage + 1} of {numPages === 0 ? 1 : numPages}
         </Heading>
         <PrevButton
-          id="all-drops"
+          id="all-events"
           isDisabled={curPage === 0}
           lineHeight=""
           variant="secondary"
           onClick={handlePrevPage}
         />
         <NextButton
-          id="all-drops"
+          id="all-events"
           isDisabled={numPages === 0 ? true : curPage === numPages - 1}
           lineHeight=""
           variant="secondary"
