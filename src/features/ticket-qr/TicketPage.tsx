@@ -9,6 +9,10 @@ import {
   type EventDrop,
   type TicketInfoMetadata,
   type TicketMetadataExtra,
+  defaultEventInfo,
+  defaultDropInfo,
+  defaultTicketInfo,
+  defaultTicketInfoExtra,
 } from '@/lib/eventsHelpers';
 
 import TicketQRPage from './TicketQRPage';
@@ -21,10 +25,13 @@ export default function TicketPage() {
   // State variables for managing the ticket and event information
   const [isValid, setIsValid] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
-  const [eventInfo, setEventInfo] = useState<FunderEventMetadata>();
-  const [dropInfo, setDropInfo] = useState<EventDrop>();
-  const [ticketInfo, setTicketInfo] = useState<TicketInfoMetadata>();
-  const [ticketInfoExtra, setTicketInfoExtra] = useState<TicketMetadataExtra>();
+
+  const [eventInfo, setEventInfo] = useState<FunderEventMetadata>(defaultEventInfo);
+  const [dropInfo, setDropInfo] = useState<EventDrop>(defaultDropInfo);
+  const [ticketInfo, setTicketInfo] = useState<TicketInfoMetadata>(defaultTicketInfo);
+  const [ticketInfoExtra, setTicketInfoExtra] =
+    useState<TicketMetadataExtra>(defaultTicketInfoExtra);
+
   const [maxKeyUses, setMaxKeyUses] = useState<number>();
   const [curKeyStep, setCurKeyStep] = useState<number>(1);
   const [eventId, setEventId] = useState('');
@@ -87,14 +94,13 @@ export default function TicketPage() {
 
   useEffect(() => {
     const getTokenTicker = async () => {
-      if (dropInfo) {
+      if (dropInfo.drop_id !== 'loading') {
         const factoryAccount = dropInfo?.asset_data[1].config.root_account_id;
         const tokenInfo = await keypomInstance.viewCall({
           contractId: factoryAccount,
           methodName: 'ft_metadata',
           args: { drop_id: 'foo' },
         });
-        console.log('Token Info: ', tokenInfo);
         setTicker(tokenInfo.symbol);
         setTokensToClaim(keypomInstance.yoctoToNear(tokenInfo.minted_per_claim));
       }

@@ -154,6 +154,96 @@ export function isValidTicketNFTMetadata(tokenMetadata: TicketInfoMetadata) {
   }
 }
 
+export const defaultEventInfo: FunderEventMetadata = {
+  nearCheckout: false,
+  name: 'Loading...',
+  id: 'loading',
+  description: 'Loading description...',
+  location: 'Loading location...',
+  date: { startDate: Date.now() },
+  artwork: 'loading',
+  dateCreated: new Date().toISOString(),
+  questions: [],
+  styles: {
+    title: { color: 'grey', fontFamily: 'Arial', fontSize: { base: '16px', md: '24px' } },
+    h1: { color: 'grey', fontFamily: 'Arial', fontSize: { base: '20px', md: '28px' } },
+    h2: { color: 'grey', fontFamily: 'Arial', fontSize: { base: '18px', md: '26px' } },
+    h3: { color: 'grey', fontFamily: 'Arial', fontSize: { base: '16px', md: '24px' } },
+    buttons: {
+      primary: { color: 'white', bg: 'blue', fontFamily: 'Arial', fontSize: '16px' },
+      secondary: { color: 'black', bg: 'grey', fontFamily: 'Arial', fontSize: '16px' },
+    },
+    border: { color: 'grey', border: '1px solid grey' },
+    icon: { color: 'grey', fontSize: '24px' },
+    background: 'loading',
+  },
+  qrPage: {
+    showTitle: true,
+    showLocation: true,
+    showDate: true,
+    dateUnderQR: false,
+    showDownloadButton: true,
+    showSellTicketButton: true,
+    sellableThroughText: true,
+  },
+  welcomePage: {
+    title: { color: 'grey', fontFamily: 'Arial', fontSize: '24px' },
+  },
+};
+
+export const defaultDropInfo: EventDrop = {
+  drop_id: 'loading',
+  funder_id: 'loading',
+  max_key_uses: 0,
+  asset_data: [
+    {
+      uses: 0,
+      assets: [],
+      config: { root_account_id: 'loading', permissions: 'claim' },
+    },
+  ],
+  drop_config: {
+    nft_keys_config: {
+      token_metadata: {
+        title: 'Loading...',
+        description: 'Loading description...',
+        media: 'loading',
+        extra: JSON.stringify({
+          eventId: 'loading',
+          dateCreated: new Date().toISOString(),
+          salesValidThrough: { startDate: Date.now() },
+          passValidThrough: { startDate: Date.now() },
+          price: '0',
+          limitPerUser: 0,
+        }),
+      },
+    },
+  },
+};
+
+export const defaultTicketInfo: TicketInfoMetadata = {
+  title: 'Loading...',
+  description: 'Loading description...',
+  media: 'loading',
+  extra: JSON.stringify({
+    eventId: 'loading',
+    dateCreated: new Date().toISOString(),
+    salesValidThrough: { startDate: Date.now() },
+    passValidThrough: { startDate: Date.now() },
+    price: '0',
+    limitPerUser: 0,
+  }),
+};
+
+export const defaultTicketInfoExtra: TicketMetadataExtra = {
+  eventId: 'loading',
+  dateCreated: new Date().toISOString(),
+  salesValidThrough: { startDate: Date.now() },
+  passValidThrough: { startDate: Date.now() },
+  price: '0',
+  limitPerUser: 0,
+};
+
 const FIRST_DROP_BASE_COST = BigInt('15899999999999900000000');
 const SUBSEQUENT_DROP_BASE_COST = BigInt('14460000000000200000000');
 const FUNDER_METADATA_BASE_COST = BigInt('840000000000000000000');

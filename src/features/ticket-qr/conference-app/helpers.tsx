@@ -34,7 +34,7 @@ export const claimEventDrop = async ({
     setScanStatus('error');
     setStatusMessage('You already scanned this drop');
     return {
-      shouldBreak: true,
+      alreadyClaimed: true,
     };
   }
 
@@ -47,7 +47,7 @@ export const claimEventDrop = async ({
   });
 
   return {
-    shouldBreak: false,
+    alreadyClaimed: false,
     isScavenger: scavId !== undefined,
     numFound: claimsForAccount.length + 1,
     numRequired: claimedDropInfo?.scavenger_ids?.length || 0,

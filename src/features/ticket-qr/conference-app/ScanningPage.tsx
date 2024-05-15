@@ -28,8 +28,14 @@ import { ViewFinder } from '@/components/ViewFinder';
 import { LoadingOverlay } from '@/features/scanner/components/LoadingOverlay';
 import keypomInstance from '@/lib/keypom';
 
-import EventPrizeClaimedModal, { type EventPrizeModalContent } from './EventPrizeClaimedModal';
+import ScavengerModal from './modals/ScavengerModal';
+import MerchModal from './modals/MerchModal';
+import RaffleModal from './modals/RaffleModal';
+import SponsorModal from './modals/SponsorModal';
+import ProfileTransferModal from './modals/ProfileTransferModal';
 import { claimEventDrop } from './helpers';
+import NFTModal from './modals/NFTModal';
+import TokenModal from './modals/TokenModal';
 
 interface StateRefObject {
   isScanning: boolean;
@@ -38,10 +44,10 @@ interface StateRefObject {
 }
 
 interface ScanningPageProps {
-  eventInfo?: FunderEventMetadata;
-  ticketInfo?: TicketInfoMetadata;
-  ticketInfoExtra?: TicketMetadataExtra;
-  dropInfo?: EventDrop;
+  eventInfo: FunderEventMetadata;
+  ticketInfo: TicketInfoMetadata;
+  ticketInfoExtra: TicketMetadataExtra;
+  dropInfo: EventDrop;
   isLoading: boolean;
   eventId: string;
   funderId: string;
@@ -71,16 +77,10 @@ export default function ScanningPage({
   const [isOnCooldown, setIsOnCooldown] = useState(false); // New state to manage cooldown
   const [scanStatus, setScanStatus] = useState<'success' | 'error'>();
   const [statusMessage, setStatusMessage] = useState('');
-  const [claimModalOpen, setClaimModalOpen] = useState(false);
-  const [modalContent, setModalContent] = useState<EventPrizeModalContent>({
-    title: '',
-    subtitle: '',
-    image: ``,
-    name: '',
-    body: '',
-    showConfetti: false,
-    showAssetsButton: false,
-  });
+
+  const [modalOpen, setModalOpen] = useState(true);
+  const [modalType, setModalType] = useState('token');
+  const [modalProps, setModalProps] = useState<any>({});
 
   const stateRef = useRef<StateRefObject>({
     isScanning: false,
@@ -91,7 +91,7 @@ export default function ScanningPage({
   const enableCooldown = () => {
     setIsOnCooldown(true); // Activate cooldown
     setTimeout(() => {
-      setIsOnCooldown(false); // Deactivate cooldown after 3000 milliseconds (3 seconds)
+      setIsOnCooldown(false); // Deactivate cooldown after 1000 milliseconds (1 second)
     }, 1000);
   };
 
@@ -117,83 +117,7 @@ export default function ScanningPage({
     }
   }, [scanStatus, statusMessage, toast]);
 
-  // Helper function to process the claim event drop
-  async function processClaimEventDrop(qrDataSplit, setModalContent, setClaimModalOpen) {
-    const { shouldBreak, isScavenger, numFound, numRequired, name, image, amount } =
-      await claimEventDrop({
-        dropInfo,
-        qrDataSplit,
-        accountId,
-        setScanStatus,
-        setStatusMessage,
-        secretKey,
-      });
-
-    if (shouldBreak) {
-      return true;
-    }
-
-    const tokenAmount: string | undefined = amount ? keypomInstance.yoctoToNear(amount) : undefined;
-
-    const content = {
-      title: '',
-      subtitle: '',
-      image: `${CLOUDFLARE_IPFS}/${image as string}`,
-      name,
-      body: '',
-      showConfetti: false,
-      showAssetsButton: false,
-      showCloseButton: true, // Default to show only close button
-    };
-
-    if (isScavenger) {
-      if (numFound === 1 && numRequired > 1) {
-        // Case 2: Scavenger hunt started
-        content.title = 'Scavenger Hunt Started';
-        content.subtitle = `${parseInt(numRequired) - 1} piece(s) left.`;
-        content.body = `When you find all the pieces, you'll receive ${
-          tokenAmount ? `${tokenAmount} tokens!` : `an exclusive NFT!`
-        }`;
-        content.showConfetti = false;
-      } else if (numFound < numRequired) {
-        // Case 3: Piece found but scavenger hunt not completed
-        content.title = 'Piece Found';
-        content.subtitle = `Found ${Number(numFound)}/${numRequired as string} pieces. Keep going!`;
-        content.showConfetti = false;
-      } else if (numFound === numRequired) {
-        // Case 4: Scavenger hunt completed
-        content.title = 'Scavenger Hunt Completed';
-        content.subtitle = 'Congratulations! You have found all the pieces!';
-        content.body = `You've received ${
-          tokenAmount ? `${tokenAmount} tokens!` : `an exclusive NFT!`
-        }`;
-        content.showConfetti = true;
-        content.showAssetsButton = true; // Assume they get rewards that can be viewed on assets page
-      }
-    } else {
-      if (amount) {
-        // Case 5: Tokens claimed with no scavenger involvement
-        content.title = 'Tokens Claimed';
-        content.subtitle = `Successfully claimed ${keypomInstance.yoctoToNear(amount)} tokens.`;
-        content.showConfetti = true;
-        content.showAssetsButton = true; // Link to assets page as tokens are involved
-      } else {
-        // Case 1: NFT claimed with no scavenger involvement
-        content.title = 'NFT Claimed';
-        content.subtitle = `Successfully claimed ${name as string}.`;
-        content.showAssetsButton = true;
-        content.showConfetti = true; // Celebratory confetti for claiming an NFT
-      }
-    }
-
-    setModalContent(content);
-    setClaimModalOpen(true);
-
-    return false;
-  }
-
-  // The refactored handleScanResult function
-  const handleScanResult = async (result) => {
+  const handleScanResult = async (result: any) => {
     if (result && !stateRef.current.isScanning && !stateRef.current.isOnCooldown) {
       setIsScanning(true);
       setScanStatus(undefined);
@@ -210,18 +134,88 @@ export default function ScanningPage({
           throw new Error('QR data format is incorrect');
         }
 
-        if (type === 'token' || type === 'nft') {
-          await processClaimEventDrop(qrDataSplit, setModalContent, setClaimModalOpen);
-        } else if (type === 'food') {
-          console.log('Handling food type with data:', data);
-          // Handle food type logic here
-        } else if (type === 'merch') {
-          console.log('Handling merch type with data:', data);
-          // Handle merch type logic here
-        } else {
-          console.error('Unhandled QR data type:', type);
-          throw new Error('Invalid QR data type');
+        switch (type) {
+          case 'token':
+          case 'nft': {
+            const { alreadyClaimed, isScavenger, numFound, numRequired, name, image, amount } =
+              await claimEventDrop({
+                dropInfo,
+                qrDataSplit,
+                accountId,
+                setScanStatus,
+                setStatusMessage,
+                secretKey,
+              });
+
+            if (alreadyClaimed) {
+              return;
+            }
+
+            const tokenAmount = amount ? keypomInstance.yoctoToNear(amount) : undefined;
+
+            if (isScavenger) {
+              setModalType('scavenger');
+              setModalProps({ numFound, numRequired, tokenAmount, image, name });
+            } else if (amount) {
+              setModalType('token');
+              setModalProps({ tokenAmount });
+            } else {
+              setModalType('nft');
+              setModalProps({ name });
+            }
+            break;
+          }
+          case 'food':
+            setModalType('merch');
+            setModalProps({
+              title: 'Food Purchase',
+              subtitle: `You are purchasing food`,
+              body: `How much $NCON would you like to transfer to the vendor?`,
+            });
+            break;
+          case 'merch':
+            setModalType('merch');
+            setModalProps({
+              title: 'Merch Purchase',
+              subtitle: `You are purchasing merchandise`,
+              body: `How much $NCON would you like to transfer to the vendor?`,
+            });
+            break;
+          case 'raffle':
+            setModalType('raffle');
+            setModalProps({
+              title: 'Raffle Entry',
+              subtitle: `Enter the raffle for a chance to win`,
+              body: `How many tickets would you like to purchase?`,
+            });
+            break;
+          case 'profile':
+            setModalType('profileTransfer');
+            setModalProps({
+              title: 'Transfer $NCON',
+              subtitle: `Send $NCON to another user`,
+              body: `How much $NCON would you like to transfer?`,
+            });
+            break;
+          case 'sponsor':
+            setModalType('sponsor');
+            setModalProps({
+              title: 'Sponsor Quiz',
+              subtitle: `Answer the quiz to earn rewards`,
+              body: `Fill in the details to earn an NFT!`,
+              questions: [
+                'Question 1: What is NEAR?',
+                'Question 2: What is the latest NEAR feature?',
+                'Question 3: What is NEARCON?',
+              ],
+            });
+            break;
+          default:
+            console.error('Unhandled QR data type:', type);
+            throw new Error('Invalid QR data type');
         }
+
+        setModalOpen(true);
       } catch (error) {
         console.error('Scan failed', error);
         setScanStatus('error');
@@ -235,14 +229,54 @@ export default function ScanningPage({
 
   return (
     <>
-      <EventPrizeClaimedModal
-        eventInfo={eventInfo}
-        isOpen={claimModalOpen}
-        modalContent={modalContent}
-        onAssetsClicked={() => setSelectedTab(1)}
+      <ScavengerModal
+        isOpen={modalOpen && modalType === 'scavenger'}
         onClose={() => {
-          setClaimModalOpen(false);
+          setModalOpen(false);
         }}
+        {...modalProps}
+      />
+      <NFTModal
+        isOpen={modalOpen && modalType === 'nft'}
+        onClose={() => {
+          setModalOpen(false);
+        }}
+        {...modalProps}
+      />
+      <TokenModal
+        isOpen={modalOpen && modalType === 'token'}
+        onClose={() => {
+          setModalOpen(false);
+        }}
+        {...modalProps}
+      />
+      <MerchModal
+        isOpen={modalOpen && modalType === 'merch'}
+        onClose={() => {
+          setModalOpen(false);
+        }}
+        {...modalProps}
+      />
+      <RaffleModal
+        isOpen={modalOpen && modalType === 'raffle'}
+        onClose={() => {
+          setModalOpen(false);
+        }}
+        {...modalProps}
+      />
+      <SponsorModal
+        isOpen={modalOpen && modalType === 'sponsor'}
+        onClose={() => {
+          setModalOpen(false);
+        }}
+        {...modalProps}
+      />
+      <ProfileTransferModal
+        isOpen={modalOpen && modalType === 'profileTransfer'}
+        onClose={() => {
+          setModalOpen(false);
+        }}
+        {...modalProps}
       />
       <Center>
         <VStack gap={{ base: 'calc(24px + 8px)', md: 'calc(32px + 10px)' }}>
@@ -258,10 +292,10 @@ export default function ScanningPage({
               ) : (
                 <VStack>
                   <Heading
-                    color={eventInfo?.qrPage?.title?.color}
-                    fontFamily={eventInfo?.qrPage?.title?.fontFamily}
-                    fontSize={{ base: '6xl', md: '8xl' }}
-                    fontWeight="500"
+                    color={eventInfo.styles.title.color}
+                    fontFamily={eventInfo.styles.title.fontFamily}
+                    fontSize={eventInfo.styles.title.fontSize}
+                    fontWeight={eventInfo.styles.title.fontWeight}
                     textAlign="center"
                   >
                     Scan
@@ -272,13 +306,13 @@ export default function ScanningPage({
           </Skeleton>
 
           <IconBox
-            bg={eventInfo?.qrPage?.content?.border || 'border.box'}
+            bg={eventInfo.styles.border.color || 'border.box'}
             icon={
               <Skeleton isLoaded={!isLoading}>
-                {eventInfo?.qrPage?.boxIcon?.image ? (
+                {eventInfo.styles.icon.image ? (
                   <Image
                     height={{ base: '10', md: '12' }}
-                    src={`${CLOUDFLARE_IPFS}/${eventInfo.qrPage.boxIcon.image}`}
+                    src={`${CLOUDFLARE_IPFS}/${eventInfo.styles.icon.image}`}
                     width={{ base: '10', md: '12' }}
                   />
                 ) : (
@@ -286,8 +320,8 @@ export default function ScanningPage({
                 )}
               </Skeleton>
             }
-            iconBg={eventInfo?.qrPage?.boxIcon?.bg || 'blue.100'}
-            iconBorder={eventInfo?.qrPage?.boxIcon?.border || 'border.round'}
+            iconBg={eventInfo.styles.icon.bg || 'blue.100'}
+            iconBorder={eventInfo.styles.icon.border || 'border.round'}
             maxW="345px"
             minW={{ base: '90vw', md: '345px' }}
             p="0"
@@ -340,13 +374,13 @@ export default function ScanningPage({
                         />
                       </VStack>
                       <Button
-                        backgroundColor={eventInfo?.qrPage?.content?.sellButton?.bg}
-                        color={eventInfo?.qrPage?.content?.sellButton?.color}
-                        fontFamily={eventInfo?.qrPage?.content?.sellButton?.fontFamily}
-                        fontSize={eventInfo?.qrPage?.content?.sellButton?.fontSize}
-                        fontWeight={eventInfo?.qrPage?.content?.sellButton?.fontWeight}
-                        h={eventInfo?.qrPage?.content?.sellButton?.h}
-                        sx={eventInfo?.qrPage?.content?.sellButton?.sx}
+                        backgroundColor={eventInfo.styles.buttons.primary.bg}
+                        color={eventInfo.styles.buttons.primary.color}
+                        fontFamily={eventInfo.styles.buttons.primary.fontFamily}
+                        fontSize={eventInfo.styles.buttons.primary.fontSize}
+                        fontWeight={eventInfo.styles.buttons.primary.fontWeight}
+                        h={eventInfo.styles.buttons.primary.h}
+                        sx={eventInfo.styles.buttons.primary.sx}
                         variant="outline"
                         w="full"
                         onClick={() => {
@@ -371,10 +405,10 @@ export default function ScanningPage({
                 px="6"
               >
                 <Text
-                  color="#844AFF"
-                  fontFamily="denverBody"
-                  fontWeight="600"
-                  size={{ base: 'xl', md: '2xl' }}
+                  color={eventInfo.styles.h1.color}
+                  fontFamily={eventInfo.styles.h1.fontFamily}
+                  fontSize={eventInfo.styles.h1.fontSize}
+                  fontWeight={eventInfo.styles.h1.fontWeight}
                   textAlign="center"
                 >
                   Scan to participate
@@ -389,26 +423,46 @@ export default function ScanningPage({
                   {/* Left column for earning methods */}
                   <Box>
                     <Text
-                      color="black"
-                      fontFamily="denverBody"
-                      fontSize="lg"
-                      fontWeight="500"
+                      color={eventInfo.styles.h2.color}
+                      fontFamily={eventInfo.styles.h2.fontFamily}
+                      fontSize={eventInfo.styles.h2.fontSize}
+                      fontWeight={eventInfo.styles.h2.fontWeight}
                       mb={0}
                       textAlign="left"
                     >
                       To Earn:
                     </Text>
                     <VStack align="stretch" spacing={1} textAlign="left">
-                      <Text color="black" fontFamily="denverBody" fontSize="sm" fontWeight="400">
+                      <Text
+                        color={eventInfo.styles.h3.color}
+                        fontFamily={eventInfo.styles.h3.fontFamily}
+                        fontSize="sm"
+                        fontWeight={eventInfo.styles.h3.fontWeight}
+                      >
                         Attend talks
                       </Text>
-                      <Text color="black" fontFamily="denverBody" fontSize="sm" fontWeight="400">
+                      <Text
+                        color={eventInfo.styles.h3.color}
+                        fontFamily={eventInfo.styles.h3.fontFamily}
+                        fontSize="sm"
+                        fontWeight={eventInfo.styles.h3.fontWeight}
+                      >
                         Visit booths
                       </Text>
-                      <Text color="black" fontFamily="denverBody" fontSize="sm" fontWeight="400">
+                      <Text
+                        color={eventInfo.styles.h3.color}
+                        fontFamily={eventInfo.styles.h3.fontFamily}
+                        fontSize="sm"
+                        fontWeight={eventInfo.styles.h3.fontWeight}
+                      >
                         Scavenger hunts
                       </Text>
-                      <Text color="black" fontFamily="denverBody" fontSize="sm" fontWeight="400">
+                      <Text
+                        color={eventInfo.styles.h3.color}
+                        fontFamily={eventInfo.styles.h3.fontFamily}
+                        fontSize="sm"
+                        fontWeight={eventInfo.styles.h3.fontWeight}
+                      >
                         Sponsor quizzes
                       </Text>
                     </VStack>
@@ -417,26 +471,46 @@ export default function ScanningPage({
                   {/* Right column for spending methods */}
                   <Box>
                     <Text
-                      color="black"
-                      fontFamily="denverBody"
-                      fontSize="lg"
-                      fontWeight="500"
+                      color={eventInfo.styles.h2.color}
+                      fontFamily={eventInfo.styles.h2.fontFamily}
+                      fontSize={eventInfo.styles.h2.fontSize}
+                      fontWeight={eventInfo.styles.h2.fontWeight}
                       mb={0}
                       textAlign="right"
                     >
                       Spend On:
                     </Text>
                     <VStack align="stretch" spacing={1} textAlign="right">
-                      <Text color="black" fontFamily="denverBody" fontSize="sm" fontWeight="400">
+                      <Text
+                        color={eventInfo.styles.h3.color}
+                        fontFamily={eventInfo.styles.h3.fontFamily}
+                        fontSize="sm"
+                        fontWeight={eventInfo.styles.h3.fontWeight}
+                      >
                         Food Trucks
                       </Text>
-                      <Text color="black" fontFamily="denverBody" fontSize="sm" fontWeight="400">
+                      <Text
+                        color={eventInfo.styles.h3.color}
+                        fontFamily={eventInfo.styles.h3.fontFamily}
+                        fontSize="sm"
+                        fontWeight={eventInfo.styles.h3.fontWeight}
+                      >
                         Merch Booths
                       </Text>
-                      <Text color="black" fontFamily="denverBody" fontSize="sm" fontWeight="400">
+                      <Text
+                        color={eventInfo.styles.h3.color}
+                        fontFamily={eventInfo.styles.h3.fontFamily}
+                        fontSize="sm"
+                        fontWeight={eventInfo.styles.h3.fontWeight}
+                      >
                         Raffles
                       </Text>
-                      <Text color="black" fontFamily="denverBody" fontSize="sm" fontWeight="400">
+                      <Text
+                        color={eventInfo.styles.h3.color}
+                        fontFamily={eventInfo.styles.h3.fontFamily}
+                        fontSize="sm"
+                        fontWeight={eventInfo.styles.h3.fontWeight}
+                      >
                         NFTs
                       </Text>
                     </VStack>

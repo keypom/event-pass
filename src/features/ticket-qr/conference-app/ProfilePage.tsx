@@ -25,7 +25,7 @@ import {
 
 interface ProfilePageProps {
   eventInfo: FunderEventMetadata;
-  ticketInfoExtra?: TicketMetadataExtra;
+  ticketInfoExtra: TicketMetadataExtra;
   dropInfo: EventDrop;
   ticketInfo: TicketInfoMetadata;
   isLoading: boolean;
@@ -65,10 +65,10 @@ export default function ProfilePage({
             ) : (
               <VStack>
                 <Heading
-                  color={eventInfo?.styles.title.color}
-                  fontFamily={eventInfo?.styles.title.fontFamily}
-                  fontSize={eventInfo?.styles.title.fontSize}
-                  fontWeight={eventInfo?.styles.title.fontWeight}
+                  color={eventInfo.styles.title.color}
+                  fontFamily={eventInfo.styles.title.fontFamily}
+                  fontSize={eventInfo.styles.title.fontSize}
+                  fontWeight={eventInfo.styles.title.fontWeight}
                   textAlign="center"
                 >
                   PROFILE
@@ -79,10 +79,10 @@ export default function ProfilePage({
         </Skeleton>
 
         <IconBox
-          bg={eventInfo?.styles.border.border || 'border.box'}
+          bg={eventInfo.styles.border.border || 'border.box'}
           icon={
             <Skeleton isLoaded={!isLoading}>
-              {eventInfo?.styles.icon.image ? (
+              {eventInfo.styles.icon.image ? (
                 <Image
                   height={{ base: '10', md: '12' }}
                   src={`${CLOUDFLARE_IPFS}/${eventInfo.styles.icon.image}`}
@@ -93,8 +93,8 @@ export default function ProfilePage({
               )}
             </Skeleton>
           }
-          iconBg={eventInfo?.styles.icon.bg || 'blue.100'}
-          iconBorder={eventInfo?.styles.icon.border || 'border.round'}
+          iconBg={eventInfo.styles.icon.bg || 'blue.100'}
+          iconBorder={eventInfo.styles.icon.border || 'border.round'}
           maxW="345px"
           minW={{ base: '90vw', md: '345px' }}
           p="0"
@@ -110,14 +110,14 @@ export default function ProfilePage({
                   align="center"
                   flexDir="column"
                   pb={{ base: '3', md: '5' }}
-                  pt={{ base: '10', md: '16' }}
+                  pt={{ base: '12', md: '16' }}
                   px={{ base: '10', md: '8' }}
                 >
                   <Text
-                    color={eventInfo?.styles.h1.color}
-                    fontFamily={eventInfo?.styles.h1.fontFamily}
-                    fontSize={eventInfo?.styles.h1.fontSize}
-                    fontWeight={eventInfo?.styles.h1.fontWeight}
+                    color={eventInfo.styles.h1.color}
+                    fontFamily={eventInfo.styles.h1.fontFamily}
+                    fontSize="2xl"
+                    fontWeight={eventInfo.styles.h1.fontWeight}
                     textAlign="center"
                   >
                     {tokensAvailable} ${ticker} Available
@@ -131,20 +131,20 @@ export default function ProfilePage({
                     {/* Left column for first name */}
                     <Box>
                       <Text
-                        color={eventInfo?.styles.h2.color}
-                        fontFamily={eventInfo?.styles.h2.fontFamily}
-                        fontSize={eventInfo?.styles.h2.fontSize}
-                        fontWeight={eventInfo?.styles.h2.fontWeight}
+                        color={eventInfo.styles.h2.color}
+                        fontFamily={eventInfo.styles.h2.fontFamily}
+                        fontSize={eventInfo.styles.h2.fontSize}
+                        fontWeight={eventInfo.styles.h2.fontWeight}
                         mb={0}
                         textAlign="left"
                       >
                         First Name
                       </Text>
                       <Text
-                        color={eventInfo?.styles.h3.color}
-                        fontFamily={eventInfo?.styles.h3.fontFamily}
+                        color={eventInfo.styles.h3.color}
+                        fontFamily={eventInfo.styles.h3.fontFamily}
                         fontSize="sm"
-                        fontWeight={eventInfo?.styles.h3.fontWeight}
+                        fontWeight={eventInfo.styles.h3.fontWeight}
                         textAlign="left"
                       >
                         Benjamin
@@ -154,20 +154,20 @@ export default function ProfilePage({
                     {/* Right column for last name */}
                     <Box>
                       <Text
-                        color={eventInfo?.styles.h2.color}
-                        fontFamily={eventInfo?.styles.h2.fontFamily}
-                        fontSize={eventInfo?.styles.h2.fontSize}
-                        fontWeight={eventInfo?.styles.h2.fontWeight}
+                        color={eventInfo.styles.h2.color}
+                        fontFamily={eventInfo.styles.h2.fontFamily}
+                        fontSize={eventInfo.styles.h2.fontSize}
+                        fontWeight={eventInfo.styles.h2.fontWeight}
                         mb={0}
                         textAlign="right"
                       >
                         Last Name
                       </Text>
                       <Text
-                        color={eventInfo?.styles.h3.color}
-                        fontFamily={eventInfo?.styles.h3.fontFamily}
+                        color={eventInfo.styles.h3.color}
+                        fontFamily={eventInfo.styles.h3.fontFamily}
                         fontSize="sm"
-                        fontWeight={eventInfo?.styles.h3.fontWeight}
+                        fontWeight={eventInfo.styles.h3.fontWeight}
                         textAlign="right"
                       >
                         Kurrek
@@ -176,30 +176,30 @@ export default function ProfilePage({
                   </Grid>
                   <Skeleton borderRadius="12px" isLoaded={!isLoading}>
                     <Image
-                      alt={`Event image for ${eventInfo?.name}`}
+                      alt={`Event image for ${eventInfo.name}`}
                       borderRadius="12px"
                       height="140px"
                       mb="2"
                       objectFit="contain"
-                      src={`${CLOUDFLARE_IPFS}/${ticketInfo?.media}`}
+                      src={`${CLOUDFLARE_IPFS}/${ticketInfo.media}`}
                     />
                   </Skeleton>
                   <HStack>
                     <Text
-                      color={eventInfo?.styles.h2.color}
-                      fontFamily={eventInfo?.styles.h2.fontFamily}
-                      fontSize={eventInfo?.styles.h2.fontSize}
-                      fontWeight={eventInfo?.styles.h2.fontWeight}
+                      color={eventInfo.styles.h2.color}
+                      fontFamily={eventInfo.styles.h2.fontFamily}
+                      fontSize={eventInfo.styles.h2.fontSize}
+                      fontWeight={eventInfo.styles.h2.fontWeight}
                       mb={0}
                       textAlign="right"
                     >
                       Username:
                     </Text>
                     <Text
-                      color={eventInfo?.styles.h3.color}
-                      fontFamily={eventInfo?.styles.h3.fontFamily}
+                      color={eventInfo.styles.h3.color}
+                      fontFamily={eventInfo.styles.h3.fontFamily}
                       fontSize="sm"
-                      fontWeight={eventInfo?.styles.h3.fontWeight}
+                      fontWeight={eventInfo.styles.h3.fontWeight}
                       textAlign="right"
                     >
                       {accountId.split('.')[0]}
@@ -218,10 +218,10 @@ export default function ProfilePage({
               px="6"
             >
               <Text
-                color={eventInfo?.styles.h1.color}
-                fontFamily={eventInfo?.styles.h1.fontFamily}
-                fontSize={eventInfo?.styles.h1.fontSize}
-                fontWeight={eventInfo?.styles.h1.fontWeight}
+                color={eventInfo.styles.h1.color}
+                fontFamily={eventInfo.styles.h1.fontFamily}
+                fontSize={eventInfo.styles.h1.fontSize}
+                fontWeight={eventInfo.styles.h1.fontWeight}
                 size={{ base: 'xl', md: '2xl' }}
                 textAlign="center"
               >
@@ -237,10 +237,10 @@ export default function ProfilePage({
                 <QRCode id="QRCode" size={180} value={accountId} />
               </Box>
               <Text
-                color={eventInfo?.styles.h3.color}
-                fontFamily={eventInfo?.styles.h3.fontFamily}
+                color={eventInfo.styles.h3.color}
+                fontFamily={eventInfo.styles.h3.fontFamily}
                 fontSize="sm"
-                fontWeight={eventInfo?.styles.h3.fontWeight}
+                fontWeight={eventInfo.styles.h3.fontWeight}
                 textAlign="center"
               >
                 Show this to receive ${ticker}

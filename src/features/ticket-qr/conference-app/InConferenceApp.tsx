@@ -21,20 +21,20 @@ import ScanningPage from './ScanningPage';
 import AssetsPage from './AssetsPage';
 
 const footerMenuItems = [
-  { label: 'Profile', icon: ProfileIcon },
-  { label: 'Assets', icon: WalletIcon },
-  { label: 'Agenda', icon: FooterCalendarIcon },
-  { label: 'Scan', icon: ScanIcon },
+  { label: 'Profile', icon: ProfileIcon, path: '/tickets/ticket/profile' },
+  { label: 'Assets', icon: WalletIcon, path: '/tickets/ticket/assets' },
+  { label: 'Agenda', icon: FooterCalendarIcon, path: '/tickets/ticket/agenda' },
+  { label: 'Scan', icon: ScanIcon, path: '/tickets/ticket/scan' },
 ];
 
 const selectedColor = 'black';
 const unselectedColor = 'white';
 
 interface InConferenceAppProps {
-  eventInfo?: FunderEventMetadata;
-  ticketInfo?: TicketInfoMetadata;
-  ticketInfoExtra?: TicketMetadataExtra;
-  dropInfo?: EventDrop;
+  eventInfo: FunderEventMetadata;
+  ticketInfo: TicketInfoMetadata;
+  ticketInfoExtra: TicketMetadataExtra;
+  dropInfo: EventDrop;
   isLoading: boolean;
   eventId: string;
   funderId: string;
@@ -57,10 +57,9 @@ export default function InConferenceApp({
   const [tokensAvailable, setTokensAvailable] = useState<string>('0');
   const location = useLocation();
   const navigate = useNavigate();
-  const queryParams = new URLSearchParams(location.search);
-  const hash = location.hash;
-  const initialTab = parseInt(queryParams.get('tab') || '0', 10);
-  const [selectedTab, setSelectedTab] = useState<number>(initialTab);
+  const path = location.pathname.split('/').pop() || 'profile';
+  const initialTab = footerMenuItems.findIndex((item) => item.path.includes(path));
+  const [selectedTab, setSelectedTab] = useState<number>(initialTab !== -1 ? initialTab : 0);
 
   const currentTab = () => {
     switch (selectedTab) {
@@ -90,7 +89,7 @@ export default function InConferenceApp({
           />
         );
       case 2:
-        return <div />;
+        return <div>Agenda</div>;
       case 3:
         return (
           <ScanningPage
@@ -114,7 +113,7 @@ export default function InConferenceApp({
 
   useEffect(() => {
     const recoverAccount = async () => {
-      if (dropInfo) {
+      if (dropInfo.drop_id !== 'loading') {
         const factoryAccount = dropInfo?.asset_data[1].config.root_account_id;
         const recoveredAccountId = await keypomInstance.viewCall({
           contractId: factoryAccount,
@@ -128,19 +127,15 @@ export default function InConferenceApp({
         });
         setTokensAvailable(keypomInstance.yoctoToNear(balance));
         setAccountId(recoveredAccountId);
-        console.log('Recovered account ID', recoveredAccountId);
       }
     };
     recoverAccount();
   }, [dropInfo, selectedTab]);
 
   useEffect(() => {
-    // This will run when `selectedTab` changes and update the URL only if it differs from the initial tab.
-    if (initialTab !== selectedTab) {
-      // Append the current hash back onto the URL when navigating
-      navigate(`?tab=${selectedTab}${hash}`, { replace: true });
-    }
-  }, [selectedTab, navigate, initialTab, hash]);
+    // This will run when `selectedTab` changes and update the URL
+    navigate(footerMenuItems[selectedTab].path, { replace: true });
+  }, [selectedTab, navigate]);
 
   return (
     <VStack

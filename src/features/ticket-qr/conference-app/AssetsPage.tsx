@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Accordion,
   AccordionItem,
@@ -37,24 +37,26 @@ export interface ScavengerHunt {
   needed: number;
 }
 
+interface NFTMetadata {
+  name: string;
+  image: string;
+}
+
 interface NFTData {
-  nft: {
-    image: string;
-    name: string;
-  };
+  nft: NFTMetadata;
   owned: boolean;
 }
 
 interface AssetsPageProps {
   accountId: string;
-  dropInfo?: EventDrop;
-  eventInfo?: FunderEventMetadata;
+  dropInfo: EventDrop;
+  eventInfo: FunderEventMetadata;
   isLoading: boolean;
 }
 
-const NFTCard = ({ nft, isOwned }) => {
+const NFTCard = ({ nft, isOwned }: { nft: NFTMetadata; isOwned: boolean }) => {
   const cardStyle = {
-    position: 'relative',
+    position: 'relative' as const,
     w: '100%',
     h: '220px',
     p: '4',
@@ -66,7 +68,7 @@ const NFTCard = ({ nft, isOwned }) => {
   };
 
   const lockIconStyle = {
-    position: 'absolute',
+    position: 'absolute' as const,
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
@@ -76,7 +78,7 @@ const NFTCard = ({ nft, isOwned }) => {
   };
 
   const imageContainerStyle = {
-    position: 'relative',
+    position: 'relative' as const,
     w: '100%', // Full width of the card
     h: '130px', // Fixed height for the image container
     mb: '2', // Margin bottom
@@ -100,6 +102,7 @@ const NFTCard = ({ nft, isOwned }) => {
         color={isOwned ? 'black' : 'gray.500'}
         fontSize="sm"
         fontWeight="bold"
+        pt="2"
         textAlign="center"
       >
         {nft.name}
@@ -114,7 +117,7 @@ const NFTCard = ({ nft, isOwned }) => {
   );
 };
 
-const ScavengerCard = ({ scavenger }) => {
+const ScavengerCard = ({ scavenger }: { scavenger: ScavengerHunt }) => {
   const isCompleted = scavenger.found >= scavenger.needed;
 
   return (
@@ -167,60 +170,72 @@ const ScavengerCard = ({ scavenger }) => {
     </Box>
   );
 };
+
 // Update the CollapsibleSection to accept a list of scavenger hunts and render them inside a Flex container
-const CollapsibleSection = ({ title, itemList, index, emptyMessage }) => (
-  <Accordion allowMultiple allowToggle defaultIndex={[0]} maxW="345px" w="100%">
-    <AccordionItem border="none">
-      <h2>
-        <AccordionButton
-          _expanded={{ bg: 'transparent', color: 'black' }} // Remove the blue background and white text on expanded
-          _focus={{ boxShadow: 'none' }} // Remove focus styles
-          _hover={{ bg: 'transparent' }} // Remove hover styles
-        >
-          <Box flex="1" textAlign="left">
-            <Text
-              color="#844AFF"
-              fontFamily="denverBody"
-              fontWeight="600"
-              size={{ base: '2xl', md: '2xl' }}
-            >
-              {title}
-            </Text>
-          </Box>
-          <AccordionIcon />
-        </AccordionButton>
-      </h2>
-      <AccordionPanel pb={4} pos="relative">
-        <Box
-          className="hide-scrollbar"
-          maxW="full" // Set maximum width to full to contain the flex box
-          overflowX="auto"
-          pb={3}
-        >
-          <Flex direction="row" gap="4">
-            {itemList.length > 0 ? (
-              itemList.map((item) => (
-                <Box key={item.id} flex="none">
-                  {' '}
-                  {/* Flex "none" ensures it doesn't grow or shrink */}
-                  <ScavengerCard scavenger={item} />
-                </Box>
-              ))
-            ) : (
-              // If there are no NFTs, show a message
-              <Text>{emptyMessage}</Text>
-            )}
-          </Flex>
-        </Box>
-      </AccordionPanel>
-    </AccordionItem>
-  </Accordion>
-);
 
 const AssetsPage = ({ dropInfo, eventInfo, accountId, isLoading }: AssetsPageProps) => {
   const [liveScavengers, setLiveScavengers] = useState<ScavengerHunt[]>([]);
   const [nfts, setNFTs] = useState<NFTData[]>([]);
   const [showUnowned, setShowUnowned] = useState(true); // State to show/hide unowned NFTs
+
+  const CollapsibleSection = ({
+    title,
+    itemList,
+    index,
+    emptyMessage,
+  }: {
+    title: string;
+    itemList: ScavengerHunt[];
+    index: number;
+    emptyMessage: string;
+  }) => (
+    <Accordion allowMultiple allowToggle defaultIndex={[0]} maxW="345px" w="100%">
+      <AccordionItem border="none">
+        <h2>
+          <AccordionButton
+            _expanded={{ bg: 'transparent', color: 'black' }} // Remove the blue background and white text on expanded
+            _focus={{ boxShadow: 'none' }} // Remove focus styles
+            _hover={{ bg: 'transparent' }} // Remove hover styles
+          >
+            <Box flex="1" textAlign="left">
+              <Text
+                color={eventInfo?.styles.h1.color}
+                fontFamily={eventInfo?.styles.h1.fontFamily}
+                fontWeight={eventInfo?.styles.h1.fontWeight}
+                size={{ base: '2xl', md: '2xl' }}
+              >
+                {title}
+              </Text>
+            </Box>
+            <AccordionIcon />
+          </AccordionButton>
+        </h2>
+        <AccordionPanel pb={0} pos="relative">
+          <Box
+            className="hide-scrollbar"
+            maxW="full" // Set maximum width to full to contain the flex box
+            overflowX="auto"
+            pb={3}
+          >
+            <Flex direction="row" gap="4">
+              {itemList.length > 0 ? (
+                itemList.map((item) => (
+                  <Box key={item.id} flex="none">
+                    {' '}
+                    {/* Flex "none" ensures it doesn't grow or shrink */}
+                    <ScavengerCard scavenger={item} />
+                  </Box>
+                ))
+              ) : (
+                // If there are no NFTs, show a message
+                <Text>{emptyMessage}</Text>
+              )}
+            </Flex>
+          </Box>
+        </AccordionPanel>
+      </AccordionItem>
+    </Accordion>
+  );
 
   useEffect(() => {
     if (accountId.length === 0) return;
@@ -232,6 +247,7 @@ const AssetsPage = ({ dropInfo, eventInfo, accountId, isLoading }: AssetsPagePro
         methodName: 'get_scavengers_for_account',
         args: { account_id: accountId }, // Use accountId directly
       });
+      console.log('Scavs: ', scavs);
 
       // Convert each entry into a promise to fetch the additional data
       const scavengerHuntPromises = Object.entries(scavs).map(async ([id, found]) => {
@@ -328,10 +344,10 @@ const AssetsPage = ({ dropInfo, eventInfo, accountId, isLoading }: AssetsPagePro
             ) : (
               <VStack>
                 <Heading
-                  color={eventInfo?.qrPage?.title?.color}
-                  fontFamily={eventInfo?.qrPage?.title?.fontFamily}
-                  fontSize={{ base: '6xl', md: '8xl' }}
-                  fontWeight="500"
+                  color={eventInfo?.styles.title.color}
+                  fontFamily={eventInfo?.styles.title.fontFamily}
+                  fontSize={eventInfo?.styles.title.fontSize}
+                  fontWeight={eventInfo?.styles.title.fontWeight}
                   textAlign="center"
                 >
                   ASSETS
@@ -342,13 +358,13 @@ const AssetsPage = ({ dropInfo, eventInfo, accountId, isLoading }: AssetsPagePro
         </Skeleton>
 
         <IconBox
-          bg={eventInfo?.qrPage?.content?.border || 'border.box'}
+          bg={eventInfo?.styles.border.border || 'border.box'}
           icon={
             <Skeleton isLoaded={!isLoading}>
-              {eventInfo?.qrPage?.boxIcon?.image ? (
+              {eventInfo?.styles.icon.image ? (
                 <Image
                   height={{ base: '10', md: '12' }}
-                  src={`${CLOUDFLARE_IPFS}/${eventInfo.qrPage.boxIcon.image}`}
+                  src={`${CLOUDFLARE_IPFS}/${eventInfo.styles.icon.image}`}
                   width={{ base: '10', md: '12' }}
                 />
               ) : (
@@ -356,8 +372,8 @@ const AssetsPage = ({ dropInfo, eventInfo, accountId, isLoading }: AssetsPagePro
               )}
             </Skeleton>
           }
-          iconBg={eventInfo?.qrPage?.boxIcon?.bg || 'blue.100'}
-          iconBorder={eventInfo?.qrPage?.boxIcon?.border || 'border.round'}
+          iconBg={eventInfo?.styles.icon.bg || 'blue.100'}
+          iconBorder={eventInfo?.styles.icon.border || 'border.round'}
           maxW="345px"
           minW={{ base: '90vw', md: '345px' }}
           p="0"
@@ -381,7 +397,7 @@ const AssetsPage = ({ dropInfo, eventInfo, accountId, isLoading }: AssetsPagePro
                     emptyMessage="You have no active scavenger hunts."
                     index={0}
                     itemList={liveScavengers}
-                    title={`Scavenger Hunts`}
+                    title="Scavenger Hunts"
                   />
                 </Flex>
               )}
@@ -393,16 +409,20 @@ const AssetsPage = ({ dropInfo, eventInfo, accountId, isLoading }: AssetsPagePro
                 w="full" // Making the heading take the full width
               >
                 <Text
-                  color="#844AFF"
-                  fontFamily="denverBody"
-                  fontSize={{ base: 'xl', md: '2xl' }}
-                  fontWeight="600"
+                  color={eventInfo?.styles.h1.color}
+                  fontFamily={eventInfo?.styles.h1.fontFamily}
+                  fontSize="2xl"
+                  fontWeight={eventInfo?.styles.h1.fontWeight}
                 >
                   Unlockables
                 </Text>
               </Box>
               <HStack justifyContent="center" mb="2" w="full">
-                <Text fontSize={{ base: 'md', md: 'lg' }} fontWeight="500">
+                <Text
+                  fontFamily={eventInfo?.styles.h2.fontFamily}
+                  fontSize={eventInfo?.styles.h2.fontSize}
+                  fontWeight={eventInfo?.styles.h2.fontWeight}
+                >
                   Show Unowned
                 </Text>
                 <ToggleSwitch
@@ -421,7 +441,12 @@ const AssetsPage = ({ dropInfo, eventInfo, accountId, isLoading }: AssetsPagePro
                   ))}
                 </SimpleGrid>
               ) : (
-                <Text fontSize={{ base: 'md', md: 'lg' }} fontWeight="500" mt="4">
+                <Text
+                  fontFamily={eventInfo?.styles.h2.fontFamily}
+                  fontSize={eventInfo?.styles.h2.fontSize}
+                  fontWeight={eventInfo?.styles.h2.fontWeight}
+                  mt="4"
+                >
                   You haven't received any NFTs yet.
                 </Text>
               )}
