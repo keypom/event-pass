@@ -1,5 +1,3 @@
-import { type TicketInfoFormMetadata } from '@/features/create-drop/components/ticket/CreateTicketsForm';
-
 type AllDayEvent = string;
 interface MultiDayEvent {
   from: string;
@@ -13,6 +11,47 @@ export interface EventDateInfo {
 export interface QuestionInfo {
   required: boolean;
   question: string;
+}
+
+export interface EventStyle {
+  color?: string;
+  fontFamily?: string;
+  fontSize?: { base: string; md: string } | string;
+  border?: string;
+  bg?: string;
+  fontWeight?: string;
+  h?: string;
+  sx?: object;
+  text?: string;
+  image?: string;
+}
+
+export interface EventStyles {
+  title: EventStyle;
+  h1: EventStyle;
+  h2: EventStyle;
+  h3: EventStyle;
+  buttons: {
+    primary: EventStyle;
+    secondary: EventStyle;
+  };
+  border: EventStyle;
+  icon: EventStyle;
+  background: string;
+}
+
+export interface QRPage {
+  showTitle: boolean;
+  showLocation: boolean;
+  showDate: boolean;
+  dateUnderQR: boolean;
+  showDownloadButton: boolean;
+  showSellTicketButton: boolean;
+  sellableThroughText: boolean;
+}
+
+export interface WelcomePage {
+  title: EventStyle;
 }
 
 export interface FunderEventMetadata {
@@ -37,44 +76,9 @@ export interface FunderEventMetadata {
   iv?: string;
   salt?: string;
 
-  // EXTRA
-  qrPage?: {
-    showTitle?: boolean;
-    showLocation?: boolean;
-    showDate?: boolean;
-    dateUnderQR?: boolean;
-    title?: {
-      color?: string;
-      fontFamily?: string;
-      fontSize?: any;
-    };
-    content?: {
-      border?: string;
-      helperText?: {
-        fontFamily?: string;
-        fontWeight?: string;
-        text?: string;
-      };
-      sellButton?: {
-        bg?: string;
-        fontFamily?: string;
-        fontSize?: any;
-        fontWeight?: string;
-        color?: string;
-        helperText?: boolean;
-        h?: string;
-        sx?: any;
-        text?: string;
-      };
-      downloadButton: false;
-    };
-    background?: string;
-    boxIcon?: {
-      bg?: string;
-      border?: string;
-      image?: string;
-    };
-  };
+  styles: EventStyles;
+  qrPage: QRPage;
+  welcomePage: WelcomePage;
 }
 
 export type AssetType = null;
@@ -174,7 +178,7 @@ export const calculateDepositCost = ({
   marketTicketInfo,
 }: {
   eventMetadata: FunderEventMetadata;
-  eventTickets: TicketInfoFormMetadata[];
+  eventTickets: TicketInfoMetadata[];
   marketTicketInfo: Record<
     string,
     { max_tickets: number; price: string; sale_start?: number; sale_end?: number }

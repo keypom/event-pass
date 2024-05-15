@@ -38,6 +38,7 @@ interface InConferenceAppProps {
   isLoading: boolean;
   eventId: string;
   funderId: string;
+  ticker: string;
   secretKey: string;
 }
 
@@ -47,6 +48,7 @@ export default function InConferenceApp({
   dropInfo,
   ticketInfo,
   isLoading,
+  ticker,
   eventId,
   funderId,
   secretKey,
@@ -72,6 +74,7 @@ export default function InConferenceApp({
             funderId={funderId}
             isLoading={isLoading || accountId.length === 0}
             secretKey={secretKey}
+            ticker={ticker}
             ticketInfo={ticketInfo}
             ticketInfoExtra={ticketInfoExtra}
             tokensAvailable={tokensAvailable}
@@ -142,7 +145,7 @@ export default function InConferenceApp({
   return (
     <VStack
       backgroundImage={
-        eventInfo?.qrPage?.background && `${CLOUDFLARE_IPFS}/${eventInfo.qrPage.background}`
+        eventInfo?.styles?.background && `${CLOUDFLARE_IPFS}/${eventInfo.styles.background}`
       }
       backgroundPosition="center"
       backgroundRepeat="no-repeat"
@@ -154,7 +157,7 @@ export default function InConferenceApp({
       {currentTab()}
       <HStack
         as="footer"
-        backgroundColor="#844AFF" // change the background color as needed
+        backgroundColor={eventInfo?.styles?.h1.color} // change the background color as needed
         bottom="0" // zero pixels from the bottom
         boxShadow="0 -2px 10px rgba(0,0,0,0.05)" // optional shadow for depth
         justifyContent="space-evenly"
@@ -189,9 +192,9 @@ export default function InConferenceApp({
                 />
                 <Text
                   color={isActive ? selectedColor : unselectedColor}
-                  fontFamily="denverBody"
+                  fontFamily={eventInfo?.styles?.h3.fontFamily}
                   fontSize="md"
-                  fontWeight="400"
+                  fontWeight={eventInfo?.styles?.h3.fontWeight}
                   marginTop="2"
                 >
                   {item.label}

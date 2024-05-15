@@ -34,6 +34,8 @@ interface WelcomePageProps {
   ticketInfo?: TicketInfoMetadata;
   ticketInfoExtra?: TicketMetadataExtra;
   dropInfo?: EventDrop;
+  ticker: string;
+  tokensToClaim: string;
   isLoading: boolean;
   eventId: string;
   funderId: string;
@@ -48,6 +50,8 @@ export default function WelcomePage({
   isLoading,
   eventId,
   funderId,
+  ticker,
+  tokensToClaim,
   secretKey,
 }: WelcomePageProps) {
   const [username, setUsername] = useState<string>('');
@@ -113,7 +117,7 @@ export default function WelcomePage({
   return (
     <VStack
       backgroundImage={
-        eventInfo?.qrPage?.background && `${CLOUDFLARE_IPFS}/${eventInfo.qrPage.background}`
+        eventInfo?.styles?.background && `${CLOUDFLARE_IPFS}/${eventInfo.styles.background}`
       }
       backgroundPosition="center"
       backgroundRepeat="no-repeat"
@@ -136,10 +140,10 @@ export default function WelcomePage({
               ) : (
                 <VStack>
                   <Heading
-                    color={eventInfo?.qrPage?.title?.color}
-                    fontFamily={eventInfo?.qrPage?.title?.fontFamily}
-                    fontSize={{ base: '6xl', md: '8xl' }}
-                    fontWeight="500"
+                    color={eventInfo?.styles.title.color}
+                    fontFamily={eventInfo?.styles.title.fontFamily}
+                    fontSize={eventInfo?.styles.title.fontSize}
+                    fontWeight={eventInfo?.styles.title.fontWeight}
                     textAlign="center"
                   >
                     Welcome
@@ -150,13 +154,13 @@ export default function WelcomePage({
           </Skeleton>
 
           <IconBox
-            bg={eventInfo?.qrPage?.content?.border || 'border.box'}
+            bg={eventInfo?.styles.border.border || 'border.box'}
             icon={
               <Skeleton isLoaded={!isLoading}>
-                {eventInfo?.qrPage?.boxIcon?.image ? (
+                {eventInfo?.styles.icon.image ? (
                   <Image
                     height={{ base: '10', md: '12' }}
-                    src={`${CLOUDFLARE_IPFS}/${eventInfo.qrPage.boxIcon.image}`}
+                    src={`${CLOUDFLARE_IPFS}/${eventInfo.styles.icon.image}`}
                     width={{ base: '10', md: '12' }}
                   />
                 ) : (
@@ -164,8 +168,8 @@ export default function WelcomePage({
                 )}
               </Skeleton>
             }
-            iconBg={eventInfo?.qrPage?.boxIcon?.bg || 'blue.100'}
-            iconBorder={eventInfo?.qrPage?.boxIcon?.border || 'border.round'}
+            iconBg={eventInfo?.styles.icon.bg || 'blue.100'}
+            iconBorder={eventInfo?.styles.icon.border || 'border.round'}
             maxW={{ base: '345px', md: '30rem' }}
             minW={{ base: '90vw', md: '345px' }}
             p="0"
@@ -184,20 +188,20 @@ export default function WelcomePage({
                     pt={{ base: '10', md: '16' }}
                   >
                     <Text
-                      color="#844AFF"
-                      fontFamily="denverBody"
-                      fontWeight="600"
-                      size={{ base: '2xl', md: '2xl' }}
+                      color={eventInfo?.styles.h1.color}
+                      fontFamily={eventInfo?.styles.h1.fontFamily}
+                      fontSize={eventInfo?.welcomePage.title.fontSize}
+                      fontWeight={eventInfo?.styles.h1.fontWeight}
                       textAlign="center"
                     >
-                      ETH Denver 2025
+                      {eventInfo?.welcomePage.title.text}
                     </Text>
                     <Text
-                      color="black"
-                      fontFamily="denverBody"
-                      fontWeight="400"
+                      color={eventInfo?.styles.h3.color}
+                      fontFamily={eventInfo?.styles.h3.fontFamily}
+                      fontSize="sm"
+                      fontWeight={eventInfo?.styles.h3.fontWeight}
                       mb="5"
-                      size={{ base: 'md', md: 'lg' }}
                       textAlign="center"
                     >
                       To get started, enter a username.
@@ -206,12 +210,12 @@ export default function WelcomePage({
                       <Input
                         backgroundColor="white"
                         border="1px solid"
-                        borderColor={!isValidUsername ? 'red.500' : '#844AFF'}
+                        borderColor={!isValidUsername ? 'red.500' : eventInfo?.styles.h1.color}
                         borderRadius="12px"
                         color="black"
-                        fontFamily="denverBody"
+                        fontFamily={eventInfo?.styles.h3.fontFamily}
                         fontSize={{ base: 'sm', md: 'md' }}
-                        fontWeight="400"
+                        fontWeight={eventInfo?.styles.h3.fontWeight}
                         height={{ base: '38px', md: '48px' }}
                         id="username"
                         placeholder="Username"
@@ -228,21 +232,21 @@ export default function WelcomePage({
                       <FormErrorMessage>Username is invalid or already taken.</FormErrorMessage>
                     </FormControl>
                     <Text
-                      color="black"
-                      fontFamily="denverBody"
-                      fontWeight="400"
+                      color={eventInfo?.styles.h3.color}
+                      fontFamily={eventInfo?.styles.h3.fontFamily}
+                      fontSize="sm"
+                      fontWeight={eventInfo?.styles.h3.fontWeight}
                       mb="3"
-                      size={{ base: 'lg', md: 'xl' }}
                       textAlign="center"
                     >
                       Your ticket comes with{' '}
                       <Text
                         as="span"
                         color="black"
-                        fontWeight="400"
+                        fontWeight={eventInfo?.styles.h3.fontWeight}
                         size={{ base: 'lg', md: 'xl' }}
                       >
-                        250 $PORK
+                        {tokensToClaim} ${ticker}
                       </Text>
                     </Text>
                     <Skeleton borderRadius="12px" isLoaded={!isLoading}>
@@ -257,12 +261,12 @@ export default function WelcomePage({
                     </Skeleton>
                     <Heading
                       color="black"
-                      fontFamily={eventInfo?.qrPage?.title?.fontFamily}
-                      fontSize={{ base: '4xl', md: '4xl' }}
-                      fontWeight="500"
+                      fontFamily={eventInfo?.styles.title.fontFamily}
+                      fontSize={{ base: '4xl', md: '5xl' }}
+                      fontWeight={eventInfo?.styles.title.fontWeight}
                       textAlign="center"
                     >
-                      SPORKWHALE VIP
+                      {ticketInfo?.title}
                     </Heading>
                   </Flex>
                 )}
@@ -277,13 +281,13 @@ export default function WelcomePage({
                 px="6"
               >
                 <Text
-                  color="#844AFF"
-                  fontFamily="denverBody"
-                  fontWeight="600"
+                  color={eventInfo?.styles.h1.color}
+                  fontFamily={eventInfo?.styles.h1.fontFamily}
+                  fontWeight={eventInfo?.styles.h1.fontWeight}
                   size={{ base: 'xl', md: '2xl' }}
                   textAlign="center"
                 >
-                  $PORK Details
+                  ${ticker} Details
                 </Text>
                 {/* Start of the grid for Spork Details */}
                 <Grid
@@ -295,29 +299,54 @@ export default function WelcomePage({
                   {/* Left column for earning methods */}
                   <Box>
                     <Text
-                      color="black"
-                      fontFamily="denverBody"
-                      fontSize="lg"
-                      fontWeight="500"
+                      color={eventInfo?.styles.h2.color}
+                      fontFamily={eventInfo?.styles.h2.fontFamily}
+                      fontSize={eventInfo?.styles.h2.fontSize}
+                      fontWeight={eventInfo?.styles.h2.fontWeight}
                       mb={0}
                       textAlign="left"
                     >
                       Earn By:
                     </Text>
                     <VStack align="stretch" spacing={1} textAlign="left">
-                      <Text color="black" fontFamily="denverBody" fontSize="sm" fontWeight="400">
+                      <Text
+                        color={eventInfo?.styles.h3.color}
+                        fontFamily={eventInfo?.styles.h3.fontFamily}
+                        fontSize="sm"
+                        fontWeight={eventInfo?.styles.h3.fontWeight}
+                      >
                         Attending Talks
                       </Text>
-                      <Text color="black" fontFamily="denverBody" fontSize="sm" fontWeight="400">
+                      <Text
+                        color={eventInfo?.styles.h3.color}
+                        fontFamily={eventInfo?.styles.h3.fontFamily}
+                        fontSize="sm"
+                        fontWeight={eventInfo?.styles.h3.fontWeight}
+                      >
                         Visiting Booths
                       </Text>
-                      <Text color="black" fontFamily="denverBody" fontSize="sm" fontWeight="400">
+                      <Text
+                        color={eventInfo?.styles.h3.color}
+                        fontFamily={eventInfo?.styles.h3.fontFamily}
+                        fontSize="sm"
+                        fontWeight={eventInfo?.styles.h3.fontWeight}
+                      >
                         Scavenger Hunts
                       </Text>
-                      <Text color="black" fontFamily="denverBody" fontSize="sm" fontWeight="400">
+                      <Text
+                        color={eventInfo?.styles.h3.color}
+                        fontFamily={eventInfo?.styles.h3.fontFamily}
+                        fontSize="sm"
+                        fontWeight={eventInfo?.styles.h3.fontWeight}
+                      >
                         Sponsor Quizzes
                       </Text>
-                      <Text color="black" fontFamily="denverBody" fontSize="sm" fontWeight="400">
+                      <Text
+                        color={eventInfo?.styles.h3.color}
+                        fontFamily={eventInfo?.styles.h3.fontFamily}
+                        fontSize="sm"
+                        fontWeight={eventInfo?.styles.h3.fontWeight}
+                      >
                         Airdrops
                       </Text>
                     </VStack>
@@ -326,44 +355,69 @@ export default function WelcomePage({
                   {/* Right column for spending methods */}
                   <Box>
                     <Text
-                      color="black"
-                      fontFamily="denverBody"
-                      fontSize="lg"
-                      fontWeight="500"
+                      color={eventInfo?.styles.h2.color}
+                      fontFamily={eventInfo?.styles.h2.fontFamily}
+                      fontSize={eventInfo?.styles.h2.fontSize}
+                      fontWeight={eventInfo?.styles.h2.fontWeight}
                       mb={0}
                       textAlign="right"
                     >
                       Spend On:
                     </Text>
                     <VStack align="stretch" spacing={1} textAlign="right">
-                      <Text color="black" fontFamily="denverBody" fontSize="sm" fontWeight="400">
+                      <Text
+                        color={eventInfo?.styles.h3.color}
+                        fontFamily={eventInfo?.styles.h3.fontFamily}
+                        fontSize="sm"
+                        fontWeight={eventInfo?.styles.h3.fontWeight}
+                      >
                         Food
                       </Text>
-                      <Text color="black" fontFamily="denverBody" fontSize="sm" fontWeight="400">
+                      <Text
+                        color={eventInfo?.styles.h3.color}
+                        fontFamily={eventInfo?.styles.h3.fontFamily}
+                        fontSize="sm"
+                        fontWeight={eventInfo?.styles.h3.fontWeight}
+                      >
                         Merch
                       </Text>
-                      <Text color="black" fontFamily="denverBody" fontSize="sm" fontWeight="400">
+                      <Text
+                        color={eventInfo?.styles.h3.color}
+                        fontFamily={eventInfo?.styles.h3.fontFamily}
+                        fontSize="sm"
+                        fontWeight={eventInfo?.styles.h3.fontWeight}
+                      >
                         Raffles
                       </Text>
-                      <Text color="black" fontFamily="denverBody" fontSize="sm" fontWeight="400">
+                      <Text
+                        color={eventInfo?.styles.h3.color}
+                        fontFamily={eventInfo?.styles.h3.fontFamily}
+                        fontSize="sm"
+                        fontWeight={eventInfo?.styles.h3.fontWeight}
+                      >
                         NFTs
                       </Text>
-                      <Text color="black" fontFamily="denverBody" fontSize="sm" fontWeight="400">
+                      <Text
+                        color={eventInfo?.styles.h3.color}
+                        fontFamily={eventInfo?.styles.h3.fontFamily}
+                        fontSize="sm"
+                        fontWeight={eventInfo?.styles.h3.fontWeight}
+                      >
                         Discounts
                       </Text>
                     </VStack>
                   </Box>
                 </Grid>
                 <Button
-                  backgroundColor={eventInfo?.qrPage?.content?.sellButton?.bg}
-                  color={eventInfo?.qrPage?.content?.sellButton?.color}
-                  fontFamily={eventInfo?.qrPage?.content?.sellButton?.fontFamily}
-                  fontSize={eventInfo?.qrPage?.content?.sellButton?.fontSize}
-                  fontWeight={eventInfo?.qrPage?.content?.sellButton?.fontWeight}
-                  h={eventInfo?.qrPage?.content?.sellButton?.h}
+                  backgroundColor={eventInfo?.styles.buttons.primary.bg}
+                  color={eventInfo?.styles.buttons.primary.color}
+                  fontFamily={eventInfo?.styles.buttons.primary.fontFamily}
+                  fontSize={eventInfo?.styles.buttons.primary.fontSize}
+                  fontWeight={eventInfo?.styles.buttons.primary.fontWeight}
+                  h={eventInfo?.styles.buttons.primary.h}
                   isDisabled={!isValidUsername}
                   isLoading={isClaiming}
-                  sx={eventInfo?.qrPage?.content?.sellButton?.sx}
+                  sx={eventInfo?.styles.buttons.primary.sx}
                   variant="outline"
                   w="full"
                   onClick={handleBeginJourney}

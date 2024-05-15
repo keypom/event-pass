@@ -24,16 +24,17 @@ import {
 } from '@/lib/eventsHelpers';
 
 interface ProfilePageProps {
-  eventInfo?: FunderEventMetadata;
-  ticketInfo?: TicketInfoMetadata;
+  eventInfo: FunderEventMetadata;
   ticketInfoExtra?: TicketMetadataExtra;
-  dropInfo?: EventDrop;
+  dropInfo: EventDrop;
+  ticketInfo: TicketInfoMetadata;
   isLoading: boolean;
   eventId: string;
   funderId: string;
   accountId: string;
   tokensAvailable: string;
   secretKey: string;
+  ticker: string;
 }
 
 export default function ProfilePage({
@@ -42,6 +43,7 @@ export default function ProfilePage({
   dropInfo,
   ticketInfo,
   isLoading,
+  ticker,
   eventId,
   funderId,
   accountId,
@@ -63,10 +65,10 @@ export default function ProfilePage({
             ) : (
               <VStack>
                 <Heading
-                  color={eventInfo?.qrPage?.title?.color}
-                  fontFamily={eventInfo?.qrPage?.title?.fontFamily}
-                  fontSize={{ base: '6xl', md: '8xl' }}
-                  fontWeight="500"
+                  color={eventInfo?.styles.title.color}
+                  fontFamily={eventInfo?.styles.title.fontFamily}
+                  fontSize={eventInfo?.styles.title.fontSize}
+                  fontWeight={eventInfo?.styles.title.fontWeight}
                   textAlign="center"
                 >
                   PROFILE
@@ -77,13 +79,13 @@ export default function ProfilePage({
         </Skeleton>
 
         <IconBox
-          bg={eventInfo?.qrPage?.content?.border || 'border.box'}
+          bg={eventInfo?.styles.border.border || 'border.box'}
           icon={
             <Skeleton isLoaded={!isLoading}>
-              {eventInfo?.qrPage?.boxIcon?.image ? (
+              {eventInfo?.styles.icon.image ? (
                 <Image
                   height={{ base: '10', md: '12' }}
-                  src={`${CLOUDFLARE_IPFS}/${eventInfo.qrPage.boxIcon.image}`}
+                  src={`${CLOUDFLARE_IPFS}/${eventInfo.styles.icon.image}`}
                   width={{ base: '10', md: '12' }}
                 />
               ) : (
@@ -91,8 +93,8 @@ export default function ProfilePage({
               )}
             </Skeleton>
           }
-          iconBg={eventInfo?.qrPage?.boxIcon?.bg || 'blue.100'}
-          iconBorder={eventInfo?.qrPage?.boxIcon?.border || 'border.round'}
+          iconBg={eventInfo?.styles.icon.bg || 'blue.100'}
+          iconBorder={eventInfo?.styles.icon.border || 'border.round'}
           maxW="345px"
           minW={{ base: '90vw', md: '345px' }}
           p="0"
@@ -112,60 +114,60 @@ export default function ProfilePage({
                   px={{ base: '10', md: '8' }}
                 >
                   <Text
-                    color="#844AFF"
-                    fontFamily="denverBody"
-                    fontWeight="600"
-                    size={{ base: '2xl', md: '2xl' }}
+                    color={eventInfo?.styles.h1.color}
+                    fontFamily={eventInfo?.styles.h1.fontFamily}
+                    fontSize={eventInfo?.styles.h1.fontSize}
+                    fontWeight={eventInfo?.styles.h1.fontWeight}
                     textAlign="center"
                   >
-                    {tokensAvailable} $PORK Available
+                    {tokensAvailable} ${ticker} Available
                   </Text>
                   <Grid
                     gap={6} // Space between grid items
-                    py={2} // Padding on the top and bottom
+                    py={4} // Padding on the top and bottom
                     templateColumns={{ base: 'repeat(2, 1fr)' }} // Responsive grid layout
                     width="full" // Full width of the parent container
                   >
-                    {/* Left column for earning methods */}
+                    {/* Left column for first name */}
                     <Box>
                       <Text
-                        color="black"
-                        fontFamily="denverBody"
-                        fontSize="lg"
-                        fontWeight="500"
+                        color={eventInfo?.styles.h2.color}
+                        fontFamily={eventInfo?.styles.h2.fontFamily}
+                        fontSize={eventInfo?.styles.h2.fontSize}
+                        fontWeight={eventInfo?.styles.h2.fontWeight}
                         mb={0}
                         textAlign="left"
                       >
                         First Name
                       </Text>
                       <Text
-                        color="black"
-                        fontFamily="denverBody"
+                        color={eventInfo?.styles.h3.color}
+                        fontFamily={eventInfo?.styles.h3.fontFamily}
                         fontSize="sm"
-                        fontWeight="400"
+                        fontWeight={eventInfo?.styles.h3.fontWeight}
                         textAlign="left"
                       >
                         Benjamin
                       </Text>
                     </Box>
 
-                    {/* Right column for spending methods */}
+                    {/* Right column for last name */}
                     <Box>
                       <Text
-                        color="black"
-                        fontFamily="denverBody"
-                        fontSize="lg"
-                        fontWeight="500"
+                        color={eventInfo?.styles.h2.color}
+                        fontFamily={eventInfo?.styles.h2.fontFamily}
+                        fontSize={eventInfo?.styles.h2.fontSize}
+                        fontWeight={eventInfo?.styles.h2.fontWeight}
                         mb={0}
                         textAlign="right"
                       >
                         Last Name
                       </Text>
                       <Text
-                        color="black"
-                        fontFamily="denverBody"
+                        color={eventInfo?.styles.h3.color}
+                        fontFamily={eventInfo?.styles.h3.fontFamily}
                         fontSize="sm"
-                        fontWeight="400"
+                        fontWeight={eventInfo?.styles.h3.fontWeight}
                         textAlign="right"
                       >
                         Kurrek
@@ -184,20 +186,20 @@ export default function ProfilePage({
                   </Skeleton>
                   <HStack>
                     <Text
-                      color="black"
-                      fontFamily="denverBody"
-                      fontSize="lg"
-                      fontWeight="500"
+                      color={eventInfo?.styles.h2.color}
+                      fontFamily={eventInfo?.styles.h2.fontFamily}
+                      fontSize={eventInfo?.styles.h2.fontSize}
+                      fontWeight={eventInfo?.styles.h2.fontWeight}
                       mb={0}
                       textAlign="right"
                     >
                       Username:
                     </Text>
                     <Text
-                      color="black"
-                      fontFamily="denverBody"
+                      color={eventInfo?.styles.h3.color}
+                      fontFamily={eventInfo?.styles.h3.fontFamily}
                       fontSize="sm"
-                      fontWeight="400"
+                      fontWeight={eventInfo?.styles.h3.fontWeight}
                       textAlign="right"
                     >
                       {accountId.split('.')[0]}
@@ -216,9 +218,10 @@ export default function ProfilePage({
               px="6"
             >
               <Text
-                color="#844AFF"
-                fontFamily="denverBody"
-                fontWeight="600"
+                color={eventInfo?.styles.h1.color}
+                fontFamily={eventInfo?.styles.h1.fontFamily}
+                fontSize={eventInfo?.styles.h1.fontSize}
+                fontWeight={eventInfo?.styles.h1.fontWeight}
                 size={{ base: 'xl', md: '2xl' }}
                 textAlign="center"
               >
@@ -234,13 +237,13 @@ export default function ProfilePage({
                 <QRCode id="QRCode" size={180} value={accountId} />
               </Box>
               <Text
-                color="black"
-                fontFamily="denverBody"
+                color={eventInfo?.styles.h3.color}
+                fontFamily={eventInfo?.styles.h3.fontFamily}
                 fontSize="sm"
-                fontWeight="400"
-                textAlign="right"
+                fontWeight={eventInfo?.styles.h3.fontWeight}
+                textAlign="center"
               >
-                Show this to receive $PORK
+                Show this to receive ${ticker}
               </Text>
             </Flex>
           </Box>

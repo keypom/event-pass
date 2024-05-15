@@ -58,16 +58,9 @@ export const QrDetails = ({
     };
     img.src = `data:image/svg+xml;base64,${btoa(svgData)}`;
   };
-  const shouldShowDownloadButton =
-    eventInfo?.qrPage?.content?.downloadButton !== undefined
-      ? eventInfo?.qrPage?.content?.downloadButton
-      : true;
+  const shouldShowDownloadButton = eventInfo?.qrPage.showDownloadButton;
 
-  const shouldShowSellButtonHelper =
-    eventInfo?.qrPage?.content?.sellButton?.helperText !== undefined
-      ? eventInfo?.qrPage?.content?.sellButton?.helperText
-      : true;
-
+  const shouldShowSellButtonHelper = eventInfo?.qrPage.sellableThroughText;
   return (
     <Flex align="center" flexDir="column" p={{ base: '6', md: '8' }} pt={{ base: '12', md: '16' }}>
       <Box
@@ -109,13 +102,13 @@ export const QrDetails = ({
             </Button>
           )}
           <Button
-            backgroundColor={eventInfo?.qrPage?.content?.sellButton?.bg}
-            color={eventInfo?.qrPage?.content?.sellButton?.color}
-            fontFamily={eventInfo?.qrPage?.content?.sellButton?.fontFamily}
-            fontSize={eventInfo?.qrPage?.content?.sellButton?.fontSize}
-            fontWeight={eventInfo?.qrPage?.content?.sellButton?.fontWeight}
-            h={eventInfo?.qrPage?.content?.sellButton?.h}
-            sx={eventInfo?.qrPage?.content?.sellButton?.sx}
+            backgroundColor={eventInfo?.styles?.buttons.primary.bg}
+            color={eventInfo?.styles?.buttons.primary.color}
+            fontFamily={eventInfo?.styles?.buttons.primary.fontFamily}
+            fontSize={eventInfo?.styles?.buttons.primary.fontSize}
+            fontWeight={eventInfo?.styles?.buttons.primary.fontWeight}
+            h={eventInfo?.styles?.buttons.primary.h}
+            sx={eventInfo?.styles?.buttons.primary.sx}
             variant="outline"
             w="full"
             onClick={() => {
