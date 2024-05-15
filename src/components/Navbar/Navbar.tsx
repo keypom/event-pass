@@ -26,7 +26,9 @@ type NavbarProps = BoxProps;
 export const Navbar = (props: NavbarProps) => {
   const { isLoggedIn } = useAuthWalletContext();
   const isTicketSubdirectory =
-    location.pathname.startsWith('/tickets/') || location.pathname.startsWith('/claim/');
+    location.pathname.startsWith('/tickets/') ||
+    location.pathname.startsWith('/claim/') ||
+    location.pathname.startsWith('/conference/');
 
   const MENU_ITEMS = [
     {

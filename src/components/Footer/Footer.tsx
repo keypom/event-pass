@@ -9,7 +9,9 @@ const NEAR_LINK = 'https://near.org/';
 
 export const Footer = (props: FooterProps) => {
   const isTicketSubdirectory =
-    location.pathname.startsWith('/tickets/') || location.pathname.startsWith('/claim/');
+    location.pathname.startsWith('/tickets/') ||
+    location.pathname.startsWith('/claim/') ||
+    location.pathname.startsWith('/conference/');
 
   if (isTicketSubdirectory) {
     return null;

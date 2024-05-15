@@ -21,10 +21,10 @@ import ScanningPage from './ScanningPage';
 import AssetsPage from './AssetsPage';
 
 const footerMenuItems = [
-  { label: 'Profile', icon: ProfileIcon, path: '/tickets/ticket/profile' },
-  { label: 'Assets', icon: WalletIcon, path: '/tickets/ticket/assets' },
-  { label: 'Agenda', icon: FooterCalendarIcon, path: '/tickets/ticket/agenda' },
-  { label: 'Scan', icon: ScanIcon, path: '/tickets/ticket/scan' },
+  { label: 'Profile', icon: ProfileIcon, path: '/conference/app/profile' },
+  { label: 'Assets', icon: WalletIcon, path: '/conference/app/assets' },
+  { label: 'Agenda', icon: FooterCalendarIcon, path: '/conference/app/agenda' },
+  { label: 'Scan', icon: ScanIcon, path: '/conference/app/scan' },
 ];
 
 const selectedColor = 'black';
@@ -57,6 +57,7 @@ export default function InConferenceApp({
   const [tokensAvailable, setTokensAvailable] = useState<string>('0');
   const location = useLocation();
   const navigate = useNavigate();
+
   const path = location.pathname.split('/').pop() || 'profile';
   const initialTab = footerMenuItems.findIndex((item) => item.path.includes(path));
   const [selectedTab, setSelectedTab] = useState<number>(initialTab !== -1 ? initialTab : 0);
@@ -115,6 +116,7 @@ export default function InConferenceApp({
     const recoverAccount = async () => {
       if (dropInfo.drop_id !== 'loading') {
         const factoryAccount = dropInfo?.asset_data[1].config.root_account_id;
+        console.log('Secret Key: ', secretKey);
         const recoveredAccountId = await keypomInstance.viewCall({
           contractId: factoryAccount,
           methodName: 'recover_account',
@@ -125,6 +127,7 @@ export default function InConferenceApp({
           methodName: 'ft_balance_of',
           args: { account_id: recoveredAccountId },
         });
+        console.log('recovered account id: ', recoveredAccountId);
         setTokensAvailable(keypomInstance.yoctoToNear(balance));
         setAccountId(recoveredAccountId);
       }

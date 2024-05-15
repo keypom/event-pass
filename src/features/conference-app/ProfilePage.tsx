@@ -234,7 +234,7 @@ export default function ProfilePage({
                 mb={{ base: '2', md: '2' }}
                 p="5"
               >
-                <QRCode id="QRCode" size={180} value={accountId} />
+                <QRCode id="QRCode" size={180} value={`profile:${accountId}`} />
               </Box>
               <Text
                 color={eventInfo.styles.h3.color}

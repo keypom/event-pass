@@ -5,21 +5,8 @@ export const useTicketClaimParams = () => {
   const { id: dropIdParam } = useParams();
   const { hash } = useLocation();
 
-  let dropId = dropIdParam;
-  let secretKey = hash ? hash.replace('#', '') : '';
-
-  if (dropId && secretKey) {
-    // Store in local storage
-    localStorage.setItem('EVENT_DROP_ID', dropId);
-    localStorage.setItem('EVENT_SECRET_KEY', secretKey);
-
-    // Clear URL
-    navigate(`/tickets/ticket/profile`, { replace: true });
-  } else {
-    // Fallback to local storage
-    dropId = localStorage.getItem('EVENT_DROP_ID') || '';
-    secretKey = localStorage.getItem('EVENT_SECRET_KEY') || '';
-  }
+  const dropId = dropIdParam;
+  const secretKey = hash ? hash.replace('#', '') : '';
 
   if (!dropId || !secretKey) {
     console.error(

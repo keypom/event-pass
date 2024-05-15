@@ -1,36 +1,41 @@
 import { useEffect, useState } from 'react';
 import { getPubFromSecret } from 'keypom-js';
-import { useNavigate } from 'react-router-dom';
+import { Center, Spinner, VStack, Text } from '@chakra-ui/react';
 
-import { useTicketClaimParams } from '@/hooks/useTicketClaimParams';
+import InConferenceApp from '@/features/conference-app/InConferenceApp';
 import { NotFound404 } from '@/components/NotFound404';
 import keypomInstance from '@/lib/keypom';
 import {
   type FunderEventMetadata,
+  type EventDrop,
   type TicketInfoMetadata,
   type TicketMetadataExtra,
   defaultEventInfo,
+  defaultDropInfo,
   defaultTicketInfo,
   defaultTicketInfoExtra,
 } from '@/lib/eventsHelpers';
+import { useConferenceClaimParams } from '@/hooks/useConferenceClaimParams';
+import WelcomePage from '@/features/conference-app/WelcomePage';
 
-import TicketQRPage from './TicketQRPage';
-
-export default function TicketPage() {
-  const { secretKey } = useTicketClaimParams();
-  const navigate = useNavigate();
+export default function ConferencePageManager() {
+  const { secretKey } = useConferenceClaimParams();
 
   // State variables for managing the ticket and event information
   const [isValid, setIsValid] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
 
   const [eventInfo, setEventInfo] = useState<FunderEventMetadata>(defaultEventInfo);
+  const [dropInfo, setDropInfo] = useState<EventDrop>(defaultDropInfo);
   const [ticketInfo, setTicketInfo] = useState<TicketInfoMetadata>(defaultTicketInfo);
   const [ticketInfoExtra, setTicketInfoExtra] =
     useState<TicketMetadataExtra>(defaultTicketInfoExtra);
 
+  const [curKeyStep, setCurKeyStep] = useState<number>(1);
   const [eventId, setEventId] = useState('');
   const [funderId, setFunderId] = useState('');
+  const [ticker, setTicker] = useState<string>('');
+  const [tokensToClaim, setTokensToClaim] = useState<string>('');
 
   useEffect(() => {
     const getEventInfo = async () => {
@@ -45,9 +50,8 @@ export default function TicketPage() {
           methodName: 'get_drop_information',
           args: { drop_id: keyInfo.drop_id },
         });
-
-        const maxUses = drop.max_key_uses;
-        const curStep = drop.max_key_uses - keyInfo.uses_remaining + 1;
+        setDropInfo(drop);
+        setCurKeyStep(drop.max_key_uses - keyInfo.uses_remaining + 1);
 
         const ticketMetadata = drop.drop_config.nft_keys_config.token_metadata;
         setTicketInfo(ticketMetadata);
@@ -59,23 +63,14 @@ export default function TicketPage() {
           eventId: ticketExtra.eventId,
         });
 
-        if (maxUses !== 3 || !eventInfo) {
-          console.error('Invalid ticket');
-          console.log('maxUses', maxUses);
-          console.log('curStep', curStep);
-          console.log('eventInfo', eventInfo);
+        if (!eventInfo) {
+          console.log('Event info not set: ', eventInfo);
           setIsValid(false);
           setIsLoading(false);
           return;
         }
-
-        const eventId: string = ticketExtra.eventId;
-        if (curStep !== 1) {
-          navigate(`/conference/app/${eventId}#${secretKey}`);
-        }
-
         setEventInfo(eventInfo);
-        setEventId(eventId);
+        setEventId(ticketExtra.eventId);
         setFunderId(drop.funder_id);
 
         // eslint-disable-next-line no-console
@@ -96,24 +91,72 @@ export default function TicketPage() {
     getEventInfo();
   }, [secretKey]);
 
+  useEffect(() => {
+    const getTokenTicker = async () => {
+      if (dropInfo.drop_id !== 'loading') {
+        const factoryAccount = dropInfo?.asset_data[1].config.root_account_id;
+        const tokenInfo = await keypomInstance.viewCall({
+          contractId: factoryAccount,
+          methodName: 'ft_metadata',
+          args: { drop_id: 'foo' },
+        });
+        setTicker(tokenInfo.symbol);
+        setTokensToClaim(keypomInstance.yoctoToNear(tokenInfo.minted_per_claim));
+      }
+    };
+    getTokenTicker();
+  }, [dropInfo]);
+
   if (!isValid) {
     return (
       <NotFound404 header="Ticket not found" subheader="Please check your email and try again" />
     );
   }
 
-  return (
-    <TicketQRPage
-      eventId={eventId}
-      eventInfo={eventInfo}
-      funderId={funderId}
-      isLoading={isLoading}
-      secretKey={secretKey}
-      ticketInfo={ticketInfo}
-      ticketInfoExtra={ticketInfoExtra}
-      onScanned={() => {
-        navigate(`/conference/app/${eventId}#${secretKey}`);
-      }}
-    />
-  );
+  if (isLoading) {
+    return (
+      <Center minH="100vh">
+        <VStack spacing={4}>
+          <Spinner size="xl" />
+          <Text>Loading ticket information...</Text>
+        </VStack>
+      </Center>
+    );
+  }
+
+  switch (curKeyStep) {
+    case 2:
+      return (
+        <WelcomePage
+          dropInfo={dropInfo}
+          eventId={eventId}
+          eventInfo={eventInfo}
+          funderId={funderId}
+          isLoading={isLoading}
+          secretKey={secretKey}
+          ticker={ticker}
+          ticketInfo={ticketInfo}
+          ticketInfoExtra={ticketInfoExtra}
+          tokensToClaim={tokensToClaim}
+        />
+      );
+    case 3:
+      return (
+        <InConferenceApp
+          dropInfo={dropInfo}
+          eventId={eventId}
+          eventInfo={eventInfo}
+          funderId={funderId}
+          isLoading={isLoading}
+          secretKey={secretKey}
+          ticker={ticker}
+          ticketInfo={ticketInfo}
+          ticketInfoExtra={ticketInfoExtra}
+        />
+      );
+    default:
+      return (
+        <NotFound404 header="Invalid ticket" subheader="Please contact the event organizers" />
+      );
+  }
 }

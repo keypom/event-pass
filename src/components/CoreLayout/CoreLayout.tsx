@@ -16,7 +16,9 @@ export const CoreLayout = () => {
   const layoutBg =
     'none, linear-gradient(180deg, rgba(239, 250, 253, 0.4) 0%, rgba(239, 250, 253, 0.6) 27.41%), #FFFFFF;';
   const isTicketSubdirectory =
-    location.pathname.startsWith('/tickets/') || location.pathname.startsWith('/claim/');
+    location.pathname.startsWith('/tickets/') ||
+    location.pathname.startsWith('/claim/') ||
+    location.pathname.startsWith('/conference/');
 
   return (
     <Flex

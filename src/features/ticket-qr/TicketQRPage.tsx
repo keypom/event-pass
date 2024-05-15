@@ -31,11 +31,11 @@ interface TicketQRPageProps {
   eventInfo?: FunderEventMetadata;
   ticketInfo?: TicketInfoMetadata;
   ticketInfoExtra?: TicketMetadataExtra;
-  maxKeyUses?: number;
   isLoading: boolean;
   eventId: string;
   funderId: string;
   secretKey: string;
+  onScanned: () => void;
 }
 
 export default function TicketQRPage({
@@ -45,22 +45,21 @@ export default function TicketQRPage({
   isLoading,
   eventId,
   funderId,
-  maxKeyUses,
   secretKey,
+  onScanned,
 }: TicketQRPageProps) {
   // Effect to check for QR scan and reload if necessary
   useEffect(() => {
-    if (!maxKeyUses) return;
-
     const checkForQRScanned = async () => {
       const pubKey = getPubFromSecret(secretKey);
       const keyInfo: { drop_id: string; uses_remaining: number } = await keypomInstance.viewCall({
         methodName: 'get_key_information',
         args: { key: pubKey },
       });
-      const curUse = maxKeyUses - keyInfo.uses_remaining + 1;
-      if (curUse !== 1) {
-        window.location.reload();
+      console.log('keyInfo', keyInfo);
+
+      if (keyInfo.uses_remaining !== 3) {
+        onScanned();
       }
     };
 
@@ -71,7 +70,7 @@ export default function TicketQRPage({
     return () => {
       clearInterval(intervalId);
     };
-  }, [maxKeyUses, secretKey]);
+  }, [secretKey]);
 
   const ticketDetails = () => (
     <VStack spacing="0">

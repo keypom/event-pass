@@ -78,8 +78,8 @@ export default function ScanningPage({
   const [scanStatus, setScanStatus] = useState<'success' | 'error'>();
   const [statusMessage, setStatusMessage] = useState('');
 
-  const [modalOpen, setModalOpen] = useState(true);
-  const [modalType, setModalType] = useState('token');
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalType, setModalType] = useState('');
   const [modalProps, setModalProps] = useState<any>({});
 
   const stateRef = useRef<StateRefObject>({
@@ -155,13 +155,13 @@ export default function ScanningPage({
 
             if (isScavenger) {
               setModalType('scavenger');
-              setModalProps({ numFound, numRequired, tokenAmount, image, name });
+              setModalProps({ numFound, numRequired, tokenAmount, image, name, eventInfo });
             } else if (amount) {
               setModalType('token');
-              setModalProps({ tokenAmount });
+              setModalProps({ tokenAmount, dropName: name, tokenImage: image, eventInfo });
             } else {
               setModalType('nft');
-              setModalProps({ name });
+              setModalProps({ name, image, eventInfo });
             }
             break;
           }
@@ -192,7 +192,7 @@ export default function ScanningPage({
           case 'profile':
             setModalType('profileTransfer');
             setModalProps({
-              title: 'Transfer $NCON',
+              title: 'Transfer Tokens',
               subtitle: `Send $NCON to another user`,
               body: `How much $NCON would you like to transfer?`,
             });
@@ -230,49 +230,63 @@ export default function ScanningPage({
   return (
     <>
       <ScavengerModal
+        eventInfo={eventInfo}
         isOpen={modalOpen && modalType === 'scavenger'}
+        setSelectedTab={setSelectedTab}
         onClose={() => {
           setModalOpen(false);
         }}
         {...modalProps}
       />
       <NFTModal
+        eventInfo={eventInfo}
         isOpen={modalOpen && modalType === 'nft'}
+        setSelectedTab={setSelectedTab}
         onClose={() => {
           setModalOpen(false);
         }}
         {...modalProps}
       />
       <TokenModal
+        eventInfo={eventInfo}
         isOpen={modalOpen && modalType === 'token'}
+        setSelectedTab={setSelectedTab}
         onClose={() => {
           setModalOpen(false);
         }}
         {...modalProps}
       />
       <MerchModal
+        eventInfo={eventInfo}
         isOpen={modalOpen && modalType === 'merch'}
+        setSelectedTab={setSelectedTab}
         onClose={() => {
           setModalOpen(false);
         }}
         {...modalProps}
       />
       <RaffleModal
+        eventInfo={eventInfo}
         isOpen={modalOpen && modalType === 'raffle'}
+        setSelectedTab={setSelectedTab}
         onClose={() => {
           setModalOpen(false);
         }}
         {...modalProps}
       />
       <SponsorModal
+        eventInfo={eventInfo}
         isOpen={modalOpen && modalType === 'sponsor'}
+        setSelectedTab={setSelectedTab}
         onClose={() => {
           setModalOpen(false);
         }}
         {...modalProps}
       />
       <ProfileTransferModal
+        eventInfo={eventInfo}
         isOpen={modalOpen && modalType === 'profileTransfer'}
+        setSelectedTab={setSelectedTab}
         onClose={() => {
           setModalOpen(false);
         }}
