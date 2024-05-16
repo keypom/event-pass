@@ -23,15 +23,7 @@ import { useConferenceContext } from '@/contexts/ConferenceContext';
 import UsernamePromptModal from '../modals/UsernamePromptModal';
 
 const AssetsHome = () => {
-  const {
-    tokensAvailable,
-    eventInfo,
-    factoryAccount,
-    isLoading,
-    secretKey,
-    setSelectedTab,
-    ticker,
-  } = useConferenceContext();
+  const { tokensAvailable, eventInfo, isLoading, setSelectedTab, ticker } = useConferenceContext();
   const navigate = useNavigate();
   const { isOpen, onClose } = useDisclosure();
 
@@ -101,13 +93,7 @@ const AssetsHome = () => {
 
   return (
     <Center>
-      <UsernamePromptModal
-        eventInfo={eventInfo}
-        factoryAccount={factoryAccount}
-        isOpen={isOpen}
-        secretKey={secretKey}
-        onClose={onClose}
-      />
+      <UsernamePromptModal isOpen={isOpen} onClose={onClose} />
       <VStack gap={{ base: 'calc(24px + 8px)', md: 'calc(32px + 10px)' }}>
         <Skeleton fadeDuration={1} isLoaded={!isLoading}>
           <Heading

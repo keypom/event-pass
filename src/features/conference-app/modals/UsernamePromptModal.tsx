@@ -13,25 +13,9 @@ import {
 } from '@chakra-ui/react';
 import { useState } from 'react';
 
-import { type FunderEventMetadata } from '@/lib/eventsHelpers';
-
 import ProfileTransferModal from './ProfileTransferModal'; // Import the ProfileTransferModal
 
-interface UsernamePromptModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  eventInfo: FunderEventMetadata;
-  secretKey: string;
-  factoryAccount: string;
-}
-
-const UsernamePromptModal = ({
-  isOpen,
-  onClose,
-  eventInfo,
-  secretKey,
-  factoryAccount,
-}: UsernamePromptModalProps) => {
+const UsernamePromptModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
   const [username, setUsername] = useState('');
   const {
     isOpen: isTransferModalOpen,
@@ -74,11 +58,7 @@ const UsernamePromptModal = ({
 
       {/* ProfileTransferModal with relevant props */}
       <ProfileTransferModal
-        curAccountId={username} // Pass the entered username
-        eventInfo={eventInfo}
-        factoryAccount={factoryAccount}
         isOpen={isTransferModalOpen}
-        secretKey={secretKey}
         sendTo={username} // Provide the recipient account
         title="Send Tokens"
         onClose={closeTransferModal}

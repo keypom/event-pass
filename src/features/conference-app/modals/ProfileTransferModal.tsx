@@ -17,40 +17,32 @@ import {
   Spinner,
 } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
-// Importing the backspace icon
 import { accountExists } from 'keypom-js';
 
 import keypomInstance from '@/lib/keypom';
-import { type FunderEventMetadata } from '@/lib/eventsHelpers';
 import { DeleteTextIcon } from '@/components/Icons/DeleteTextIcon';
+import { useConferenceContext } from '@/contexts/ConferenceContext';
 
 interface ProfileTransferModalProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
-  eventInfo: FunderEventMetadata;
-  curAccountId: string;
-  secretKey: string;
-  factoryAccount: string;
   sendTo: string;
 }
 
-const ProfileTransferModal = ({
-  isOpen,
-  onClose,
-  title,
-  eventInfo,
-  curAccountId,
-  secretKey,
-  factoryAccount,
-  sendTo,
-}: ProfileTransferModalProps) => {
+const ProfileTransferModal = ({ isOpen, onClose, title, sendTo }: ProfileTransferModalProps) => {
+  const {
+    eventInfo,
+    accountId: curAccountId,
+    secretKey,
+    factoryAccount,
+    setTriggerRefetch,
+  } = useConferenceContext();
+
   const [amount, setAmount] = useState('');
-
   const [isSending, setIsSending] = useState(false);
+  const [tokensAvailable, setTokensAvailable] = useState('0');
   const [isValidAccount, setIsValidAccount] = useState(true);
-  const [tokensAvailable, setTokensAvailable] = useState('');
-
   const [isOversend, setIsOversend] = useState(false);
   const [isInvalidNumber, setIsInvalidNumber] = useState(false);
   const toast = useToast();
@@ -72,10 +64,8 @@ const ProfileTransferModal = ({
 
   const closeModal = () => {
     setAmount('');
-
     setIsSending(false);
     setIsValidAccount(true);
-
     setIsOversend(false);
     setIsInvalidNumber(false);
     onClose();
@@ -86,7 +76,6 @@ const ProfileTransferModal = ({
       setIsInvalidNumber(true);
       return true;
     }
-
     setIsInvalidNumber(false);
     return false;
   };
@@ -126,6 +115,7 @@ const ProfileTransferModal = ({
         duration: 5000,
         isClosable: true,
       });
+      setTriggerRefetch((prev) => prev + 1); // Trigger a refetch after successful transfer
     } catch (error) {
       toast({
         title: 'Transfer failed',
@@ -151,7 +141,6 @@ const ProfileTransferModal = ({
     if (amount && parseFloat(amount) <= parseFloat(tokensAvailable)) {
       setIsOversend(false);
     }
-
     setIsInvalidNumber(false);
   }, [amount, tokensAvailable]);
 
@@ -162,27 +151,20 @@ const ProfileTransferModal = ({
     setAmount((prev) => {
       if (value === 'backspace') {
         const [integerPart, decimalPart] = prev.split('.');
-        console.log('Integer part: ', integerPart, ' decimal part: ', decimalPart);
-
-        // Regular integer like 54 or 54. (with the decimal) so remove the `4`
         if (decimalPart === undefined || decimalPart.length === 0) {
           return integerPart.slice(0, -1);
         }
-
-        // There's a single decimal part like 5.4 so return the `5`
         if (decimalPart.length === 1) {
           return integerPart;
         }
-
-        // Regular floating point number
         return prev.slice(0, -1);
       }
       if (value === '.' && prev.includes('.')) {
-        return prev; // Prevent multiple decimals
+        return prev;
       }
       const newAmount = prev + value;
       if (newAmount.includes('.') && newAmount.split('.')[1].length > 4) {
-        return prev; // Prevent more than 4 decimal places
+        return prev;
       }
       return newAmount;
     });
@@ -256,14 +238,9 @@ const ProfileTransferModal = ({
                     <GridItem key={idx}>
                       {num === 'backspace' ? (
                         <Button
-                          _active={{
-                            bg: 'gray.300', // Change color on click to gray
-                          }}
-                          _focus={{
-                            boxShadow: 'none',
-                            bg: 'white', // Maintain white background on focus
-                          }}
-                          _hover={{ bg: 'gray.100' }} // Change color on hover to light gray
+                          _active={{ bg: 'gray.300' }}
+                          _focus={{ boxShadow: 'none', bg: 'white' }}
+                          _hover={{ bg: 'gray.100' }}
                           bg="white"
                           color="black"
                           h="12"
@@ -278,14 +255,9 @@ const ProfileTransferModal = ({
                         </Button>
                       ) : (
                         <Button
-                          _active={{
-                            bg: 'gray.300', // Change color on click to gray
-                          }}
-                          _focus={{
-                            boxShadow: 'none',
-                            bg: 'white', // Maintain white background on focus
-                          }}
-                          _hover={{ bg: 'gray.100' }} // Change color on hover to light gray
+                          _active={{ bg: 'gray.300' }}
+                          _focus={{ boxShadow: 'none', bg: 'white' }}
+                          _hover={{ bg: 'gray.100' }}
                           bg="white"
                           border="2px solid transparent"
                           borderColor={num === '.' ? 'white' : 'gray.100'}

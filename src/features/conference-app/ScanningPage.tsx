@@ -43,7 +43,6 @@ export default function ScanningPage() {
     eventInfo,
     dropInfo,
     isLoading,
-    factoryAccount,
     setTriggerRefetch,
     accountId,
     setSelectedTab,
@@ -291,11 +290,7 @@ export default function ScanningPage() {
       )}
       {modalOpen && modalType === 'profileTransfer' && (
         <ProfileTransferModal
-          eventInfo={eventInfo}
-          factoryAccount={factoryAccount}
           isOpen={modalOpen}
-          secretKey={secretKey}
-          setSelectedTab={setSelectedTab}
           onClose={() => {
             setTriggerRefetch((prev: number) => prev + 1);
             setModalOpen(false);
