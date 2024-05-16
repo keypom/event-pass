@@ -8,41 +8,38 @@ import {
   VStack,
   HStack,
   Image,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 
-import { type EventDrop, type FunderEventMetadata } from '@/lib/eventsHelpers';
 import { CLOUDFLARE_IPFS } from '@/constants/common';
 import { IconBox } from '@/components/IconBox';
 import { BoxWithShape } from '@/components/BoxWithShape';
 import { SendIcon } from '@/components/Icons/SendIcon';
 import { ReceiveIcon } from '@/components/Icons/ReceiveIcon';
 import { CameraIcon } from '@/components/Icons/CameraIcon';
+import { useConferenceContext } from '@/contexts/ConferenceContext';
 
-interface AssetsHomeProps {
-  accountId: string;
-  tokensAvailable: string;
-  dropInfo: EventDrop;
-  eventInfo: FunderEventMetadata;
-  isLoading: boolean;
-  ticker: string;
-}
+import UsernamePromptModal from '../modals/UsernamePromptModal';
 
-const AssetsHome = ({
-  dropInfo,
-  eventInfo,
-  accountId,
-  isLoading,
-  ticker,
-  tokensAvailable,
-}: AssetsHomeProps) => {
+const AssetsHome = () => {
+  const {
+    tokensAvailable,
+    eventInfo,
+    factoryAccount,
+    isLoading,
+    secretKey,
+    setSelectedTab,
+    ticker,
+  } = useConferenceContext();
   const navigate = useNavigate();
+  const { isOpen, onClose } = useDisclosure();
 
   const handleCardClick = (tab: string) => {
     navigate(`/conference/app/assets?tab=${tab}`);
   };
 
-  const PageCard = ({ title, imageUrl, tab }: { name: string; imageUrl: string; tab: string }) => {
+  const PageCard = ({ title, imageUrl, tab }: { title: string; imageUrl: string; tab: string }) => {
     const cardStyle = {
       position: 'relative' as const,
       w: '100%',
@@ -104,6 +101,13 @@ const AssetsHome = ({
 
   return (
     <Center>
+      <UsernamePromptModal
+        eventInfo={eventInfo}
+        factoryAccount={factoryAccount}
+        isOpen={isOpen}
+        secretKey={secretKey}
+        onClose={onClose}
+      />
       <VStack gap={{ base: 'calc(24px + 8px)', md: 'calc(32px + 10px)' }}>
         <Skeleton fadeDuration={1} isLoaded={!isLoading}>
           <Heading
@@ -212,6 +216,9 @@ const AssetsHome = ({
                         bg={eventInfo.styles.buttons.secondary.color}
                         borderRadius="0.75em"
                         p="2"
+                        onClick={() => {
+                          setSelectedTab(3);
+                        }}
                       >
                         <CameraIcon color="white" h="24px" strokeWidth="1" />
                       </Box>

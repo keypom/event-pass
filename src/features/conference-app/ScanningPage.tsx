@@ -18,15 +18,10 @@ import { IconBox } from '@/components/IconBox';
 import { TicketIcon } from '@/components/Icons';
 import { BoxWithShape } from '@/components/BoxWithShape';
 import { CLOUDFLARE_IPFS } from '@/constants/common';
-import {
-  type TicketInfoMetadata,
-  type TicketMetadataExtra,
-  type FunderEventMetadata,
-  type EventDrop,
-} from '@/lib/eventsHelpers';
 import { ViewFinder } from '@/components/ViewFinder';
 import { LoadingOverlay } from '@/features/scanner/components/LoadingOverlay';
 import keypomInstance from '@/lib/keypom';
+import { useConferenceContext } from '@/contexts/ConferenceContext';
 
 import ScavengerModal from './modals/ScavengerModal';
 import MerchModal from './modals/MerchModal';
@@ -43,39 +38,18 @@ interface StateRefObject {
   isProcessing: boolean;
 }
 
-interface ScanningPageProps {
-  eventInfo: FunderEventMetadata;
-  ticketInfo: TicketInfoMetadata;
-  ticketInfoExtra: TicketMetadataExtra;
-  dropInfo: EventDrop;
-  isLoading: boolean;
-  eventId: string;
-  factoryAccount: string;
-  funderId: string;
-  accountId: string;
-  tokensAvailable: string;
-  setSelectedTab: any;
-  secretKey: string;
-  setTriggerRefetch: React.Dispatch<React.SetStateAction<number>>;
-  ticker: string;
-}
+export default function ScanningPage() {
+  const {
+    eventInfo,
+    dropInfo,
+    isLoading,
+    factoryAccount,
+    setTriggerRefetch,
+    accountId,
+    setSelectedTab,
+    secretKey,
+  } = useConferenceContext();
 
-export default function ScanningPage({
-  eventInfo,
-  ticketInfoExtra,
-  dropInfo,
-  ticketInfo,
-  isLoading,
-  eventId,
-  factoryAccount,
-  setTriggerRefetch,
-  ticker,
-  funderId,
-  accountId,
-  tokensAvailable,
-  setSelectedTab,
-  secretKey,
-}: ScanningPageProps) {
   const toast = useToast();
 
   const [facingMode, setFacingMode] = useState('user'); // default to rear camera
@@ -323,7 +297,7 @@ export default function ScanningPage({
           secretKey={secretKey}
           setSelectedTab={setSelectedTab}
           onClose={() => {
-            setTriggerRefetch((prev) => prev + 1);
+            setTriggerRefetch((prev: number) => prev + 1);
             setModalOpen(false);
           }}
           {...modalProps}
@@ -576,7 +550,9 @@ export default function ScanningPage({
                   cursor="pointer" // Makes the text behave like a clickable link
                   textDecoration="underline" // Remove underline from text
                   transition="color 0.2s, text-decoration 0.2s" // Smooth transition for hover effects
-                  onClick={() => setSelectedTab(0)}
+                  onClick={() => {
+                    setSelectedTab(0);
+                  }}
                 >
                   View Profile QR Code
                 </Text>

@@ -1,6 +1,6 @@
 import { useLocation } from 'react-router-dom';
 
-import { type EventDrop, type FunderEventMetadata } from '@/lib/eventsHelpers';
+import { useConferenceContext } from '@/contexts/ConferenceContext';
 
 import ScavengerPage from './ScavengerPage';
 import CollectiblesPage from './CollectiblesPage';
@@ -8,25 +8,8 @@ import RafflesPage from './RafflesPage';
 import AuctionsPage from './AuctionsPage';
 import AssetsHome from './AssetsHome';
 
-interface AssetsPageManagerProps {
-  accountId: string;
-  dropInfo: EventDrop;
-  eventInfo: FunderEventMetadata;
-  isLoading: boolean;
-  tokensAvailable: string;
-  ticker: string;
-  setTriggerRefetch: React.Dispatch<React.SetStateAction<number>>;
-}
-
-const AssetsPageManager = ({
-  dropInfo,
-  eventInfo,
-  accountId,
-  isLoading,
-  ticker,
-  tokensAvailable,
-  setTriggerRefetch,
-}: AssetsPageManagerProps) => {
+const AssetsPageManager = () => {
+  const { accountId, dropInfo } = useConferenceContext();
   const location = useLocation();
   const query = new URLSearchParams(location.search);
   const tab = query.get('tab') || 'home';
@@ -41,16 +24,7 @@ const AssetsPageManager = ({
     case 'auctions':
       return <AuctionsPage accountId={accountId} dropInfo={dropInfo} />;
     default:
-      return (
-        <AssetsHome
-          accountId={accountId}
-          dropInfo={dropInfo}
-          eventInfo={eventInfo}
-          isLoading={isLoading}
-          ticker={ticker}
-          tokensAvailable={tokensAvailable}
-        />
-      );
+      return <AssetsHome />;
   }
 };
 

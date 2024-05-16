@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { getPubFromSecret } from 'keypom-js';
 import { Center, Spinner, VStack, Text } from '@chakra-ui/react';
+import { getPubFromSecret } from 'keypom-js';
 
 import InConferenceApp from '@/features/conference-app/InConferenceApp';
 import { NotFound404 } from '@/components/NotFound404';
@@ -17,6 +17,7 @@ import {
 } from '@/lib/eventsHelpers';
 import { useConferenceClaimParams } from '@/hooks/useConferenceClaimParams';
 import WelcomePage from '@/features/conference-app/WelcomePage';
+import { ConferenceProvider } from '@/contexts/ConferenceContext';
 
 export default function ConferencePageManager() {
   const { secretKey } = useConferenceClaimParams();
@@ -85,16 +86,12 @@ export default function ConferencePageManager() {
         setEventId(ticketExtra.eventId);
         setFunderId(drop.funder_id);
 
-        // eslint-disable-next-line no-console
         console.log('eventInfo', eventInfo);
-        // eslint-disable-next-line no-console
         console.log('Ticket Metadata', ticketMetadata);
-        // eslint-disable-next-line no-console
         console.log('Ticket Metadata Extra', ticketExtra);
 
         setIsLoading(false);
       } catch (e) {
-        // eslint-disable-next-line no-console
         console.error('Error getting event info: ', e);
         setIsValid(false);
         setIsLoading(false);
@@ -120,6 +117,19 @@ export default function ConferencePageManager() {
     );
   }
 
+  const initialData = {
+    dropInfo,
+    eventId,
+    eventInfo,
+    factoryAccount,
+    funderId,
+    isLoading,
+    secretKey,
+    ticker,
+    ticketInfo,
+    ticketInfoExtra,
+  };
+
   switch (curKeyStep) {
     case 2:
       return (
@@ -139,18 +149,9 @@ export default function ConferencePageManager() {
       );
     case 3:
       return (
-        <InConferenceApp
-          dropInfo={dropInfo}
-          eventId={eventId}
-          eventInfo={eventInfo}
-          factoryAccount={factoryAccount}
-          funderId={funderId}
-          isLoading={isLoading}
-          secretKey={secretKey}
-          ticker={ticker}
-          ticketInfo={ticketInfo}
-          ticketInfoExtra={ticketInfoExtra}
-        />
+        <ConferenceProvider initialData={initialData}>
+          <InConferenceApp />
+        </ConferenceProvider>
       );
     default:
       return (

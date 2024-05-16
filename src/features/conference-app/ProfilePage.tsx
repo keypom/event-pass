@@ -16,40 +16,12 @@ import { IconBox } from '@/components/IconBox';
 import { TicketIcon } from '@/components/Icons';
 import { BoxWithShape } from '@/components/BoxWithShape';
 import { CLOUDFLARE_IPFS } from '@/constants/common';
-import {
-  type TicketInfoMetadata,
-  type TicketMetadataExtra,
-  type FunderEventMetadata,
-  type EventDrop,
-} from '@/lib/eventsHelpers';
+import { useConferenceContext } from '@/contexts/ConferenceContext';
 
-interface ProfilePageProps {
-  eventInfo: FunderEventMetadata;
-  ticketInfoExtra: TicketMetadataExtra;
-  dropInfo: EventDrop;
-  ticketInfo: TicketInfoMetadata;
-  isLoading: boolean;
-  eventId: string;
-  funderId: string;
-  accountId: string;
-  tokensAvailable: string;
-  secretKey: string;
-  ticker: string;
-}
+export default function ProfilePage() {
+  const { eventInfo, ticketInfo, isLoading, ticker, accountId, tokensAvailable } =
+    useConferenceContext();
 
-export default function ProfilePage({
-  eventInfo,
-  ticketInfoExtra,
-  dropInfo,
-  ticketInfo,
-  isLoading,
-  ticker,
-  eventId,
-  funderId,
-  accountId,
-  tokensAvailable,
-  secretKey,
-}: ProfilePageProps) {
   return (
     <Center>
       <VStack gap={{ base: 'calc(24px + 8px)', md: 'calc(32px + 10px)' }}>

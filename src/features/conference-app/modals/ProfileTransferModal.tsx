@@ -29,7 +29,6 @@ interface ProfileTransferModalProps {
   onClose: () => void;
   title: string;
   eventInfo: FunderEventMetadata;
-  tokensAvailable: string;
   curAccountId: string;
   secretKey: string;
   factoryAccount: string;
