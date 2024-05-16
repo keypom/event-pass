@@ -18,7 +18,7 @@ import { ScanIcon } from '@/components/Icons/ScanIcon';
 
 import ProfilePage from './ProfilePage';
 import ScanningPage from './ScanningPage';
-import AssetsPage from './AssetsPage';
+import AssetsPageManager from './AssetsPages/AssetsPageManager';
 
 const footerMenuItems = [
   { label: 'Profile', icon: ProfileIcon, path: '/conference/app/profile' },
@@ -85,11 +85,14 @@ export default function InConferenceApp({
         );
       case 1:
         return (
-          <AssetsPage
+          <AssetsPageManager
             accountId={accountId}
             dropInfo={dropInfo}
             eventInfo={eventInfo}
             isLoading={isLoading || accountId.length === 0}
+            setTriggerRefetch={setTriggerRefetch}
+            ticker={ticker}
+            tokensAvailable={tokensAvailable}
           />
         );
       case 2:
