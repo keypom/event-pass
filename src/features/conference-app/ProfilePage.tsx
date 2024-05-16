@@ -120,7 +120,7 @@ export default function ProfilePage({
                     fontWeight={eventInfo.styles.h1.fontWeight}
                     textAlign="center"
                   >
-                    {tokensAvailable} ${ticker} Available
+                    {tokensAvailable} ${ticker}
                   </Text>
                   <Grid
                     gap={6} // Space between grid items

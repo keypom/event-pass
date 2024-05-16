@@ -39,6 +39,7 @@ interface WelcomePageProps {
   isLoading: boolean;
   eventId: string;
   funderId: string;
+  factoryAccount: string;
   secretKey: string;
 }
 
@@ -48,6 +49,7 @@ export default function WelcomePage({
   dropInfo,
   ticketInfo,
   isLoading,
+  factoryAccount,
   eventId,
   funderId,
   ticker,
@@ -57,7 +59,6 @@ export default function WelcomePage({
   const [username, setUsername] = useState<string>('');
   const [isValidUsername, setIsValidUsername] = useState<boolean>(true);
   const [isClaiming, setIsClaiming] = useState<boolean>(false);
-  const factoryAccount = dropInfo?.asset_data[1].config.root_account_id;
   const toast = useToast();
 
   const handleChangeUsername = (event) => {

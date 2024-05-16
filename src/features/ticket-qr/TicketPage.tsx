@@ -32,6 +32,10 @@ export default function TicketPage() {
   const [eventId, setEventId] = useState('');
   const [funderId, setFunderId] = useState('');
 
+  const onScanned = () => {
+    window.location.reload();
+  };
+
   useEffect(() => {
     const getEventInfo = async () => {
       try {
@@ -111,9 +115,7 @@ export default function TicketPage() {
       secretKey={secretKey}
       ticketInfo={ticketInfo}
       ticketInfoExtra={ticketInfoExtra}
-      onScanned={() => {
-        navigate(`/conference/app/${eventId}#${secretKey}`);
-      }}
+      onScanned={onScanned}
     />
   );
 }

@@ -34,6 +34,7 @@ export default function ConferencePageManager() {
   const [curKeyStep, setCurKeyStep] = useState<number>(1);
   const [eventId, setEventId] = useState('');
   const [funderId, setFunderId] = useState('');
+  const [factoryAccount, setFactoryAcccount] = useState('');
   const [ticker, setTicker] = useState<string>('');
   const [tokensToClaim, setTokensToClaim] = useState<string>('');
 
@@ -52,6 +53,17 @@ export default function ConferencePageManager() {
         });
         setDropInfo(drop);
         setCurKeyStep(drop.max_key_uses - keyInfo.uses_remaining + 1);
+
+        const factory = drop?.asset_data[1].config.root_account_id;
+        setFactoryAcccount(factory);
+        const tokenInfo = await keypomInstance.viewCall({
+          contractId: factory,
+          methodName: 'ft_metadata',
+          args: { drop_id: 'foo' },
+        });
+        console.log('Token info:', tokenInfo);
+        setTicker(tokenInfo.symbol);
+        setTokensToClaim(keypomInstance.yoctoToNear(tokenInfo.minted_per_claim));
 
         const ticketMetadata = drop.drop_config.nft_keys_config.token_metadata;
         setTicketInfo(ticketMetadata);
@@ -91,22 +103,6 @@ export default function ConferencePageManager() {
     getEventInfo();
   }, [secretKey]);
 
-  useEffect(() => {
-    const getTokenTicker = async () => {
-      if (dropInfo.drop_id !== 'loading') {
-        const factoryAccount = dropInfo?.asset_data[1].config.root_account_id;
-        const tokenInfo = await keypomInstance.viewCall({
-          contractId: factoryAccount,
-          methodName: 'ft_metadata',
-          args: { drop_id: 'foo' },
-        });
-        setTicker(tokenInfo.symbol);
-        setTokensToClaim(keypomInstance.yoctoToNear(tokenInfo.minted_per_claim));
-      }
-    };
-    getTokenTicker();
-  }, [dropInfo]);
-
   if (!isValid) {
     return (
       <NotFound404 header="Ticket not found" subheader="Please check your email and try again" />
@@ -131,6 +127,7 @@ export default function ConferencePageManager() {
           dropInfo={dropInfo}
           eventId={eventId}
           eventInfo={eventInfo}
+          factoryAccount={factoryAccount}
           funderId={funderId}
           isLoading={isLoading}
           secretKey={secretKey}
@@ -146,6 +143,7 @@ export default function ConferencePageManager() {
           dropInfo={dropInfo}
           eventId={eventId}
           eventInfo={eventInfo}
+          factoryAccount={factoryAccount}
           funderId={funderId}
           isLoading={isLoading}
           secretKey={secretKey}

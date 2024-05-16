@@ -50,11 +50,14 @@ interface ScanningPageProps {
   dropInfo: EventDrop;
   isLoading: boolean;
   eventId: string;
+  factoryAccount: string;
   funderId: string;
   accountId: string;
   tokensAvailable: string;
   setSelectedTab: any;
   secretKey: string;
+  setTriggerRefetch: React.Dispatch<React.SetStateAction<number>>;
+  ticker: string;
 }
 
 export default function ScanningPage({
@@ -64,6 +67,9 @@ export default function ScanningPage({
   ticketInfo,
   isLoading,
   eventId,
+  factoryAccount,
+  setTriggerRefetch,
+  ticker,
   funderId,
   accountId,
   tokensAvailable,
@@ -189,14 +195,28 @@ export default function ScanningPage({
               body: `How many tickets would you like to purchase?`,
             });
             break;
-          case 'profile':
+          case 'profile': {
+            const sendTo = data;
+            if (sendTo === accountId) {
+              toast({
+                title: 'Invalid QR',
+                description: 'Cannot send tokens to yourself',
+                status: 'error',
+                duration: 5000,
+                isClosable: true,
+              });
+              break;
+            }
+
             setModalType('profileTransfer');
             setModalProps({
               title: 'Transfer Tokens',
-              subtitle: `Send $NCON to another user`,
-              body: `How much $NCON would you like to transfer?`,
+              curAccountId: accountId,
+              sendTo,
             });
             break;
+          }
+
           case 'sponsor':
             setModalType('sponsor');
             setModalProps({
@@ -229,69 +249,86 @@ export default function ScanningPage({
 
   return (
     <>
-      <ScavengerModal
-        eventInfo={eventInfo}
-        isOpen={modalOpen && modalType === 'scavenger'}
-        setSelectedTab={setSelectedTab}
-        onClose={() => {
-          setModalOpen(false);
-        }}
-        {...modalProps}
-      />
-      <NFTModal
-        eventInfo={eventInfo}
-        isOpen={modalOpen && modalType === 'nft'}
-        setSelectedTab={setSelectedTab}
-        onClose={() => {
-          setModalOpen(false);
-        }}
-        {...modalProps}
-      />
-      <TokenModal
-        eventInfo={eventInfo}
-        isOpen={modalOpen && modalType === 'token'}
-        setSelectedTab={setSelectedTab}
-        onClose={() => {
-          setModalOpen(false);
-        }}
-        {...modalProps}
-      />
-      <MerchModal
-        eventInfo={eventInfo}
-        isOpen={modalOpen && modalType === 'merch'}
-        setSelectedTab={setSelectedTab}
-        onClose={() => {
-          setModalOpen(false);
-        }}
-        {...modalProps}
-      />
-      <RaffleModal
-        eventInfo={eventInfo}
-        isOpen={modalOpen && modalType === 'raffle'}
-        setSelectedTab={setSelectedTab}
-        onClose={() => {
-          setModalOpen(false);
-        }}
-        {...modalProps}
-      />
-      <SponsorModal
-        eventInfo={eventInfo}
-        isOpen={modalOpen && modalType === 'sponsor'}
-        setSelectedTab={setSelectedTab}
-        onClose={() => {
-          setModalOpen(false);
-        }}
-        {...modalProps}
-      />
-      <ProfileTransferModal
-        eventInfo={eventInfo}
-        isOpen={modalOpen && modalType === 'profileTransfer'}
-        setSelectedTab={setSelectedTab}
-        onClose={() => {
-          setModalOpen(false);
-        }}
-        {...modalProps}
-      />
+      {modalOpen && modalType === 'scavenger' && (
+        <ScavengerModal
+          eventInfo={eventInfo}
+          isOpen={modalOpen}
+          setSelectedTab={setSelectedTab}
+          onClose={() => {
+            setModalOpen(false);
+          }}
+          {...modalProps}
+        />
+      )}
+      {modalOpen && modalType === 'nft' && (
+        <NFTModal
+          eventInfo={eventInfo}
+          isOpen={modalOpen}
+          setSelectedTab={setSelectedTab}
+          onClose={() => {
+            setModalOpen(false);
+          }}
+          {...modalProps}
+        />
+      )}
+      {modalOpen && modalType === 'token' && (
+        <TokenModal
+          eventInfo={eventInfo}
+          isOpen={modalOpen}
+          setSelectedTab={setSelectedTab}
+          onClose={() => {
+            setModalOpen(false);
+          }}
+          {...modalProps}
+        />
+      )}
+      {modalOpen && modalType === 'merch' && (
+        <MerchModal
+          eventInfo={eventInfo}
+          isOpen={modalOpen}
+          setSelectedTab={setSelectedTab}
+          onClose={() => {
+            setModalOpen(false);
+          }}
+          {...modalProps}
+        />
+      )}
+      {modalOpen && modalType === 'raffle' && (
+        <RaffleModal
+          eventInfo={eventInfo}
+          isOpen={modalOpen}
+          setSelectedTab={setSelectedTab}
+          onClose={() => {
+            setModalOpen(false);
+          }}
+          {...modalProps}
+        />
+      )}
+      {modalOpen && modalType === 'sponsor' && (
+        <SponsorModal
+          eventInfo={eventInfo}
+          isOpen={modalOpen}
+          setSelectedTab={setSelectedTab}
+          onClose={() => {
+            setModalOpen(false);
+          }}
+          {...modalProps}
+        />
+      )}
+      {modalOpen && modalType === 'profileTransfer' && (
+        <ProfileTransferModal
+          eventInfo={eventInfo}
+          factoryAccount={factoryAccount}
+          isOpen={modalOpen}
+          secretKey={secretKey}
+          setSelectedTab={setSelectedTab}
+          onClose={() => {
+            setTriggerRefetch((prev) => prev + 1);
+            setModalOpen(false);
+          }}
+          {...modalProps}
+        />
+      )}
       <Center>
         <VStack gap={{ base: 'calc(24px + 8px)', md: 'calc(32px + 10px)' }}>
           <Skeleton fadeDuration={1} isLoaded={!isLoading}>

@@ -40,6 +40,7 @@ interface InConferenceAppProps {
   funderId: string;
   ticker: string;
   secretKey: string;
+  factoryAccount: string;
 }
 
 export default function InConferenceApp({
@@ -47,6 +48,7 @@ export default function InConferenceApp({
   ticketInfoExtra,
   dropInfo,
   ticketInfo,
+  factoryAccount,
   isLoading,
   ticker,
   eventId,
@@ -61,6 +63,7 @@ export default function InConferenceApp({
   const path = location.pathname.split('/').pop() || 'profile';
   const initialTab = footerMenuItems.findIndex((item) => item.path.includes(path));
   const [selectedTab, setSelectedTab] = useState<number>(initialTab !== -1 ? initialTab : 0);
+  const [triggerRefetch, setTriggerRefetch] = useState<number>(0);
 
   const currentTab = () => {
     switch (selectedTab) {
@@ -98,10 +101,13 @@ export default function InConferenceApp({
             dropInfo={dropInfo}
             eventId={eventId}
             eventInfo={eventInfo}
+            factoryAccount={factoryAccount}
             funderId={funderId}
             isLoading={isLoading || accountId.length === 0}
             secretKey={secretKey}
             setSelectedTab={setSelectedTab}
+            setTriggerRefetch={setTriggerRefetch}
+            ticker={ticker}
             ticketInfo={ticketInfo}
             ticketInfoExtra={ticketInfoExtra}
             tokensAvailable={tokensAvailable}
@@ -114,9 +120,9 @@ export default function InConferenceApp({
 
   useEffect(() => {
     const recoverAccount = async () => {
-      if (dropInfo.drop_id !== 'loading') {
-        const factoryAccount = dropInfo?.asset_data[1].config.root_account_id;
+      if (!isLoading && dropInfo.drop_id !== 'loading' && factoryAccount.length !== 0) {
         console.log('Secret Key: ', secretKey);
+        console.log('Factory Account: ', factoryAccount);
         const recoveredAccountId = await keypomInstance.viewCall({
           contractId: factoryAccount,
           methodName: 'recover_account',
@@ -128,12 +134,13 @@ export default function InConferenceApp({
           args: { account_id: recoveredAccountId },
         });
         console.log('recovered account id: ', recoveredAccountId);
-        setTokensAvailable(keypomInstance.yoctoToNear(balance));
+        console.log('balance: ', balance);
+        setTokensAvailable(keypomInstance.yoctoToNearWith4Decimals(balance));
         setAccountId(recoveredAccountId);
       }
     };
     recoverAccount();
-  }, [dropInfo, selectedTab]);
+  }, [dropInfo, selectedTab, triggerRefetch, factoryAccount, isLoading]);
 
   useEffect(() => {
     // This will run when `selectedTab` changes and update the URL

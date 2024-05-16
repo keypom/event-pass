@@ -157,6 +157,24 @@ class KeypomJS {
 
   yoctoToNear = (yocto: string) => nearAPI.utils.format.formatNearAmount(yocto, 4);
 
+  yoctoToNearWith4Decimals = (yoctoString: string) => {
+    const divisor = 1e24;
+    const near =
+      (BigInt(yoctoString) / BigInt(divisor)).toString() +
+      '.' +
+      (BigInt(yoctoString) % BigInt(divisor)).toString().padStart(24, '0');
+
+    // Split at the decimal point
+    const split = near.split('.');
+    const integerPart = split[0];
+    let decimalPart = split[1];
+
+    // Take only the first 4 digits of the decimal part
+    decimalPart = decimalPart.substring(0, 4);
+
+    return `${integerPart}.${decimalPart}`;
+  };
+
   nearToYocto = (near: string) => nearAPI.utils.format.parseNearAmount(near);
 
   viewCall = async ({ contractId = KEYPOM_EVENTS_CONTRACT, methodName, args }) => {
@@ -403,6 +421,32 @@ class KeypomJS {
       args: {
         drop_id: dropId,
         scavenger_id: scavId,
+      },
+    });
+  };
+
+  sendConferenceTokens = async ({
+    secretKey,
+    accountId,
+    sendTo,
+    amount,
+    factoryAccount,
+  }: {
+    secretKey: string;
+    accountId: string;
+    sendTo: string;
+    amount: string;
+    factoryAccount: string;
+  }) => {
+    const keyPair = nearAPI.KeyPair.fromString(secretKey);
+    await myKeyStore.setKey(networkId, accountId, keyPair);
+    const userAccount = new nearAPI.Account(this.nearConnection.connection, accountId);
+    await userAccount.functionCall({
+      contractId: factoryAccount,
+      methodName: 'ft_transfer',
+      args: {
+        receiver_id: sendTo,
+        amount,
       },
     });
   };
