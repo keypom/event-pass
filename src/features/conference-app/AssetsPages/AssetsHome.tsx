@@ -21,11 +21,14 @@ import { CameraIcon } from '@/components/Icons/CameraIcon';
 import { useConferenceContext } from '@/contexts/ConferenceContext';
 
 import ProfileTransferModal from '../modals/ProfileTransferModal';
+import ReceiveTokensModal from '../modals/ReceiveTokensModal';
 
 const AssetsHome = () => {
   const { tokensAvailable, eventInfo, isLoading, setSelectedTab, ticker } = useConferenceContext();
   const navigate = useNavigate();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const sendDisclosure = useDisclosure();
+  const receiveDisclosure = useDisclosure();
 
   const handleCardClick = (tab: string) => {
     navigate(`/conference/app/assets?tab=${tab}`);
@@ -93,7 +96,12 @@ const AssetsHome = () => {
 
   return (
     <Center>
-      <ProfileTransferModal isOpen={isOpen} title="Send Tokens" onClose={onClose} />
+      <ProfileTransferModal
+        isOpen={sendDisclosure.isOpen}
+        title="Send Tokens"
+        onClose={sendDisclosure.onClose}
+      />
+      <ReceiveTokensModal isOpen={receiveDisclosure.isOpen} onClose={receiveDisclosure.onClose} />
       <VStack gap={{ base: 'calc(24px + 8px)', md: 'calc(32px + 10px)' }}>
         <Skeleton fadeDuration={1} isLoaded={!isLoading}>
           <Heading
@@ -166,7 +174,7 @@ const AssetsHome = () => {
                         bg={eventInfo.styles.buttons.secondary.color}
                         borderRadius="0.75em"
                         p="2"
-                        onClick={onOpen}
+                        onClick={sendDisclosure.onOpen}
                       >
                         <SendIcon color="white" h="24px" strokeWidth="1" />
                       </Box>
@@ -185,6 +193,7 @@ const AssetsHome = () => {
                         bg={eventInfo.styles.buttons.secondary.color}
                         borderRadius="0.75em"
                         p="2"
+                        onClick={receiveDisclosure.onOpen}
                       >
                         <ReceiveIcon color="white" h="24px" strokeWidth="1" />
                       </Box>

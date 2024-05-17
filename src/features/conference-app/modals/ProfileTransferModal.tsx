@@ -79,7 +79,7 @@ const ProfileTransferModal = ({
   const handleChangeUsername = (event) => {
     setIsValidAccount(true);
     const { value } = event.target;
-    setSendTo(value);
+    setSendTo(value.toLowerCase());
   };
 
   const closeModal = () => {
