@@ -93,7 +93,7 @@ const AssetsHome = () => {
 
   return (
     <Center>
-      <ProfileTransferModal isOpen={isOpen} sendTo="fll" title="Send Tokens" onClose={onClose} />
+      <ProfileTransferModal isOpen={isOpen} title="Send Tokens" onClose={onClose} />
       <VStack gap={{ base: 'calc(24px + 8px)', md: 'calc(32px + 10px)' }}>
         <Skeleton fadeDuration={1} isLoaded={!isLoading}>
           <Heading
