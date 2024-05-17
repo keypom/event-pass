@@ -185,7 +185,7 @@ export default function ScanningPage() {
             setModalProps({
               title: 'Transfer Tokens',
               curAccountId: accountId,
-              sendTo,
+              initialSendTo: sendTo.split('.')[0],
             });
             break;
           }

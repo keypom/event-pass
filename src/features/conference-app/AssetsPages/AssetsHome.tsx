@@ -20,12 +20,12 @@ import { ReceiveIcon } from '@/components/Icons/ReceiveIcon';
 import { CameraIcon } from '@/components/Icons/CameraIcon';
 import { useConferenceContext } from '@/contexts/ConferenceContext';
 
-import UsernamePromptModal from '../modals/UsernamePromptModal';
+import ProfileTransferModal from '../modals/ProfileTransferModal';
 
 const AssetsHome = () => {
   const { tokensAvailable, eventInfo, isLoading, setSelectedTab, ticker } = useConferenceContext();
   const navigate = useNavigate();
-  const { isOpen, onClose } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleCardClick = (tab: string) => {
     navigate(`/conference/app/assets?tab=${tab}`);
@@ -93,7 +93,7 @@ const AssetsHome = () => {
 
   return (
     <Center>
-      <UsernamePromptModal isOpen={isOpen} onClose={onClose} />
+      <ProfileTransferModal isOpen={isOpen} sendTo="fll" title="Send Tokens" onClose={onClose} />
       <VStack gap={{ base: 'calc(24px + 8px)', md: 'calc(32px + 10px)' }}>
         <Skeleton fadeDuration={1} isLoaded={!isLoading}>
           <Heading
@@ -166,6 +166,7 @@ const AssetsHome = () => {
                         bg={eventInfo.styles.buttons.secondary.color}
                         borderRadius="0.75em"
                         p="2"
+                        onClick={onOpen}
                       >
                         <SendIcon color="white" h="24px" strokeWidth="1" />
                       </Box>

@@ -1,11 +1,11 @@
 import {
   Modal,
   ModalOverlay,
+  InputGroup,
   ModalContent,
   ModalHeader,
   ModalFooter,
   ModalBody,
-  ModalCloseButton,
   Button,
   Text,
   VStack,
@@ -15,6 +15,10 @@ import {
   Grid,
   GridItem,
   Spinner,
+  FormControl,
+  Input,
+  FormErrorMessage,
+  InputRightElement,
 } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
 import { accountExists } from 'keypom-js';
@@ -22,22 +26,32 @@ import { accountExists } from 'keypom-js';
 import keypomInstance from '@/lib/keypom';
 import { DeleteTextIcon } from '@/components/Icons/DeleteTextIcon';
 import { useConferenceContext } from '@/contexts/ConferenceContext';
+import { CameraIcon } from '@/components/Icons/CameraIcon';
 
 interface ProfileTransferModalProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
-  sendTo: string;
+  initialSendTo?: string;
 }
 
-const ProfileTransferModal = ({ isOpen, onClose, title, sendTo }: ProfileTransferModalProps) => {
+const ProfileTransferModal = ({
+  isOpen,
+  onClose,
+  title,
+  initialSendTo = '',
+}: ProfileTransferModalProps) => {
   const {
     eventInfo,
     accountId: curAccountId,
     secretKey,
+    setSelectedTab,
     factoryAccount,
+    ticker,
     setTriggerRefetch,
   } = useConferenceContext();
+
+  const [sendTo, setSendTo] = useState(initialSendTo);
 
   const [amount, setAmount] = useState('');
   const [isSending, setIsSending] = useState(false);
@@ -62,6 +76,12 @@ const ProfileTransferModal = ({ isOpen, onClose, title, sendTo }: ProfileTransfe
     }
   }, [isOpen]);
 
+  const handleChangeUsername = (event) => {
+    setIsValidAccount(true);
+    const { value } = event.target;
+    setSendTo(value);
+  };
+
   const closeModal = () => {
     setAmount('');
     setIsSending(false);
@@ -81,7 +101,8 @@ const ProfileTransferModal = ({ isOpen, onClose, title, sendTo }: ProfileTransfe
   };
 
   const handleConfirm = async () => {
-    const validAccount = await checkAccountValidity(sendTo);
+    const accountId = `${sendTo}.${factoryAccount}`;
+    const validAccount = await checkAccountValidity(accountId);
     if (!validAccount) {
       setIsValidAccount(false);
       setIsSending(false);
@@ -104,7 +125,7 @@ const ProfileTransferModal = ({ isOpen, onClose, title, sendTo }: ProfileTransfe
       await keypomInstance.sendConferenceTokens({
         secretKey,
         accountId: curAccountId,
-        sendTo,
+        sendTo: accountId,
         amount: keypomInstance.nearToYocto(amount)!,
         factoryAccount,
       });
@@ -180,6 +201,21 @@ const ProfileTransferModal = ({ isOpen, onClose, title, sendTo }: ProfileTransfe
     return parseFloat(amount).toFixed(4);
   };
 
+  const checkUsernameAvailable = async () => {
+    if (!sendTo) {
+      return false;
+    }
+    const accountId = `${sendTo}.${factoryAccount}`;
+    console.log('Checking username', accountId);
+    const doesExist = await accountExists(accountId);
+    console.log('Does exist', doesExist);
+    if (!doesExist || accountId === curAccountId) {
+      setIsValidAccount(false);
+      return false;
+    }
+    return true;
+  };
+
   return (
     <Modal isCentered isOpen={isOpen} onClose={closeModal}>
       <ModalOverlay backdropFilter="blur(0px)" bg="blackAlpha.600" opacity="1" />
@@ -196,7 +232,7 @@ const ProfileTransferModal = ({ isOpen, onClose, title, sendTo }: ProfileTransfe
               <Text
                 color={eventInfo.styles.h1.color}
                 fontFamily={eventInfo.styles.h1.fontFamily}
-                fontSize="2xl"
+                fontSize="3xl"
                 fontWeight={eventInfo.styles.h1.fontWeight}
                 textAlign="center"
               >
@@ -206,16 +242,69 @@ const ProfileTransferModal = ({ isOpen, onClose, title, sendTo }: ProfileTransfe
                 fontFamily={eventInfo.styles.h3.fontFamily}
                 fontSize="sm"
                 fontWeight={eventInfo.styles.h3.fontWeight}
-                pb={4}
                 textAlign="center"
                 w="full"
               >
-                Available Balance: {tokensAvailable} tokens
+                Available Balance: {tokensAvailable} ${ticker}
               </Text>
             </VStack>
           </ModalHeader>
-          <ModalCloseButton />
           <ModalBody>
+            <VStack pb="4" spacing="1" w="full">
+              <Text
+                color={eventInfo?.styles.h2.color}
+                fontFamily={eventInfo?.styles.h2.fontFamily}
+                fontSize="md"
+                fontWeight={eventInfo?.styles.h2.fontWeight}
+                textAlign="center"
+              >
+                {sendTo ? `Sending to:` : 'Enter username or scan profile QR code'}
+              </Text>
+              <FormControl isInvalid={!isValidAccount} mb="5">
+                <InputGroup>
+                  <Input
+                    backgroundColor="white"
+                    border="1px solid"
+                    borderColor={!isValidAccount ? 'red.500' : eventInfo?.styles.h1.color}
+                    borderRadius="12px"
+                    color="black"
+                    fontFamily={eventInfo?.styles.h3.fontFamily}
+                    fontSize={{ base: 'sm', md: 'md' }}
+                    fontWeight={eventInfo?.styles.h3.fontWeight}
+                    height={{ base: '38px', md: '48px' }}
+                    id="username"
+                    placeholder="Username"
+                    px="6"
+                    sx={{
+                      '::placeholder': {
+                        color: 'black', // Placeholder text color
+                      },
+                    }}
+                    value={sendTo}
+                    onBlur={checkUsernameAvailable}
+                    onChange={handleChangeUsername}
+                  />
+                  <InputRightElement height="100%" width="3rem">
+                    <Box
+                      alignItems="center"
+                      display="flex"
+                      height="100%"
+                      justifyContent="center"
+                      onClick={() => {
+                        setSelectedTab(3);
+                      }}
+                    >
+                      <CameraIcon color="black" h="18px" strokeWidth="2" w="28px" />
+                    </Box>
+                  </InputRightElement>
+                </InputGroup>
+                <FormErrorMessage>
+                  {!isValidAccount && sendTo === curAccountId.split('.')[0]
+                    ? 'Cannot send to yourself'
+                    : `User '${sendTo}' does not exist.`}
+                </FormErrorMessage>
+              </FormControl>
+            </VStack>
             <VStack spacing={8}>
               <VStack spacing="1">
                 <Text
@@ -226,9 +315,6 @@ const ProfileTransferModal = ({ isOpen, onClose, title, sendTo }: ProfileTransfe
                 >
                   {formatAmount(amount)}
                 </Text>
-                {!isValidAccount && (
-                  <Text color="red.500">Account ID is invalid or does not exist.</Text>
-                )}
                 {isOversend && <Text color="red.500">Insufficient balance.</Text>}
                 {isInvalidNumber && <Text color="red.500">Invalid number.</Text>}
               </VStack>
