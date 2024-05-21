@@ -23,7 +23,7 @@ interface ReceiveTokensModalProps {
 }
 
 const ReceiveTokensModal = ({ isOpen, onClose }: ReceiveTokensModalProps) => {
-  const { eventInfo, accountId: curAccountId, factoryAccount, ticker } = useConferenceContext();
+  const { eventInfo, accountId: curAccountId } = useConferenceContext();
 
   const modalBackground = useColorModeValue('white', 'gray.700');
   const modalPadding = { base: '6', md: '8' };
