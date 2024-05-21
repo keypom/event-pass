@@ -28,6 +28,7 @@ import { BoxWithShape } from '@/components/BoxWithShape';
 import { CLOUDFLARE_IPFS } from '@/constants/common';
 import keypomInstance from '@/lib/keypom';
 import { useConferenceContext } from '@/contexts/ConferenceContext';
+import { BackIcon } from '@/components/BackIcon';
 
 interface NFTData {
   nft: NFTMetadata;
@@ -45,7 +46,7 @@ interface NFTCardProps {
 }
 
 const CollectiblesPage: React.FC = () => {
-  const { accountId, eventInfo, dropInfo, isLoading } = useConferenceContext();
+  const { accountId, eventInfo, dropInfo, isLoading, onSelectTab } = useConferenceContext();
   const [nfts, setNFTs] = useState<NFTData[]>([]);
 
   useEffect(() => {
@@ -214,7 +215,8 @@ const CollectiblesPage: React.FC = () => {
           pb="0"
           w="90vh"
         >
-          <Box h="full" overflowY="auto">
+          <Box h="full" overflowY="auto" position="relative">
+            <BackIcon eventInfo={eventInfo} onSelectTab={onSelectTab} />
             <BoxWithShape bg="white" borderTopRadius="8xl" showNotch={false} w="full">
               {isLoading ? (
                 <Skeleton height="200px" width="full" />

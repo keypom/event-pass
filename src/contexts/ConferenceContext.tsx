@@ -44,7 +44,7 @@ interface ConferenceContextProps {
   setTriggerRefetch: Dispatch<SetStateAction<number>>;
   triggerRefetch: number;
   selectedTab: number;
-  queryString: string;
+  queryString: URLSearchParams;
   onSelectTab: (tab: number, subtab?: string) => void;
 }
 
@@ -72,7 +72,7 @@ export const ConferenceProvider = ({
 
   const path = location.pathname.split('/').pop() || 'profile';
   const query = new URLSearchParams(location.search);
-  const [queryString, setQueryString] = useState<string>(query);
+  const [queryString, setQueryString] = useState<URLSearchParams>(query);
 
   const initialTab = conferenceFooterMenuItems.findIndex((item) => item.path.includes(path));
   const [selectedTab, setSelectedTab] = useState<number>(initialTab !== -1 ? initialTab : 0); // Initialized to 0
@@ -80,7 +80,9 @@ export const ConferenceProvider = ({
 
   const onSelectTab = (tab: number, subtab?: string) => {
     if (subtab) {
-      setQueryString(`tab=${subtab}`);
+      const urlParams = new URLSearchParams(queryString);
+      urlParams.set('tab', subtab);
+      setQueryString(urlParams);
     }
     setSelectedTab(tab);
   };

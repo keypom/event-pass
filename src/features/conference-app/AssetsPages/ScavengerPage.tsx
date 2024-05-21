@@ -25,6 +25,7 @@ import { ScavengerCard } from '@/components/ScavengerHunt';
 import { BoxWithShape } from '@/components/BoxWithShape';
 import { IconBox } from '@/components/IconBox';
 import { TicketIcon } from '@/components/Icons';
+import { BackIcon } from '@/components/BackIcon';
 
 interface ScavengerHunt {
   id: string;
@@ -35,7 +36,7 @@ interface ScavengerHunt {
 }
 
 const ScavengerHuntsPage: React.FC = () => {
-  const { accountId, eventInfo, dropInfo, isLoading } = useConferenceContext();
+  const { accountId, eventInfo, dropInfo, isLoading, onSelectTab } = useConferenceContext();
   const [scavengerHunts, setScavengerHunts] = useState<ScavengerHunt[]>([]);
 
   useEffect(() => {
@@ -139,7 +140,8 @@ const ScavengerHuntsPage: React.FC = () => {
           pb="0"
           w="90vh"
         >
-          <Box h="full" overflowY="auto">
+          <Box h="full" overflowY="auto" position="relative">
+            <BackIcon eventInfo={eventInfo} onSelectTab={onSelectTab} />
             <BoxWithShape bg="white" borderTopRadius="8xl" showNotch={false} w="full">
               {isLoading ? (
                 <Skeleton height="200px" width="full" />

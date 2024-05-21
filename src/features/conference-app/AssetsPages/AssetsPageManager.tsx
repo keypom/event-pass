@@ -1,5 +1,3 @@
-import { useLocation } from 'react-router-dom';
-
 import { useConferenceContext } from '@/contexts/ConferenceContext';
 
 import ScavengerPage from './ScavengerPage';
@@ -9,10 +7,8 @@ import AuctionsPage from './AuctionsPage';
 import AssetsHome from './AssetsHome';
 
 const AssetsPageManager = () => {
-  const { accountId, dropInfo } = useConferenceContext();
-  const location = useLocation();
-  const query = new URLSearchParams(location.search);
-  const tab = query.get('tab') || 'home';
+  const { accountId, dropInfo, queryString } = useConferenceContext();
+  const tab = queryString.get('tab') || 'home';
 
   switch (tab) {
     case 'scavengers':

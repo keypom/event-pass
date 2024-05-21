@@ -10,7 +10,6 @@ import {
   Image,
   useDisclosure,
 } from '@chakra-ui/react';
-import { useNavigate } from 'react-router-dom';
 
 import { CLOUDFLARE_IPFS } from '@/constants/common';
 import { IconBox } from '@/components/IconBox';
@@ -25,13 +24,12 @@ import ReceiveTokensModal from '../modals/ReceiveTokensModal';
 
 const AssetsHome = () => {
   const { tokensAvailable, eventInfo, isLoading, onSelectTab, ticker } = useConferenceContext();
-  const navigate = useNavigate();
 
   const sendDisclosure = useDisclosure();
   const receiveDisclosure = useDisclosure();
 
   const handleCardClick = (tab: string) => {
-    navigate(`/conference/app/assets?tab=${tab}`);
+    onSelectTab(1, tab);
   };
 
   const PageCard = ({ title, imageUrl, tab }: { title: string; imageUrl: string; tab: string }) => {
