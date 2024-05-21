@@ -251,13 +251,13 @@ const CollectiblesPage: React.FC = () => {
                     Collect exclusive assets by participating in various activities.
                   </Text>
 
-                  <Accordion defaultIndex={[0]} width="100%">
+                  <Accordion allowMultiple defaultIndex={[0]} width="100%">
                     <AccordionItem border="none" width="100%">
                       <AccordionButton
                         _expanded={{ bg: 'none', borderBottom: 'none' }}
                         _focus={{ boxShadow: 'none' }}
                         _hover={{ bg: 'none' }}
-                        pb="0"
+                        pb={ownedNFTs.length > 0 ? '2' : '0'}
                         width="100%"
                       >
                         <Box flex="1" textAlign="left" width="100%">
@@ -273,7 +273,7 @@ const CollectiblesPage: React.FC = () => {
                         </Box>
                         <AccordionIcon />
                       </AccordionButton>
-                      <AccordionPanel pb={4} pt="0" width="100%">
+                      <AccordionPanel pb={4} pt={ownedNFTs.length > 0 ? '2' : '0'} width="100%">
                         {ownedNFTs.length > 0 ? (
                           <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} spacing={4} width="100%">
                             {ownedNFTs.map((nft) => (
@@ -300,7 +300,7 @@ const CollectiblesPage: React.FC = () => {
               )}
             </BoxWithShape>
             <Flex align="center" bg="gray.50" borderRadius="8xl" direction="column" px="6">
-              <Accordion defaultIndex={[0]} w="100%">
+              <Accordion allowMultiple defaultIndex={[0]} w="100%">
                 <AccordionItem border="none">
                   <AccordionButton>
                     <Box flex="1" textAlign="left">

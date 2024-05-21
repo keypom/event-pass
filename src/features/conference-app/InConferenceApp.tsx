@@ -8,6 +8,7 @@ import { conferenceFooterMenuItems, useConferenceContext } from '@/contexts/Conf
 import ProfilePage from './ProfilePage';
 import ScanningPage from './ScanningPage';
 import AssetsPageManager from './AssetsPages/AssetsPageManager';
+import AgendaPage from './AgendaPage';
 
 const selectedColor = 'black';
 const unselectedColor = 'white';
@@ -17,7 +18,9 @@ const InConferenceApp = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    navigate(`${conferenceFooterMenuItems[selectedTab].path}?${queryString}`, { replace: true });
+    navigate(`${conferenceFooterMenuItems[selectedTab].path}?${queryString.toString()}`, {
+      replace: true,
+    });
   }, [selectedTab, queryString, navigate]);
 
   const currentTab = () => {
@@ -27,7 +30,7 @@ const InConferenceApp = () => {
       case 1:
         return <AssetsPageManager />;
       case 2:
-        return <div>Agenda</div>;
+        return <AgendaPage />;
       case 3:
         return <ScanningPage />;
       default:

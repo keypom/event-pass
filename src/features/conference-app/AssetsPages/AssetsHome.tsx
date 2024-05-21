@@ -10,6 +10,7 @@ import {
   Image,
   useDisclosure,
 } from '@chakra-ui/react';
+import { LockIcon } from '@chakra-ui/icons';
 
 import { CLOUDFLARE_IPFS } from '@/constants/common';
 import { IconBox } from '@/components/IconBox';
@@ -32,7 +33,17 @@ const AssetsHome = () => {
     onSelectTab(1, tab);
   };
 
-  const PageCard = ({ title, imageUrl, tab }: { title: string; imageUrl: string; tab: string }) => {
+  const PageCard = ({
+    title,
+    imageUrl,
+    tab,
+    locked = false,
+  }: {
+    title: string;
+    imageUrl: string;
+    tab: string;
+    locked: boolean;
+  }) => {
     const cardStyle = {
       position: 'relative' as const,
       w: '100%',
@@ -47,9 +58,27 @@ const AssetsHome = () => {
       h: '120px',
     };
 
+    const lockIconStyle = {
+      position: 'absolute' as const,
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      color: 'gray.500',
+      w: '24px',
+      h: '24px',
+    };
+
     const overlayStyle = {
       position: 'absolute' as const,
-      top: '33.33%', // Position at the top
+      top: locked ? '2' : '33.33%', // Position at the top
+      left: '50%',
+      transform: 'translateX(-50%)', // Center horizontally
+      width: '100%',
+      p: '2',
+    };
+    const comingSoonStyle = {
+      position: 'absolute' as const,
+      top: '75',
       left: '50%',
       transform: 'translateX(-50%)', // Center horizontally
       width: '100%',
@@ -59,15 +88,27 @@ const AssetsHome = () => {
     const image = `${CLOUDFLARE_IPFS}/${imageUrl}`;
 
     return (
-      <Box {...cardStyle} onClick={handleCardClick.bind(null, tab)}>
+      <Box
+        {...cardStyle}
+        onClick={
+          locked
+            ? () => {
+                console.log('Coming soon');
+              }
+            : handleCardClick.bind(null, tab)
+        }
+      >
         <Flex {...imageContainerStyle}>
           <Image
             alt={title}
             borderRadius="md"
             boxSize="full" // Use 'full' instead of specific pixel size for responsiveness
+            filter={!locked ? 'none' : 'blur(4px)'}
             objectFit="cover"
             src={image}
           />
+
+          {locked && <LockIcon {...lockIconStyle} />}
           <Box {...overlayStyle}>
             <Text
               bottom="2"
@@ -79,6 +120,19 @@ const AssetsHome = () => {
               {title}
             </Text>
           </Box>
+          {locked && (
+            <Box {...comingSoonStyle}>
+              <Text
+                bottom="2"
+                color="gray.600"
+                fontFamily={eventInfo.styles.h2.fontFamily}
+                fontSize="xl"
+                fontWeight={eventInfo.styles.h2.fontWeight}
+              >
+                Coming Soon
+              </Text>
+            </Box>
+          )}
         </Flex>
       </Box>
     );
@@ -243,23 +297,27 @@ const AssetsHome = () => {
               <VStack spacing="6" w="full">
                 <PageCard
                   imageUrl="bafkreia3sfwyavkzoe2o7arkshjkepf2yeljzjk77lxevylo4yja6hij4y"
+                  locked={false}
                   tab="collectibles"
                   title="Collectibles"
                 />
                 <HStack spacing="6" w="full">
                   <PageCard
                     imageUrl="bafybeicqe3auvvhqtujlzaue3ibcqjove7qs2vo7nccovol2mscl7vjpju"
+                    locked={true}
                     tab="raffles"
                     title="Raffles"
                   />
                   <PageCard
                     imageUrl="bafkreiecyklo4kmorcij5o2gyvfq7lh535zhnryj34sc5z3php2l7x4jj4"
+                    locked={true}
                     tab="auctions"
                     title="Auctions"
                   />
                 </HStack>
                 <PageCard
                   imageUrl="bafybeibm7s666anvtql54c54mz3aeyaitr5wsx4x6j5uhzd5wayyz3atvq"
+                  locked={false}
                   tab="scavengers"
                   title="Scavenger Hunts"
                 />

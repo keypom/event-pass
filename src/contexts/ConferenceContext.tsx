@@ -83,6 +83,8 @@ export const ConferenceProvider = ({
       const urlParams = new URLSearchParams(queryString);
       urlParams.set('tab', subtab);
       setQueryString(urlParams);
+    } else {
+      setQueryString(new URLSearchParams());
     }
     setSelectedTab(tab);
   };

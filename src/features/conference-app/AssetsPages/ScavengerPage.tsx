@@ -178,7 +178,7 @@ const ScavengerHuntsPage: React.FC = () => {
                     Find all the pieces to unlock tokens, NFTs, and more!
                   </Text>
 
-                  <Accordion defaultIndex={[0]} width="100%">
+                  <Accordion allowMultiple defaultIndex={[0]} width="100%">
                     <AccordionItem border="none" width="100%">
                       <AccordionButton
                         _expanded={{ bg: 'none', borderBottom: 'none' }}
@@ -200,7 +200,7 @@ const ScavengerHuntsPage: React.FC = () => {
                         </Box>
                         <AccordionIcon />
                       </AccordionButton>
-                      <AccordionPanel pb={4} pt="0" width="100%">
+                      <AccordionPanel pb={4} pt={liveScavengers.length > 0 ? 4 : 0} width="100%">
                         {liveScavengers.length > 0 ? (
                           <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} spacing={4} width="100%">
                             {liveScavengers.map((scavenger) => (
@@ -227,7 +227,7 @@ const ScavengerHuntsPage: React.FC = () => {
               )}
             </BoxWithShape>
             <Flex align="center" bg="gray.50" borderRadius="8xl" direction="column" px="6">
-              <Accordion defaultIndex={[0]} w="100%">
+              <Accordion allowMultiple defaultIndex={[0]} w="100%">
                 <AccordionItem border="none">
                   <AccordionButton>
                     <Box flex="1" textAlign="left">
