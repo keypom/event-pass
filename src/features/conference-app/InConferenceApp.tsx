@@ -13,12 +13,12 @@ const selectedColor = 'black';
 const unselectedColor = 'white';
 
 const InConferenceApp = () => {
-  const { eventInfo, selectedTab, setSelectedTab } = useConferenceContext();
+  const { eventInfo, selectedTab, onSelectTab, queryString } = useConferenceContext();
   const navigate = useNavigate();
 
   useEffect(() => {
-    navigate(conferenceFooterMenuItems[selectedTab].path, { replace: true });
-  }, [selectedTab, navigate]);
+    navigate(`${conferenceFooterMenuItems[selectedTab].path}?${queryString}`, { replace: true });
+  }, [selectedTab, queryString, navigate]);
 
   const currentTab = () => {
     switch (selectedTab) {
@@ -69,7 +69,7 @@ const InConferenceApp = () => {
               align="center"
               direction="column"
               onClick={() => {
-                setSelectedTab(index);
+                onSelectTab(index);
               }}
             >
               <Box as="button" paddingX="2" paddingY="1">

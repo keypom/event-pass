@@ -58,7 +58,7 @@ const ReceiveTokensModal = ({ isOpen, onClose }: ReceiveTokensModalProps) => {
                     fontSize="xl"
                     fontWeight={eventInfo.styles.h2.fontWeight}
                   >
-                    A. Scan QR Code
+                    A. By QR Code
                   </Text>
                   <Text
                     color={eventInfo.styles.h3.color}
@@ -86,7 +86,7 @@ const ReceiveTokensModal = ({ isOpen, onClose }: ReceiveTokensModalProps) => {
                     fontSize="xl"
                     fontWeight={eventInfo.styles.h2.fontWeight}
                   >
-                    B. Use Username
+                    B. By Username
                   </Text>
                   <Text
                     color={eventInfo.styles.h3.color}

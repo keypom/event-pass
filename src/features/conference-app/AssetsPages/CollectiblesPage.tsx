@@ -9,9 +9,16 @@ import {
   Text,
   VStack,
   SimpleGrid,
-  Spinner,
   Badge,
-  HStack,
+  CircularProgress,
+  CircularProgressLabel,
+  Tooltip,
+  Accordion,
+  AccordionItem,
+  AccordionButton,
+  AccordionPanel,
+  AccordionIcon,
+  Divider,
 } from '@chakra-ui/react';
 import { CheckIcon, LockIcon } from '@chakra-ui/icons';
 
@@ -20,7 +27,6 @@ import { TicketIcon } from '@/components/Icons';
 import { BoxWithShape } from '@/components/BoxWithShape';
 import { CLOUDFLARE_IPFS } from '@/constants/common';
 import keypomInstance from '@/lib/keypom';
-import ToggleSwitch from '@/components/ToggleSwitch/ToggleSwitch';
 import { useConferenceContext } from '@/contexts/ConferenceContext';
 
 interface NFTData {
@@ -38,72 +44,9 @@ interface NFTCardProps {
   isOwned: boolean;
 }
 
-const NFTCard: React.FC<NFTCardProps> = ({ nft, isOwned }: NFTCardProps) => {
-  const cardStyle = {
-    position: 'relative' as const,
-    w: '100%',
-    h: '220px',
-    p: '4',
-    bg: isOwned ? 'gray.50' : 'gray.100',
-    boxShadow: isOwned ? '0px 4px 12px rgba(0, 0, 0, 0.15)' : 'none',
-    border: isOwned ? '2px solid' : 'none',
-    borderColor: isOwned ? 'green.200' : 'none',
-    borderRadius: 'md' as const,
-  };
-
-  const lockIconStyle = {
-    position: 'absolute' as const,
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    color: 'gray.500',
-    w: '24px',
-    h: '24px',
-  };
-
-  const imageContainerStyle = {
-    position: 'relative' as const,
-    w: '100%',
-    h: '130px',
-    mb: '2',
-  };
-
-  return (
-    <Box {...cardStyle}>
-      <Flex {...imageContainerStyle}>
-        <Image
-          alt={nft.name}
-          borderRadius="md"
-          boxSize="full"
-          filter={isOwned ? 'none' : 'blur(4px)'}
-          objectFit="cover"
-          src={`${CLOUDFLARE_IPFS}/${nft.image}`}
-        />
-        {!isOwned && <LockIcon {...lockIconStyle} />}
-      </Flex>
-      <Text
-        bottom="2"
-        color={isOwned ? 'black' : 'gray.500'}
-        fontSize="sm"
-        fontWeight="bold"
-        textAlign="center"
-      >
-        {nft.name}
-      </Text>
-      {isOwned && <CheckIcon color="green.500" position="absolute" right="2" top="2" />}
-      {isOwned && (
-        <Badge borderRadius="4" colorScheme="blue" left="2" position="absolute" size="sm" top="2">
-          Owned
-        </Badge>
-      )}
-    </Box>
-  );
-};
-
-const AssetsPage: React.FC = () => {
+const CollectiblesPage: React.FC = () => {
   const { accountId, eventInfo, dropInfo, isLoading } = useConferenceContext();
   const [nfts, setNFTs] = useState<NFTData[]>([]);
-  const [showUnowned, setShowUnowned] = useState(true);
 
   useEffect(() => {
     if (!accountId) return;
@@ -116,11 +59,7 @@ const AssetsPage: React.FC = () => {
         args: { account_id: accountId },
       });
 
-      let sortedNFTDrops = nftDrops.sort((a, b) => b.is_owned - a.is_owned);
-
-      if (!showUnowned) {
-        sortedNFTDrops = sortedNFTDrops.filter((nft) => nft.is_owned);
-      }
+      const sortedNFTDrops = nftDrops.sort((a, b) => b.is_owned - a.is_owned);
 
       const parsedNFTs = sortedNFTDrops.map((nftData) => ({
         nft: nftData.nft,
@@ -131,7 +70,69 @@ const AssetsPage: React.FC = () => {
     };
 
     getNFTs();
-  }, [accountId, dropInfo, showUnowned]);
+  }, [accountId, dropInfo]);
+
+  const NFTCard: React.FC<NFTCardProps> = ({ nft, isOwned }: NFTCardProps) => {
+    const cardStyle = {
+      position: 'relative' as const,
+      w: '100%',
+      h: '220px',
+      p: '4',
+      bg: isOwned ? 'gray.50' : 'gray.100',
+      boxShadow: isOwned ? '0px 4px 12px rgba(0, 0, 0, 0.15)' : 'none',
+      border: isOwned ? '2px solid' : 'none',
+      borderColor: isOwned ? 'green.200' : 'none',
+      borderRadius: 'md' as const,
+    };
+
+    const lockIconStyle = {
+      position: 'absolute' as const,
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      color: 'gray.500',
+      w: '24px',
+      h: '24px',
+    };
+
+    const imageContainerStyle = {
+      position: 'relative' as const,
+      w: '100%',
+      h: '130px',
+      mb: '2',
+    };
+
+    return (
+      <Box {...cardStyle}>
+        <Flex {...imageContainerStyle}>
+          <Image
+            alt={nft.name}
+            borderRadius="md"
+            boxSize="full"
+            filter={isOwned ? 'none' : 'blur(4px)'}
+            objectFit="cover"
+            src={`${CLOUDFLARE_IPFS}/${nft.image}`}
+          />
+          {!isOwned && <LockIcon {...lockIconStyle} />}
+        </Flex>
+        <Text
+          color={eventInfo.styles.h3.color}
+          fontFamily={eventInfo.styles.h3.fontFamily}
+          fontSize="sm"
+          fontWeight={eventInfo.styles.h3.fontWeight}
+          textAlign="center"
+        >
+          {nft.name}
+        </Text>
+        {isOwned && <CheckIcon color="green.500" position="absolute" right="2" top="2" />}
+        {isOwned && (
+          <Badge borderRadius="4" colorScheme="blue" left="2" position="absolute" size="sm" top="2">
+            Owned
+          </Badge>
+        )}
+      </Box>
+    );
+  };
 
   if (isLoading) {
     return (
@@ -140,6 +141,10 @@ const AssetsPage: React.FC = () => {
       </Center>
     );
   }
+
+  const ownedNFTs = nfts.filter((nft) => nft.owned);
+  const unownedNFTs = nfts.filter((nft) => !nft.owned);
+  const progressValue = nfts.length > 0 ? (ownedNFTs.length / nfts.length) * 100 : 0;
 
   return (
     <Center>
@@ -180,11 +185,22 @@ const AssetsPage: React.FC = () => {
           icon={
             <Skeleton isLoaded={!isLoading}>
               {eventInfo.styles.icon.image ? (
-                <Image
-                  height={{ base: '10', md: '12' }}
-                  src={`${CLOUDFLARE_IPFS}/${eventInfo.styles.icon.image}`}
-                  width={{ base: '10', md: '12' }}
-                />
+                <CircularProgress
+                  color={eventInfo.styles.h1.color}
+                  size="60px"
+                  thickness="12px"
+                  trackColor="gray.200"
+                  value={progressValue}
+                >
+                  <CircularProgressLabel
+                    color={eventInfo.styles.h2.color}
+                    fontFamily={eventInfo.styles.h2.fontFamily}
+                    fontSize="lg"
+                    fontWeight={eventInfo.styles.h2.fontWeight}
+                  >
+                    {Math.round(progressValue)}%
+                  </CircularProgressLabel>
+                </CircularProgress>
               ) : (
                 <TicketIcon height={{ base: '8', md: '10' }} width={{ base: '8', md: '10' }} />
               )}
@@ -209,44 +225,104 @@ const AssetsPage: React.FC = () => {
                   pb={{ base: '3', md: '5' }}
                   pt={{ base: '10', md: '16' }}
                   px={{ base: '6', md: '8' }}
-                ></Flex>
+                >
+                  <Tooltip label={`You have ${ownedNFTs.length} of ${nfts.length} collectibles`}>
+                    <Text
+                      color={eventInfo.styles.h3.color}
+                      fontFamily={eventInfo.styles.h3.fontFamily}
+                      fontSize="sm"
+                      fontWeight={eventInfo.styles.h3.fontWeight}
+                      textAlign="center"
+                    >
+                      {ownedNFTs.length} of {nfts.length} Found
+                    </Text>
+                  </Tooltip>
+                  <Divider my="2" />
+                  <Text
+                    color={eventInfo.styles.h3.color}
+                    fontFamily={eventInfo.styles.h3.fontFamily}
+                    fontSize="sm"
+                    fontWeight={eventInfo.styles.h3.fontWeight}
+                    pb="2"
+                    textAlign="center"
+                  >
+                    Collect exclusive assets by participating in various activities.
+                  </Text>
+
+                  <Accordion defaultIndex={[0]} width="100%">
+                    <AccordionItem border="none" width="100%">
+                      <AccordionButton
+                        _expanded={{ bg: 'none', borderBottom: 'none' }}
+                        _focus={{ boxShadow: 'none' }}
+                        _hover={{ bg: 'none' }}
+                        pb="0"
+                        width="100%"
+                      >
+                        <Box flex="1" textAlign="left" width="100%">
+                          <Heading
+                            color={eventInfo.styles.h1.color}
+                            fontFamily={eventInfo.styles.h1.fontFamily}
+                            fontSize="2xl"
+                            fontWeight={eventInfo.styles.h1.fontWeight}
+                            textAlign="center"
+                          >
+                            Found
+                          </Heading>
+                        </Box>
+                        <AccordionIcon />
+                      </AccordionButton>
+                      <AccordionPanel pb={4} pt="0" width="100%">
+                        {ownedNFTs.length > 0 ? (
+                          <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} spacing={4} width="100%">
+                            {ownedNFTs.map((nft) => (
+                              <NFTCard key={nft.nft.name} isOwned={nft.owned} nft={nft.nft} />
+                            ))}
+                          </SimpleGrid>
+                        ) : (
+                          <Center>
+                            <Text
+                              color={eventInfo.styles.h3.color}
+                              fontFamily={eventInfo.styles.h3.fontFamily}
+                              fontSize="sm"
+                              fontWeight={eventInfo.styles.h3.fontWeight}
+                              textAlign="center"
+                            >
+                              You haven't found any collectibles yet.
+                            </Text>
+                          </Center>
+                        )}
+                      </AccordionPanel>
+                    </AccordionItem>
+                  </Accordion>
+                </Flex>
               )}
             </BoxWithShape>
-            <Flex align="center" bg="gray.50" borderRadius="8xl" direction="column" p="6">
-              <Box mb="2" textAlign="center" w="full">
-                <Text
-                  color="#844AFF"
-                  fontFamily="denverBody"
-                  fontSize={{ base: 'xl', md: '2xl' }}
-                  fontWeight="600"
-                >
-                  Unlockables
-                </Text>
-              </Box>
-              <HStack justifyContent="center" mb="2" w="full">
-                <Text fontSize={{ base: 'md', md: 'lg' }} fontWeight="500">
-                  Show Unowned
-                </Text>
-                <ToggleSwitch
-                  handleToggle={() => {
-                    setShowUnowned(!showUnowned);
-                  }}
-                  toggle={showUnowned}
-                />
-              </HStack>
-              {isLoading ? (
-                <Spinner size="xl" />
-              ) : nfts.length > 0 ? (
-                <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} mt="4" spacing={4} w="full">
-                  {nfts.map((nft) => (
-                    <NFTCard key={nft.nft.name} isOwned={nft.owned} nft={nft.nft} />
-                  ))}
-                </SimpleGrid>
-              ) : (
-                <Text fontSize={{ base: 'md', md: 'lg' }} fontWeight="500" mt="4">
-                  You haven't received any NFTs yet.
-                </Text>
-              )}
+            <Flex align="center" bg="gray.50" borderRadius="8xl" direction="column" px="6">
+              <Accordion defaultIndex={[0]} w="100%">
+                <AccordionItem border="none">
+                  <AccordionButton>
+                    <Box flex="1" textAlign="left">
+                      <Heading
+                        color={eventInfo.styles.h1.color}
+                        fontFamily={eventInfo.styles.h1.fontFamily}
+                        fontSize="2xl"
+                        fontWeight={eventInfo.styles.h1.fontWeight}
+                        textAlign="center"
+                      >
+                        Not Found
+                      </Heading>
+                    </Box>
+                    <AccordionIcon />
+                  </AccordionButton>
+                  <AccordionPanel pb={4}>
+                    <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} spacing={4} w="full">
+                      {unownedNFTs.map((nft) => (
+                        <NFTCard key={nft.nft.name} isOwned={nft.owned} nft={nft.nft} />
+                      ))}
+                    </SimpleGrid>
+                  </AccordionPanel>
+                </AccordionItem>
+              </Accordion>
             </Flex>
           </Box>
         </IconBox>
@@ -255,4 +331,4 @@ const AssetsPage: React.FC = () => {
   );
 };
 
-export default AssetsPage;
+export default CollectiblesPage;

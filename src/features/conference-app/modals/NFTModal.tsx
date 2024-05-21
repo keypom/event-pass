@@ -17,17 +17,18 @@ import Confetti from 'react-confetti';
 
 import { type FunderEventMetadata } from '@/lib/eventsHelpers';
 import { CLOUDFLARE_IPFS } from '@/constants/common';
+import { useConferenceContext } from '@/contexts/ConferenceContext';
 
 interface NFTModalProps {
   isOpen: boolean;
   onClose: () => void;
-  setSelectedTab: (tab: number) => void;
   name: string;
   image: string;
   eventInfo: FunderEventMetadata;
 }
 
-const NFTModal = ({ isOpen, onClose, setSelectedTab, name, image, eventInfo }: NFTModalProps) => {
+const NFTModal = ({ isOpen, onClose, name, image, eventInfo }: NFTModalProps) => {
+  const { onSelectTab } = useConferenceContext();
   const imageUrl = `${CLOUDFLARE_IPFS}/${image}`;
   const modalBackground = useColorModeValue('white', 'gray.700');
   const modalPadding = { base: '6', md: '8' };
@@ -106,7 +107,7 @@ const NFTModal = ({ isOpen, onClose, setSelectedTab, name, image, eventInfo }: N
               variant="outline"
               w="full"
               onClick={() => {
-                setSelectedTab(1);
+                onSelectTab(1, 'collectibles');
               }}
             >
               MY ASSETS

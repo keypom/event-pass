@@ -16,9 +16,9 @@ const AssetsPageManager = () => {
 
   switch (tab) {
     case 'scavengers':
-      return <ScavengerPage accountId={accountId} dropInfo={dropInfo} />;
+      return <ScavengerPage />;
     case 'collectibles':
-      return <CollectiblesPage accountId={accountId} dropInfo={dropInfo} />;
+      return <CollectiblesPage />;
     case 'raffles':
       return <RafflesPage accountId={accountId} dropInfo={dropInfo} />;
     case 'auctions':

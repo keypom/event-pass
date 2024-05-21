@@ -39,15 +39,8 @@ interface StateRefObject {
 }
 
 export default function ScanningPage() {
-  const {
-    eventInfo,
-    dropInfo,
-    isLoading,
-    setTriggerRefetch,
-    accountId,
-    setSelectedTab,
-    secretKey,
-  } = useConferenceContext();
+  const { eventInfo, dropInfo, isLoading, setTriggerRefetch, accountId, onSelectTab, secretKey } =
+    useConferenceContext();
 
   const toast = useToast();
 
@@ -226,7 +219,6 @@ export default function ScanningPage() {
         <ScavengerModal
           eventInfo={eventInfo}
           isOpen={modalOpen}
-          setSelectedTab={setSelectedTab}
           onClose={() => {
             setModalOpen(false);
           }}
@@ -237,7 +229,6 @@ export default function ScanningPage() {
         <NFTModal
           eventInfo={eventInfo}
           isOpen={modalOpen}
-          setSelectedTab={setSelectedTab}
           onClose={() => {
             setModalOpen(false);
           }}
@@ -248,7 +239,6 @@ export default function ScanningPage() {
         <TokenModal
           eventInfo={eventInfo}
           isOpen={modalOpen}
-          setSelectedTab={setSelectedTab}
           onClose={() => {
             setModalOpen(false);
           }}
@@ -259,7 +249,6 @@ export default function ScanningPage() {
         <MerchModal
           eventInfo={eventInfo}
           isOpen={modalOpen}
-          setSelectedTab={setSelectedTab}
           onClose={() => {
             setModalOpen(false);
           }}
@@ -270,7 +259,6 @@ export default function ScanningPage() {
         <RaffleModal
           eventInfo={eventInfo}
           isOpen={modalOpen}
-          setSelectedTab={setSelectedTab}
           onClose={() => {
             setModalOpen(false);
           }}
@@ -281,7 +269,6 @@ export default function ScanningPage() {
         <SponsorModal
           eventInfo={eventInfo}
           isOpen={modalOpen}
-          setSelectedTab={setSelectedTab}
           onClose={() => {
             setModalOpen(false);
           }}
@@ -546,7 +533,7 @@ export default function ScanningPage() {
                   textDecoration="underline" // Remove underline from text
                   transition="color 0.2s, text-decoration 0.2s" // Smooth transition for hover effects
                   onClick={() => {
-                    setSelectedTab(0);
+                    onSelectTab(0);
                   }}
                 >
                   View Profile QR Code

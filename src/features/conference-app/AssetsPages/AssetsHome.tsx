@@ -24,7 +24,7 @@ import ProfileTransferModal from '../modals/ProfileTransferModal';
 import ReceiveTokensModal from '../modals/ReceiveTokensModal';
 
 const AssetsHome = () => {
-  const { tokensAvailable, eventInfo, isLoading, setSelectedTab, ticker } = useConferenceContext();
+  const { tokensAvailable, eventInfo, isLoading, onSelectTab, ticker } = useConferenceContext();
   const navigate = useNavigate();
 
   const sendDisclosure = useDisclosure();
@@ -213,7 +213,7 @@ const AssetsHome = () => {
                         borderRadius="0.75em"
                         p="2"
                         onClick={() => {
-                          setSelectedTab(3);
+                          onSelectTab(3);
                         }}
                       >
                         <CameraIcon color="white" h="24px" strokeWidth="1" />

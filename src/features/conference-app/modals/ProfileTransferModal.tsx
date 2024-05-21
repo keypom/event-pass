@@ -45,7 +45,7 @@ const ProfileTransferModal = ({
     eventInfo,
     accountId: curAccountId,
     secretKey,
-    setSelectedTab,
+    onSelectTab,
     factoryAccount,
     ticker,
     setTriggerRefetch,
@@ -291,7 +291,7 @@ const ProfileTransferModal = ({
                       height="100%"
                       justifyContent="center"
                       onClick={() => {
-                        setSelectedTab(3);
+                        onSelectTab(3);
                       }}
                     >
                       <CameraIcon color="black" h="18px" strokeWidth="2" w="28px" />

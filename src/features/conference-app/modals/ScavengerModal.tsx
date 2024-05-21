@@ -17,11 +17,11 @@ import Confetti from 'react-confetti';
 
 import { type FunderEventMetadata } from '@/lib/eventsHelpers';
 import { CLOUDFLARE_IPFS } from '@/constants/common';
+import { useConferenceContext } from '@/contexts/ConferenceContext';
 
 interface ScavengerModalProps {
   isOpen: boolean;
   onClose: () => void;
-  setSelectedTab: (tab: number) => void;
   numFound: number;
   numRequired: number;
   image: string;
@@ -32,13 +32,13 @@ interface ScavengerModalProps {
 const ScavengerModal = ({
   isOpen,
   onClose,
-  setSelectedTab,
   numFound,
   numRequired,
   tokenAmount,
   image,
   eventInfo,
 }: ScavengerModalProps) => {
+  const { onSelectTab } = useConferenceContext();
   let title = '';
   let subtitle = '';
   let body = '';
@@ -138,7 +138,7 @@ const ScavengerModal = ({
               variant="outline"
               w="full"
               onClick={() => {
-                setSelectedTab(1);
+                onSelectTab(1, 'scavengers');
               }}
             >
               MY ASSETS

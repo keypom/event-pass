@@ -44,7 +44,8 @@ interface ConferenceContextProps {
   setTriggerRefetch: Dispatch<SetStateAction<number>>;
   triggerRefetch: number;
   selectedTab: number;
-  setSelectedTab: Dispatch<SetStateAction<number>>;
+  queryString: string;
+  onSelectTab: (tab: number, subtab?: string) => void;
 }
 
 const ConferenceContext = createContext<ConferenceContextProps | undefined>(undefined);
@@ -60,8 +61,9 @@ export const ConferenceProvider = ({
     | 'tokensAvailable'
     | 'setTriggerRefetch'
     | 'triggerRefetch'
+    | 'queryString'
     | 'selectedTab'
-    | 'setSelectedTab'
+    | 'onSelectTab'
   >;
 }) => {
   const [accountId, setAccountId] = useState<string>('');
@@ -69,9 +71,19 @@ export const ConferenceProvider = ({
   const [triggerRefetch, setTriggerRefetch] = useState<number>(0);
 
   const path = location.pathname.split('/').pop() || 'profile';
+  const query = new URLSearchParams(location.search);
+  const [queryString, setQueryString] = useState<string>(query);
+
   const initialTab = conferenceFooterMenuItems.findIndex((item) => item.path.includes(path));
   const [selectedTab, setSelectedTab] = useState<number>(initialTab !== -1 ? initialTab : 0); // Initialized to 0
   const { dropInfo, factoryAccount, isLoading, secretKey } = initialData;
+
+  const onSelectTab = (tab: number, subtab?: string) => {
+    if (subtab) {
+      setQueryString(`tab=${subtab}`);
+    }
+    setSelectedTab(tab);
+  };
 
   useEffect(() => {
     const recoverAccount = async () => {
@@ -105,8 +117,9 @@ export const ConferenceProvider = ({
         tokensAvailable,
         setTriggerRefetch,
         triggerRefetch,
+        queryString,
         selectedTab,
-        setSelectedTab,
+        onSelectTab,
       }}
     >
       {children}

@@ -17,26 +17,19 @@ import Confetti from 'react-confetti';
 
 import { type FunderEventMetadata } from '@/lib/eventsHelpers';
 import { CLOUDFLARE_IPFS } from '@/constants/common';
+import { useConferenceContext } from '@/contexts/ConferenceContext';
 
 interface TokenModalProps {
   isOpen: boolean;
   onClose: () => void;
-  setSelectedTab: (tab: number) => void;
   tokenAmount: string;
   image: string;
   name: string;
   eventInfo: FunderEventMetadata;
 }
 
-const TokenModal = ({
-  isOpen,
-  onClose,
-  setSelectedTab,
-  tokenAmount,
-  image,
-  name,
-  eventInfo,
-}: TokenModalProps) => {
+const TokenModal = ({ isOpen, onClose, tokenAmount, image, name, eventInfo }: TokenModalProps) => {
+  const { onSelectTab } = useConferenceContext();
   const imageUrl = `${CLOUDFLARE_IPFS}/${image}`;
   const modalBackground = useColorModeValue('white', 'gray.700');
   const modalPadding = { base: '6', md: '8' };
@@ -115,7 +108,7 @@ const TokenModal = ({
               variant="outline"
               w="full"
               onClick={() => {
-                setSelectedTab(1);
+                onSelectTab(1);
               }}
             >
               MY ASSETS
