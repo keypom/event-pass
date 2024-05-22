@@ -3,49 +3,34 @@ import {
   Center,
   Flex,
   Heading,
-  Image,
-  Text,
   VStack,
   HStack,
   Skeleton,
-  Grid,
-  GridItem,
+  Input,
+  IconButton,
+  Divider,
+  ButtonGroup,
+  Image,
 } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
-import { RepeatClockIcon, TimeIcon } from '@chakra-ui/icons';
+import { SearchIcon } from '@chakra-ui/icons';
+import { FaThList, FaTh } from 'react-icons/fa';
 
 import { useConferenceContext } from '@/contexts/ConferenceContext';
 import { IconBox } from '@/components/IconBox';
 import { BoxWithShape } from '@/components/BoxWithShape';
 import { CLOUDFLARE_IPFS } from '@/constants/common';
-import { CalendarIcon } from '@/components/Icons/CalendarIcon';
-import { LocationPinIcon } from '@/components/Icons/LocationPinIcon';
+import GroupedAgendaItems from '@/components/AgendaItem/GroupedAgendaItems';
+import AgendaItemCard from '@/components/AgendaItem/AgendaItemCard';
 
-type Track =
-  | 'Identity, Privacy & Security'
-  | 'Impact & Public Goods'
-  | 'Infrastructure & Scalability'
-  | 'DAOs & Communities'
-  | 'Defi, NFTs & Gaming';
-
-type Format =
-  | 'Presentation'
-  | 'Panel'
-  | 'Ceremony'
-  | 'Technical Workshop'
-  | 'Experience'
-  | 'Creative Expression'
-  | 'Mini Summit'
-  | 'Fireside Chat';
-
-interface Speaker {
+export interface Speaker {
   name: string;
   image: string;
   title?: string;
   company?: string;
 }
 
-interface AgendaItem {
+export interface AgendaItem {
   title: string;
   location: string;
   building: string;
@@ -54,315 +39,188 @@ interface AgendaItem {
   date: string;
   duration: string;
   description: string;
-  format?: Format;
+  format?: string;
   speakers?: Speaker[];
   presentedBy?: string;
   track?: string;
 }
 
+// Dummy data moved outside
+const dummyAgendaData: AgendaItem[] = [
+  {
+    date: 'Wednesday, May 29',
+    time: '9:00 AM',
+    duration: '50 mins',
+    title: 'RWAs & Tokenization - Evolution or Revolution in Traditional Finance?',
+    location: 'ACC: Spotlight Stage',
+    building: 'Building A',
+    description:
+      'Join us for an insightful discussion as we dive into the world of RWA tokenization. Explore the potential benefits, challenges, and opportunities associated with RWA tokenization, and its role in transforming various traditional financial markets.',
+    color: 'red.100',
+    format: 'Ceremony',
+    speakers: [
+      {
+        name: 'Carlos Domingo',
+        image:
+          'https://d2pasa6bkzkrjd.cloudfront.net/_resize/consensus2024/speaker/300/site/consensus2024/images/userfiles/speakers/766129b4736cae5d8287e2ba4802cd1c.jpg',
+        title: 'Co-Founder and CEO',
+        company: 'Securitize',
+      },
+      {
+        name: 'Adam Lawrence',
+        image:
+          'https://d2pasa6bkzkrjd.cloudfront.net/_resize/consensus2024/speaker/300/site/consensus2024/images/userfiles/speakers/b275a6942bb346bde978b75400ebc34d.jpg',
+        title: 'CEO and Co-Founder',
+        company: 'RWA.xyz',
+      },
+      {
+        name: 'John Patrick Mullin',
+        image:
+          'https://d2pasa6bkzkrjd.cloudfront.net/_resize/consensus2024/speaker/300/site/consensus2024/images/userfiles/speakers/5deda7c6cbc11e65cae2c5b7bc30c63b.jpg',
+        title: 'CEO and Co-Founder',
+        company: 'MANTRA',
+      },
+    ],
+    presentedBy: 'Conference Org',
+    track: 'Sponsored Sessions',
+  },
+  {
+    date: 'Wednesday, May 29',
+    time: '9:00 AM',
+    duration: '10 mins',
+    title: 'Welcome to Consensus 2025',
+    location: 'ACC: Mainstage',
+    building: 'Building A',
+    description:
+      'Join us for an insightful discussion as we dive into the world of RWA tokenization. Explore the potential benefits, challenges, and opportunities associated with RWA tokenization, and its role in transforming various traditional financial markets.',
+    color: 'blue.100',
+    format: 'Ceremony',
+    speakers: [
+      {
+        name: 'Michael Casey',
+        image:
+          'https://d2pasa6bkzkrjd.cloudfront.net/_resize/consensus2024/speaker/300/site/consensus2024/images/userfiles/speakers/ed5f04da8a640fa30b2976a1166097e2.jpg',
+        title: 'Chain, Consensus 2025',
+        company: 'CoinDesk',
+      },
+    ],
+  },
+  {
+    date: 'Wednesday, May 29',
+    time: '10:00 AM',
+    duration: '05 mins',
+    title: 'Welcome',
+    location: 'ACC: Gen C Stage',
+    building: 'Building A',
+    description:
+      'Join us for an insightful discussion as we dive into the world of RWA tokenization. Explore the potential benefits, challenges, and opportunities associated with RWA tokenization, and its role in transforming various traditional financial markets.',
+    color: 'red.100',
+    format: 'Ceremony',
+    speakers: [
+      {
+        name: 'Sam Ewen',
+        image:
+          'https://d2pasa6bkzkrjd.cloudfront.net/_resize/consensus2024/speaker/300/site/consensus2024/images/userfiles/speakers/9e4e6206a5e8ceb0a6e9561594961a83.jpg',
+        title: 'SVP',
+        company: 'CoinDesk',
+      },
+    ],
+    presentedBy: 'Conference Org',
+  },
+  {
+    date: 'Wednesday, May 29',
+    time: '10:05 AM',
+    duration: '30 mins',
+    title: 'How Brands Use Web3 to Reach New Luxury Consumers',
+    location: 'ACC: Gen C Stage',
+    building: 'Building A',
+    description:
+      'Join us for an insightful discussion as we dive into the world of RWA tokenization. Explore the potential benefits, challenges, and opportunities associated with RWA tokenization, and its role in transforming various traditional financial markets.',
+    color: 'blue.100',
+    format: 'Ceremony',
+    speakers: [
+      {
+        name: 'Vanessa Grellet',
+        image:
+          'https://d2pasa6bkzkrjd.cloudfront.net/_resize/consensus2024/speaker/300/site/consensus2024/images/userfiles/speakers/70eae8a53338307bf6e0c2a1e4713815.jpg',
+        title: 'Managing Partner',
+        company: 'Arche Capital',
+      },
+      {
+        name: 'Erika Wykes-Sneyd',
+        image:
+          'https://d2pasa6bkzkrjd.cloudfront.net/_resize/consensus2024/speaker/300/site/consensus2024/images/userfiles/speakers/69319e3fe587ffcedcff4a9318eddf4e.jpg',
+        title: 'Vice President of adidas /// Studio',
+        company: 'adidas',
+      },
+      {
+        name: 'Dani Mariano',
+        image:
+          'https://d2pasa6bkzkrjd.cloudfront.net/_resize/consensus2024/speaker/300/site/consensus2024/images/userfiles/speakers/886ecce4917c9bb875824184ca8a9979.jpg',
+        title: 'President',
+        company: 'Razorfish',
+      },
+      {
+        name: 'Camilla McFarland',
+        image:
+          'https://d2pasa6bkzkrjd.cloudfront.net/_resize/consensus2024/speaker/300/site/consensus2024/images/userfiles/speakers/863fbbc9d36b475a4ee528e569c4b3b8.jpg',
+        title: 'Advisor',
+        company: 'Serotonin',
+      },
+    ],
+    presentedBy: 'Conference Org',
+    track: 'Web3, Brand',
+  },
+];
+
+const getDummyAgendaForDate = (date: Date): AgendaItem[] => {
+  // Here you can filter based on the date if necessary
+  return dummyAgendaData;
+};
+
 const AgendaPage: React.FC = () => {
   const { eventInfo, isLoading } = useConferenceContext();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [dummyAgenda, setDummyAgenda] = useState<AgendaItem[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [viewOption, setViewOption] = useState('list');
 
   useEffect(() => {
     setDummyAgenda(getDummyAgendaForDate(currentDate));
   }, [currentDate]);
 
-  const getDummyAgendaForDate = (date: Date): AgendaItem[] => {
-    return [
-      {
-        date: 'Wednesday, May 29',
-        time: '9:00 AM',
-        duration: '50 mins',
-        title: 'RWAs & Tokenization - Evolution or Revolution in Traditional Finance?',
-        location: 'ACC: Spotlight Stage',
-        building: 'Building A',
-        description:
-          'Join us for an insightful discussion as we dive into the world of RWA tokenization. Explore the potential benefits, challenges, and opportunities associated with RWA tokenization, and its role in transforming various traditional financial markets.',
-        color: 'red.100',
-        format: 'Ceremony',
-        speakers: [
-          {
-            name: 'Carlos Domingo',
-            image:
-              'https://d2pasa6bkzkrjd.cloudfront.net/_resize/consensus2024/speaker/300/site/consensus2024/images/userfiles/speakers/766129b4736cae5d8287e2ba4802cd1c.jpg',
-            title: 'Co-Founder and CEO',
-            company: 'Securitize',
-          },
-          {
-            name: 'Adam Lawrence',
-            image:
-              'https://d2pasa6bkzkrjd.cloudfront.net/_resize/consensus2024/speaker/300/site/consensus2024/images/userfiles/speakers/b275a6942bb346bde978b75400ebc34d.jpg',
-            title: 'CEO and Co-Founder',
-            company: 'RWA.xyz',
-          },
-          {
-            name: 'John Patrick Mullin',
-            image:
-              'https://d2pasa6bkzkrjd.cloudfront.net/_resize/consensus2024/speaker/300/site/consensus2024/images/userfiles/speakers/5deda7c6cbc11e65cae2c5b7bc30c63b.jpg',
-            title: 'CEO and Co-Founder',
-            company: 'MANTRA',
-          },
-        ],
-        presentedBy: 'Conference Org',
-        track: 'Sponsored Sessions',
-      },
-      {
-        date: 'Wednesday, May 29',
-        time: '9:00 AM',
-        duration: '10 mins',
-        title: 'Welcome to Consensus 2025',
-        location: 'ACC: Mainstage',
-        building: 'Building A',
-        description:
-          'Join us for an insightful discussion as we dive into the world of RWA tokenization. Explore the potential benefits, challenges, and opportunities associated with RWA tokenization, and its role in transforming various traditional financial markets.',
-        color: 'blue.100',
-        format: 'Ceremony',
-        speakers: [
-          {
-            name: 'Michael Casey',
-            image:
-              'https://d2pasa6bkzkrjd.cloudfront.net/_resize/consensus2024/speaker/300/site/consensus2024/images/userfiles/speakers/ed5f04da8a640fa30b2976a1166097e2.jpg',
-            title: 'Chain, Consensus 2025',
-            company: 'CoinDesk',
-          },
-        ],
-      },
-      {
-        date: 'Wednesday, May 29',
-        time: '10:00 AM',
-        duration: '05 mins',
-        title: 'Welcome',
-        location: 'ACC: Gen C Stage',
-        building: 'Building A',
-        description:
-          'Join us for an insightful discussion as we dive into the world of RWA tokenization. Explore the potential benefits, challenges, and opportunities associated with RWA tokenization, and its role in transforming various traditional financial markets.',
-        color: 'red.100',
-        format: 'Ceremony',
-        speakers: [
-          {
-            name: 'Sam Ewen',
-            image:
-              'https://d2pasa6bkzkrjd.cloudfront.net/_resize/consensus2024/speaker/300/site/consensus2024/images/userfiles/speakers/9e4e6206a5e8ceb0a6e9561594961a83.jpg',
-            title: 'SVP',
-            company: 'CoinDesk',
-          },
-        ],
-        presentedBy: 'Conference Org',
-      },
-      {
-        date: 'Wednesday, May 29',
-        time: '10:05 AM',
-        duration: '30 mins',
-        title: 'How Brands Use Web3 to Reach New Luxury Consumers',
-        location: 'ACC: Gen C Stage',
-        building: 'Building A',
-        description:
-          'Join us for an insightful discussion as we dive into the world of RWA tokenization. Explore the potential benefits, challenges, and opportunities associated with RWA tokenization, and its role in transforming various traditional financial markets.',
-        color: 'blue.100',
-        format: 'Ceremony',
-        speakers: [
-          {
-            name: 'Vanessa Grellet',
-            image:
-              'https://d2pasa6bkzkrjd.cloudfront.net/_resize/consensus2024/speaker/300/site/consensus2024/images/userfiles/speakers/70eae8a53338307bf6e0c2a1e4713815.jpg',
-            title: 'Managing Partner',
-            company: 'Arche Capital',
-          },
-          {
-            name: 'Erika Wykes-Sneyd',
-            image:
-              'https://d2pasa6bkzkrjd.cloudfront.net/_resize/consensus2024/speaker/300/site/consensus2024/images/userfiles/speakers/69319e3fe587ffcedcff4a9318eddf4e.jpg',
-            title: 'Vice President of adidas /// Studio',
-            company: 'adidas',
-          },
-          {
-            name: 'Dani Mariano',
-            image:
-              'https://d2pasa6bkzkrjd.cloudfront.net/_resize/consensus2024/speaker/300/site/consensus2024/images/userfiles/speakers/886ecce4917c9bb875824184ca8a9979.jpg',
-            title: 'President',
-            company: 'Razorfish',
-          },
-          {
-            name: 'Camilla McFarland',
-            image:
-              'https://d2pasa6bkzkrjd.cloudfront.net/_resize/consensus2024/speaker/300/site/consensus2024/images/userfiles/speakers/863fbbc9d36b475a4ee528e569c4b3b8.jpg',
-            title: 'Advisor',
-            company: 'Serotonin',
-          },
-        ],
-        presentedBy: 'Conference Org',
-        track: 'Web3, Brand',
-      },
-    ];
+  const filterAgendaItems = (items: AgendaItem[], query: string): AgendaItem[] => {
+    if (!query) {
+      return items;
+    }
+    const lowercasedQuery = query.toLowerCase();
+    return items.filter((item) => {
+      return (
+        item.title.toLowerCase().includes(lowercasedQuery) ||
+        item.description.toLowerCase().includes(lowercasedQuery) ||
+        item.location.toLowerCase().includes(lowercasedQuery) ||
+        item.speakers?.some((speaker) => speaker.name.toLowerCase().includes(lowercasedQuery))
+      );
+    });
   };
 
-  const textColor = 'gray.600';
+  const filteredAgenda = filterAgendaItems(dummyAgenda, searchQuery);
 
   const renderAgendaItems = () => {
-    return dummyAgenda.map((item, index) => (
-      <VStack
-        key={index}
-        align="left"
-        bg={item.color}
-        borderRadius="md"
-        boxShadow="md"
-        flex="1"
-        px="4"
-        py="2"
-        spacing="0"
-        w="100%"
-      >
-        <VStack align="left" mb="1" mt={1} spacing={0}>
-          <HStack alignItems="center">
-            <CalendarIcon h="15px" w="15px" />
-            <Text
-              isTruncated
-              color={eventInfo.styles.h3.color}
-              fontFamily={eventInfo.styles.h3.fontFamily}
-              fontSize="sm"
-              fontWeight={eventInfo.styles.h3.fontWeight}
-              h="20px"
-              mb={0}
-              textAlign="left"
-            >
-              {item.date}
-            </Text>
-          </HStack>
-          <HStack alignItems="center">
-            <TimeIcon h="15px" w="15px" />
-            <Text
-              isTruncated
-              color={eventInfo.styles.h3.color}
-              fontFamily={eventInfo.styles.h3.fontFamily}
-              fontSize="sm"
-              fontWeight={eventInfo.styles.h3.fontWeight}
-              h="20px"
-              mb={0}
-              textAlign="left"
-            >
-              {item.time}
-            </Text>
-          </HStack>
-          <HStack alignItems="center">
-            <RepeatClockIcon h="15px" w="15px" />
-            <Text
-              isTruncated
-              color={eventInfo.styles.h3.color}
-              fontFamily={eventInfo.styles.h3.fontFamily}
-              fontSize="sm"
-              fontWeight={eventInfo.styles.h3.fontWeight}
-              h="20px"
-              mb={0}
-              textAlign="left"
-            >
-              {item.duration}
-            </Text>
-          </HStack>
-        </VStack>
-        <VStack align="left" mt={0} spacing={0}>
-          <Text
-            color={textColor}
-            fontFamily={eventInfo.styles.h1.fontFamily}
-            fontSize="lg"
-            fontWeight={eventInfo.styles.h1.fontWeight}
-            mb={0}
-            textAlign="left"
-          >
-            {item.title}
-          </Text>
-          <HStack alignItems="center">
-            <LocationPinIcon h="15px" w="15px" />
-            <Text
-              isTruncated
-              color={eventInfo.styles.h3.color}
-              fontFamily={eventInfo.styles.h3.fontFamily}
-              fontSize="sm"
-              fontWeight={eventInfo.styles.h3.fontWeight}
-              h="20px"
-              mb={0}
-              textAlign="left"
-            >
-              {item.location}
-            </Text>
-          </HStack>
-        </VStack>
+    return filteredAgenda.map((item, index) => <AgendaItemCard key={index} item={item} />);
+  };
 
-        {item.speakers && (
-          <Box overflowX="auto">
-            <Grid gap={4} mb="3" mt={4} templateColumns="repeat(auto-fit, minmax(200px, 1fr))">
-              {item.speakers.map((speaker, idx) => (
-                <GridItem key={idx}>
-                  <HStack minWidth="200px" spacing={3}>
-                    <Image
-                      alt={speaker.name}
-                      borderRadius="full"
-                      boxSize="50px"
-                      src={speaker.image}
-                    />
-                    <VStack align="start" h="50px" spacing={0} verticalAlign="middle">
-                      <Text
-                        isTruncated
-                        color={textColor}
-                        fontFamily={eventInfo.styles.h1.fontFamily}
-                        fontSize="sm"
-                        fontWeight={eventInfo.styles.h1.fontWeight}
-                        h="16px"
-                      >
-                        {speaker.name}
-                      </Text>
-                      <Text
-                        isTruncated
-                        color={eventInfo.styles.h3.color}
-                        fontFamily={eventInfo.styles.h3.fontFamily}
-                        fontSize="xs"
-                        fontWeight={eventInfo.styles.h3.fontWeight}
-                        h="16px"
-                      >
-                        {speaker.title && `${speaker.title}`}
-                      </Text>
-                      <Text
-                        isTruncated
-                        color={textColor}
-                        fontFamily={eventInfo.styles.h1.fontFamily}
-                        fontSize="sm"
-                        fontWeight={eventInfo.styles.h1.fontWeight}
-                        h="16px"
-                      >
-                        {speaker.company && `${speaker.company}`}
-                      </Text>
-                    </VStack>
-                  </HStack>
-                </GridItem>
-              ))}
-            </Grid>
-          </Box>
-        )}
+  const renderGroupedAgendaItems = () => {
+    const groupedAgenda = filteredAgenda.reduce<Record<string, AgendaItem[]>>((groups, item) => {
+      const time = item.time;
+      if (!groups[time]) {
+        groups[time] = [];
+      }
+      groups[time].push(item);
+      return groups;
+    }, {});
 
-        {item.track && (
-          <Box
-            alignSelf="left"
-            bg={eventInfo.styles.buttons.primary.bg}
-            mt={1}
-            px="1"
-            w="max-content"
-          >
-            <Text
-              color="white"
-              fontFamily={eventInfo.styles.h1.fontFamily}
-              fontSize="sm"
-              fontWeight={eventInfo.styles.h1.fontWeight}
-              h="20px"
-              mb={0}
-              textAlign="left"
-            >
-              {item.track}
-            </Text>
-          </Box>
-        )}
-      </VStack>
-    ));
+    return <GroupedAgendaItems groupedAgenda={groupedAgenda} />;
   };
 
   return (
@@ -425,8 +283,63 @@ const AgendaPage: React.FC = () => {
                     pt={{ base: '12', md: '16' }}
                     px={{ base: '4', md: '8' }}
                   >
+                    <VStack w="100%">
+                      <HStack borderBottom="2px solid" borderColor="gray.400" w="full">
+                        <SearchIcon color="gray.500" />
+                        <Input
+                          _placeholder={{
+                            color: eventInfo.styles.h3.color,
+                            fontFamily: eventInfo.styles.h3.fontFamily,
+                            fontSize: 'md',
+                            fontWeight: eventInfo.styles.h3.fontWeight,
+                          }}
+                          color={eventInfo.styles.h3.color}
+                          fontFamily={eventInfo.styles.h3.fontFamily}
+                          fontSize="md"
+                          fontWeight={eventInfo.styles.h3.fontWeight}
+                          h="30px"
+                          placeholder="Search Agenda"
+                          value={searchQuery}
+                          variant="unstyled"
+                          onChange={(e) => {
+                            setSearchQuery(e.target.value);
+                          }}
+                        />
+                      </HStack>
+                      <Divider />
+                      <HStack alignItems="center" justifyContent="flex-end" mb={0} w="full">
+                        <ButtonGroup isAttached spacing={0} variant="outline">
+                          <IconButton
+                            _active={{ bg: eventInfo.styles.buttons.secondary.bg }}
+                            _focus={{ bg: eventInfo.styles.buttons.secondary.bg }}
+                            _hover={{ bg: eventInfo.styles.buttons.secondary.bg }}
+                            aria-label="List view"
+                            bg={eventInfo.styles.buttons.secondary.bg}
+                            borderRadius="8px"
+                            color={viewOption === 'list' ? 'black' : 'gray.400'}
+                            icon={<FaThList />}
+                            onClick={() => {
+                              setViewOption('list');
+                            }}
+                          />
+                          <IconButton
+                            _active={{ bg: eventInfo.styles.buttons.secondary.bg }}
+                            _focus={{ bg: eventInfo.styles.buttons.secondary.bg }}
+                            _hover={{ bg: eventInfo.styles.buttons.secondary.bg }}
+                            aria-label="Grid view"
+                            bg={eventInfo.styles.buttons.secondary.bg}
+                            borderRadius="8px"
+                            color={viewOption === 'grid' ? 'black' : 'gray.400'}
+                            icon={<FaTh />}
+                            onClick={() => {
+                              setViewOption('grid');
+                            }}
+                          />
+                        </ButtonGroup>
+                      </HStack>
+                    </VStack>
                     <VStack spacing={4} w="full">
-                      {renderAgendaItems()}
+                      {viewOption === 'list' ? renderAgendaItems() : renderGroupedAgendaItems()}
                     </VStack>
                   </Flex>
                 )}
