@@ -36,14 +36,14 @@ interface ScavengerHunt {
 }
 
 const ScavengerHuntsPage: React.FC = () => {
-  const { accountId, eventInfo, dropInfo, isLoading, onSelectTab } = useConferenceContext();
+  const { accountId, eventInfo, dropInfo, isLoading, onSelectTab, factoryAccount } =
+    useConferenceContext();
   const [scavengerHunts, setScavengerHunts] = useState<ScavengerHunt[]>([]);
 
   useEffect(() => {
     if (!accountId) return;
 
     const getScavengerHunts = async () => {
-      const factoryAccount = dropInfo?.asset_data[1].config.root_account_id;
       const scavs: ScavengerHunt[] = await keypomInstance.viewCall({
         contractId: factoryAccount,
         methodName: 'get_scavengers_for_account',
@@ -119,7 +119,7 @@ const ScavengerHuntsPage: React.FC = () => {
                   value={progressValue}
                 >
                   <CircularProgressLabel
-                    color={eventInfo.styles.h2.color}
+                    color={eventInfo.styles.h1.color}
                     fontFamily={eventInfo.styles.h2.fontFamily}
                     fontSize="lg"
                     fontWeight={eventInfo.styles.h2.fontWeight}

@@ -187,6 +187,7 @@ export default function WelcomePage({
                     flexDir="column"
                     p={{ base: '3', md: '8' }}
                     pt={{ base: '10', md: '16' }}
+                    px="6"
                   >
                     <Text
                       color={eventInfo?.styles.h1.color}

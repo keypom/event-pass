@@ -1,4 +1,4 @@
-import { Box, Flex, HStack, Text, VStack } from '@chakra-ui/react';
+import { Box, Flex, HStack, Text } from '@chakra-ui/react';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -39,28 +39,27 @@ const InConferenceApp = () => {
   };
 
   return (
-    <VStack
+    <Flex
       backgroundImage={
         eventInfo?.styles?.background && `${CLOUDFLARE_IPFS}/${eventInfo.styles.background}`
       }
       backgroundPosition="center"
       backgroundRepeat="no-repeat"
       backgroundSize="cover"
+      direction="column"
       minH="100vh"
-      py="2"
       width="100vw"
     >
-      {currentTab()}
+      <Box flex="1" h="87vh">
+        {currentTab()}
+      </Box>
       <HStack
         as="footer"
         backgroundColor={eventInfo?.styles?.h1.color}
-        bottom="0"
         boxShadow="0 -2px 10px rgba(0,0,0,0.05)"
+        h="12vh"
         justifyContent="space-evenly"
-        left="0"
         paddingY="2"
-        position="fixed"
-        spacing="24px"
         width="full"
       >
         {conferenceFooterMenuItems.map((item, index) => {
@@ -95,7 +94,7 @@ const InConferenceApp = () => {
           );
         })}
       </HStack>
-    </VStack>
+    </Flex>
   );
 };
 

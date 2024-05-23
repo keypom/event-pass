@@ -63,7 +63,7 @@ export default function TicketPage() {
           eventId: ticketExtra.eventId,
         });
 
-        if (maxUses !== 3 || !eventInfo) {
+        if ((maxUses !== 3 && maxUses !== 2) || !eventInfo) {
           console.error('Invalid ticket');
           console.log('maxUses', maxUses);
           console.log('curStep', curStep);
@@ -74,7 +74,7 @@ export default function TicketPage() {
         }
 
         const eventId: string = ticketExtra.eventId;
-        if (curStep !== 1) {
+        if (curStep !== 1 || maxUses === 2) {
           navigate(`/conference/app/${eventId}#${secretKey}`);
         }
 

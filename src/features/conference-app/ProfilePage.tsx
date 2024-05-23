@@ -56,9 +56,10 @@ export default function ProfilePage() {
             <Skeleton isLoaded={!isLoading}>
               {eventInfo.styles.icon.image ? (
                 <Image
-                  height={{ base: '10', md: '12' }}
+                  borderRadius="full"
+                  boxSize="60px"
                   src={`${CLOUDFLARE_IPFS}/${eventInfo.styles.icon.image}`}
-                  width={{ base: '10', md: '12' }}
+                  zIndex="-1"
                 />
               ) : (
                 <TicketIcon height={{ base: '8', md: '10' }} width={{ base: '8', md: '10' }} />

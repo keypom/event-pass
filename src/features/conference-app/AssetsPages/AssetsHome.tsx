@@ -9,6 +9,7 @@ import {
   HStack,
   Image,
   useDisclosure,
+  useMediaQuery,
 } from '@chakra-ui/react';
 import { LockIcon } from '@chakra-ui/icons';
 
@@ -29,6 +30,9 @@ const AssetsHome = () => {
   const sendDisclosure = useDisclosure();
   const receiveDisclosure = useDisclosure();
 
+  const [isLargerThan700] = useMediaQuery('(min-height: 700px)');
+  const [isLargerThan900] = useMediaQuery('(min-height: 900px)');
+
   const handleCardClick = (tab: string) => {
     onSelectTab(1, tab);
   };
@@ -46,17 +50,21 @@ const AssetsHome = () => {
   }) => {
     const cardStyle = {
       position: 'relative' as const,
+      flex: '1',
       w: '100%',
       bg: 'gray.100',
       boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.15)',
       overflow: 'hidden',
+      maxH: isLargerThan900 ? '500px' : isLargerThan700 ? '250px' : '100px', // Dynamic height
     };
 
     const imageContainerStyle = {
       position: 'relative' as const,
-      w: '100%', // Full width of the card
-      h: '120px',
+      flex: '1',
+      h: '100%',
+      maxH: isLargerThan900 ? '500px' : isLargerThan700 ? '250px' : '100px', // Dynamic height
     };
+    console.log('Card style: ', cardStyle.maxH);
 
     const lockIconStyle = {
       position: 'absolute' as const,
@@ -70,17 +78,18 @@ const AssetsHome = () => {
 
     const overlayStyle = {
       position: 'absolute' as const,
-      top: locked ? '2' : '33.33%', // Position at the top
+      top: locked ? '2' : '33.33%',
       left: '50%',
-      transform: 'translateX(-50%)', // Center horizontally
+      transform: 'translateX(-50%)',
       width: '100%',
       p: '2',
     };
+
     const comingSoonStyle = {
       position: 'absolute' as const,
-      top: '75',
+      top: '75%',
       left: '50%',
-      transform: 'translateX(-50%)', // Center horizontally
+      transform: 'translateX(-50%)',
       width: '100%',
       p: '2',
     };
@@ -102,20 +111,20 @@ const AssetsHome = () => {
           <Image
             alt={title}
             borderRadius="md"
-            boxSize="full" // Use 'full' instead of specific pixel size for responsiveness
             filter={!locked ? 'none' : 'blur(4px)'}
             objectFit="cover"
             src={image}
+            w="full"
           />
 
           {locked && <LockIcon {...lockIconStyle} />}
           <Box {...overlayStyle}>
             <Text
               bottom="2"
-              color="gray.600"
-              fontFamily={eventInfo.styles.h2.fontFamily}
-              fontSize="3xl"
-              fontWeight={eventInfo.styles.h2.fontWeight}
+              color={eventInfo.styles.h3.color}
+              fontFamily={eventInfo.styles.h3.fontFamily}
+              fontSize={isLargerThan900 ? '3xl' : isLargerThan700 ? '2xl' : 'xl'}
+              fontWeight={eventInfo.styles.h3.fontWeight}
             >
               {title}
             </Text>
@@ -124,10 +133,10 @@ const AssetsHome = () => {
             <Box {...comingSoonStyle}>
               <Text
                 bottom="2"
-                color="gray.600"
-                fontFamily={eventInfo.styles.h2.fontFamily}
-                fontSize="xl"
-                fontWeight={eventInfo.styles.h2.fontWeight}
+                color={eventInfo.styles.h3.color}
+                fontFamily={eventInfo.styles.h3.fontFamily}
+                fontSize={isLargerThan900 ? 'xl' : isLargerThan700 ? 'lg' : 'md'}
+                fontWeight={eventInfo.styles.h3.fontWeight}
               >
                 Coming Soon
               </Text>
@@ -147,19 +156,27 @@ const AssetsHome = () => {
   }
 
   return (
-    <Center>
+    <Center h="87vh" w="100vw">
       <ProfileTransferModal
         isOpen={sendDisclosure.isOpen}
         title="Send Tokens"
         onClose={sendDisclosure.onClose}
       />
       <ReceiveTokensModal isOpen={receiveDisclosure.isOpen} onClose={receiveDisclosure.onClose} />
-      <VStack gap={{ base: 'calc(24px + 8px)', md: 'calc(32px + 10px)' }}>
+      <VStack
+        gap={{ base: '16px', md: '24px', lg: '32px' }}
+        h="100%"
+        maxW="800px"
+        overflowY="auto"
+        pt="3"
+        spacing="4"
+        w={{ base: '100%', md: '90%', lg: '80%' }}
+      >
         <Skeleton fadeDuration={1} isLoaded={!isLoading}>
           <Heading
             fontSize={{ base: '2xl', md: '3xl' }}
             fontWeight="500"
-            paddingBottom="0"
+            paddingBottom="4"
             textAlign="center"
           >
             {isLoading ? (
@@ -169,7 +186,7 @@ const AssetsHome = () => {
                 <Heading
                   color={eventInfo.styles.title.color}
                   fontFamily={eventInfo.styles.title.fontFamily}
-                  fontSize={eventInfo.styles.title.fontSize}
+                  fontSize={{ base: '4xl', md: '5xl' }}
                   fontWeight={eventInfo.styles.title.fontWeight}
                   textAlign="center"
                 >
@@ -182,6 +199,7 @@ const AssetsHome = () => {
 
         <IconBox
           bg={eventInfo.styles.border.border || 'border.box'}
+          h={isLargerThan900 ? '90%' : isLargerThan700 ? '89%' : '86%'}
           icon={
             <Skeleton isLoaded={!isLoading}>
               <Image
@@ -197,9 +215,9 @@ const AssetsHome = () => {
           minW={{ base: '90vw', md: '345px' }}
           p="0"
           pb="0"
-          w="90vh"
+          w="full"
         >
-          <Box h="full">
+          <Box h={isLargerThan900 ? '77%' : isLargerThan700 ? '75%' : '65%'}>
             <BoxWithShape bg="white" borderTopRadius="8xl" showNotch={false} w="full">
               {isLoading ? (
                 <Skeleton height="200px" width="full" />
@@ -207,59 +225,63 @@ const AssetsHome = () => {
                 <Flex
                   align="center"
                   flexDir="column"
-                  pb={{ base: '3', md: '5' }}
-                  pt={{ base: '12', md: '16' }}
+                  pb={{ base: '2', md: '5' }}
+                  pt={{ base: '10', md: '16' }}
                   px={{ base: '10', md: '8' }}
                 >
                   <Text
                     color={eventInfo.styles.h1.color}
                     fontFamily={eventInfo.styles.h1.fontFamily}
-                    fontSize="2xl"
+                    fontSize={{ base: 'xl', md: '2xl' }}
                     fontWeight={eventInfo.styles.h1.fontWeight}
                     textAlign="center"
                   >
                     {tokensAvailable} ${ticker}
                   </Text>
                   <HStack justify="space-evenly" mt={4} spacing={4} w="100%">
-                    <VStack>
+                    <VStack spacing="0">
                       <Box
                         bg={eventInfo.styles.buttons.secondary.color}
                         borderRadius="0.75em"
                         p="2"
                         onClick={sendDisclosure.onOpen}
                       >
-                        <SendIcon color="white" h="24px" strokeWidth="1" />
+                        <SendIcon color="white" h={{ base: '20px', md: '24px' }} strokeWidth="1" />
                       </Box>
                       <Text
                         color={eventInfo.styles.h3.color}
                         fontFamily={eventInfo.styles.h3.fontFamily}
-                        fontSize="sm"
+                        fontSize={{ base: 'xs', md: 'sm' }}
                         fontWeight={eventInfo.styles.h3.fontWeight}
                         textAlign="center"
                       >
                         Send
                       </Text>
                     </VStack>
-                    <VStack>
+                    <VStack spacing="0">
                       <Box
                         bg={eventInfo.styles.buttons.secondary.color}
                         borderRadius="0.75em"
                         p="2"
                         onClick={receiveDisclosure.onOpen}
                       >
-                        <ReceiveIcon color="white" h="24px" strokeWidth="1" />
+                        <ReceiveIcon
+                          color="white"
+                          h={{ base: '20px', md: '24px' }}
+                          strokeWidth="1"
+                        />
                       </Box>
                       <Text
                         color={eventInfo.styles.h3.color}
                         fontFamily={eventInfo.styles.h3.fontFamily}
-                        fontSize="sm"
+                        fontSize={{ base: 'xs', md: 'sm' }}
                         fontWeight={eventInfo.styles.h3.fontWeight}
                         textAlign="center"
                       >
                         Receive
                       </Text>
                     </VStack>
-                    <VStack>
+                    <VStack spacing="0">
                       <Box
                         bg={eventInfo.styles.buttons.secondary.color}
                         borderRadius="0.75em"
@@ -268,12 +290,16 @@ const AssetsHome = () => {
                           onSelectTab(3);
                         }}
                       >
-                        <CameraIcon color="white" h="24px" strokeWidth="1" />
+                        <CameraIcon
+                          color="white"
+                          h={{ base: '20px', md: '24px' }}
+                          strokeWidth="1"
+                        />
                       </Box>
                       <Text
                         color={eventInfo.styles.h3.color}
                         fontFamily={eventInfo.styles.h3.fontFamily}
-                        fontSize="sm"
+                        fontSize={{ base: 'xs', md: 'sm' }}
                         fontWeight={eventInfo.styles.h3.fontWeight}
                         textAlign="center"
                       >
@@ -290,18 +316,19 @@ const AssetsHome = () => {
               bg="gray.50"
               borderBottomRadius="8xl"
               flexDir="column"
+              h="full"
               pb="2"
               pt="2"
               px="6"
             >
-              <VStack spacing="6" w="full">
+              <VStack h="100%" spacing="6" w="full">
                 <PageCard
                   imageUrl="bafkreia3sfwyavkzoe2o7arkshjkepf2yeljzjk77lxevylo4yja6hij4y"
                   locked={false}
                   tab="collectibles"
                   title="Collectibles"
                 />
-                <HStack spacing="6" w="full">
+                <HStack flex="1" spacing="6">
                   <PageCard
                     imageUrl="bafybeicqe3auvvhqtujlzaue3ibcqjove7qs2vo7nccovol2mscl7vjpju"
                     locked={true}

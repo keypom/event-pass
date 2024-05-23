@@ -13,6 +13,7 @@ import {
 } from '@chakra-ui/react';
 import { QrReader } from 'react-qr-reader';
 import { useEffect, useRef, useState } from 'react';
+import { ClipLoader } from 'react-spinners';
 
 import { IconBox } from '@/components/IconBox';
 import { TicketIcon } from '@/components/Icons';
@@ -39,8 +40,15 @@ interface StateRefObject {
 }
 
 export default function ScanningPage() {
-  const { eventInfo, dropInfo, isLoading, setTriggerRefetch, accountId, onSelectTab, secretKey } =
-    useConferenceContext();
+  const {
+    eventInfo,
+    factoryAccount,
+    isLoading,
+    setTriggerRefetch,
+    accountId,
+    onSelectTab,
+    secretKey,
+  } = useConferenceContext();
 
   const toast = useToast();
 
@@ -109,9 +117,13 @@ export default function ScanningPage() {
         switch (type) {
           case 'token':
           case 'nft': {
+            if (!accountId) {
+              throw new Error('Account ID is not set');
+            }
+
             const { alreadyClaimed, isScavenger, numFound, numRequired, name, image, amount } =
               await claimEventDrop({
-                dropInfo,
+                factoryAccount,
                 qrDataSplit,
                 accountId,
                 setScanStatus,
@@ -294,8 +306,8 @@ export default function ScanningPage() {
               paddingBottom="0"
               textAlign="center"
             >
-              {isLoading ? (
-                'Loading ticket...'
+              {isLoading || !accountId ? (
+                <ClipLoader color={eventInfo.styles.title.color} size={50} />
               ) : (
                 <VStack>
                   <Heading
@@ -337,8 +349,10 @@ export default function ScanningPage() {
           >
             <Box h="full">
               <BoxWithShape bg="white" borderTopRadius="8xl" showNotch={false} w="full">
-                {isLoading ? (
-                  <Skeleton height="200px" width="full" />
+                {isLoading || !accountId ? (
+                  <Flex align="center" h="200px" justify="center" w="full">
+                    <ClipLoader color={eventInfo.styles.title.color} size={50} />
+                  </Flex>
                 ) : (
                   <Flex
                     align="center"

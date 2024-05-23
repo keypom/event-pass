@@ -84,9 +84,9 @@ const TokenModal = ({ isOpen, onClose, tokenAmount, image, name, eventInfo }: To
 
                 <Text
                   color="black"
-                  fontFamily="denverBody"
+                  fontFamily={eventInfo.styles.h3.fontFamily}
                   fontSize="sm"
-                  fontWeight="400"
+                  fontWeight={eventInfo.styles.h3.fontWeight}
                   textAlign="left"
                 >
                   {name}

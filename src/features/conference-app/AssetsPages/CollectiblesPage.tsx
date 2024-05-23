@@ -46,14 +46,14 @@ interface NFTCardProps {
 }
 
 const CollectiblesPage: React.FC = () => {
-  const { accountId, eventInfo, dropInfo, isLoading, onSelectTab } = useConferenceContext();
+  const { accountId, factoryAccount, eventInfo, dropInfo, isLoading, onSelectTab } =
+    useConferenceContext();
   const [nfts, setNFTs] = useState<NFTData[]>([]);
 
   useEffect(() => {
     if (!accountId) return;
 
     const getNFTs = async () => {
-      const factoryAccount = dropInfo?.asset_data[1].config.root_account_id;
       const nftDrops = await keypomInstance.viewCall({
         contractId: factoryAccount,
         methodName: 'get_nfts_for_account',
@@ -194,7 +194,7 @@ const CollectiblesPage: React.FC = () => {
                   value={progressValue}
                 >
                   <CircularProgressLabel
-                    color={eventInfo.styles.h2.color}
+                    color={eventInfo.styles.h1.color}
                     fontFamily={eventInfo.styles.h2.fontFamily}
                     fontSize="lg"
                     fontWeight={eventInfo.styles.h2.fontWeight}

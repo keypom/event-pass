@@ -111,7 +111,7 @@ export const ConferenceProvider = ({
       }
     };
     recoverAccount();
-  }, [dropInfo, factoryAccount, isLoading, secretKey, triggerRefetch]);
+  }, [dropInfo, factoryAccount, isLoading, secretKey, triggerRefetch, selectedTab]);
 
   return (
     <ConferenceContext.Provider
