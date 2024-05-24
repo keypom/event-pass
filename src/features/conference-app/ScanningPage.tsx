@@ -52,7 +52,7 @@ export default function ScanningPage() {
 
   const toast = useToast();
 
-  const [facingMode, setFacingMode] = useState('user'); // default to rear camera
+  const [facingMode, setFacingMode] = useState('environment'); // default to rear camera
   const [isScanning, setIsScanning] = useState(false);
   const [isOnCooldown, setIsOnCooldown] = useState(false); // New state to manage cooldown
   const [scanStatus, setScanStatus] = useState<'success' | 'error'>();
@@ -389,21 +389,10 @@ export default function ScanningPage() {
                     px={{ base: '10', md: '8' }}
                   >
                     <VStack w="100%">
-                      <VStack
-                        alignItems="center"
-                        borderColor="gray.200"
-                        borderRadius="24px"
-                        borderWidth="2px"
-                        h="100%"
-                        maxHeight="500px"
-                        maxW="500px"
-                        overflow="hidden"
-                        position="relative" // Ensure this container is positioned relatively
-                        spacing={4}
-                        w="full"
-                      >
+                      {facingMode === 'environment' && (
                         <QrReader
-                          constraints={{ facingMode }}
+                          key="environmentQR"
+                          constraints={{ facingMode: 'environment' }}
                           containerStyle={{
                             width: '100%',
                             height: '100%',
@@ -415,12 +404,25 @@ export default function ScanningPage() {
                           )}
                           onResult={handleScanResult}
                         />
-                        {/* Overlay Component */}
-                        <LoadingOverlay
-                          isVisible={isOnCooldown || isScanning}
-                          status={scanStatus}
+                      )}
+                      {facingMode === 'user' && (
+                        <QrReader
+                          key="userQR"
+                          constraints={{ facingMode: 'user' }}
+                          containerStyle={{
+                            width: '100%',
+                            height: '100%',
+                            borderRadius: '24px',
+                          }}
+                          scanDelay={1000}
+                          ViewFinder={() => (
+                            <ViewFinder style={{ border: '20px solid rgba(0, 0, 0, 0.3)' }} />
+                          )}
+                          onResult={handleScanResult}
                         />
-                      </VStack>
+                      )}
+                      {/* Overlay Component */}
+                      <LoadingOverlay isVisible={isOnCooldown || isScanning} status={scanStatus} />
                       <Button
                         backgroundColor={eventInfo.styles.buttons.primary.bg}
                         color={eventInfo.styles.buttons.primary.color}

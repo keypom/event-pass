@@ -49,17 +49,21 @@ const InConferenceApp = () => {
       minH="100vh"
       width="100vw"
     >
-      <Box flex="1" h="87vh">
+      <Box flex="1" overflowY="auto">
         {currentTab()}
       </Box>
       <HStack
         as="footer"
         backgroundColor={eventInfo?.styles?.h1.color}
+        bottom="0"
         boxShadow="0 -2px 10px rgba(0,0,0,0.05)"
         h="12vh"
         justifyContent="space-evenly"
+        left="0"
         paddingY="2"
+        position="fixed"
         width="full"
+        zIndex="1000" // Ensure footer stays above other content
       >
         {conferenceFooterMenuItems.map((item, index) => {
           const IconComponent = item.icon;
