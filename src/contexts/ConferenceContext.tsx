@@ -20,12 +20,14 @@ import { ProfileIcon } from '@/components/Icons/ProfileIcon';
 import { WalletIcon } from '@/components/Icons/WalletIcon';
 import { FooterCalendarIcon } from '@/components/Icons/FooterCalendarIcon';
 import { ScanIcon } from '@/components/Icons/ScanIcon';
+import { MessageIcon } from '@/components/Icons/MessageIcon';
 
 export const conferenceFooterMenuItems = [
-  { label: 'Profile', icon: ProfileIcon, path: '/conference/app/profile' },
-  { label: 'Assets', icon: WalletIcon, path: '/conference/app/assets' },
-  { label: 'Agenda', icon: FooterCalendarIcon, path: '/conference/app/agenda' },
-  { label: 'Scan', icon: ScanIcon, path: '/conference/app/scan' },
+  { label: 'Profile', icon: ProfileIcon, path: '/conference/app/profile', locked: false },
+  { label: 'Assets', icon: WalletIcon, path: '/conference/app/assets', locked: false },
+  { label: 'Agenda', icon: FooterCalendarIcon, path: '/conference/app/agenda', locked: false },
+  { label: 'Scan', icon: ScanIcon, path: '/conference/app/scan', locked: false },
+  { label: 'Chat', icon: MessageIcon, path: '/conference/app/scan', locked: true },
 ];
 
 interface ConferenceContextProps {

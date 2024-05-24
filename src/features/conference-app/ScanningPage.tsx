@@ -10,6 +10,7 @@ import {
   Text,
   useToast,
   VStack,
+  useMediaQuery,
 } from '@chakra-ui/react';
 import { QrReader } from 'react-qr-reader';
 import { useEffect, useRef, useState } from 'react';
@@ -18,7 +19,6 @@ import { ClipLoader } from 'react-spinners';
 import { IconBox } from '@/components/IconBox';
 import { TicketIcon } from '@/components/Icons';
 import { BoxWithShape } from '@/components/BoxWithShape';
-import { CLOUDFLARE_IPFS } from '@/constants/common';
 import { ViewFinder } from '@/components/ViewFinder';
 import { LoadingOverlay } from '@/features/scanner/components/LoadingOverlay';
 import keypomInstance from '@/lib/keypom';
@@ -29,7 +29,7 @@ import MerchModal from './modals/MerchModal';
 import RaffleModal from './modals/RaffleModal';
 import SponsorModal from './modals/SponsorModal';
 import ProfileTransferModal from './modals/ProfileTransferModal';
-import { claimEventDrop } from './helpers';
+import { claimEventDrop, getDynamicHeightPercentage } from './helpers';
 import NFTModal from './modals/NFTModal';
 import TokenModal from './modals/TokenModal';
 
@@ -225,6 +225,24 @@ export default function ScanningPage() {
     }
   };
 
+  const vh = window.innerHeight;
+  const iconBoxHeight = `${getDynamicHeightPercentage(vh, [900, 700, 70], [90, 80, 70])}%`;
+  const boxWithShapeHeight = `${getDynamicHeightPercentage(vh, [900, 700, 0], [77, 62, 50])}%`;
+  const [isHeightGreaterThan600] = useMediaQuery('(min-height: 600px)');
+  const [isHeightGreaterThan700] = useMediaQuery('(min-height: 700px)');
+  const [isHeightGreaterThan800] = useMediaQuery('(min-height: 800px)');
+  const [isHeightGreaterThan900] = useMediaQuery('(min-height: 900px)');
+
+  const fontSize = isHeightGreaterThan900
+    ? '3xl'
+    : isHeightGreaterThan800
+    ? '2xl'
+    : isHeightGreaterThan700
+    ? 'xl'
+    : isHeightGreaterThan600
+    ? 'lg'
+    : 'md';
+
   return (
     <>
       {modalOpen && modalType === 'scavenger' && (
@@ -297,27 +315,35 @@ export default function ScanningPage() {
           {...modalProps}
         />
       )}
-      <Center>
-        <VStack gap={{ base: 'calc(24px + 8px)', md: 'calc(32px + 10px)' }}>
+      <Center maxH="87vh">
+        <VStack
+          gap={{ base: '16px', md: '24px', lg: '32px' }}
+          h="full"
+          maxH="87vh"
+          overflowY="auto"
+          pt="3"
+          spacing="4"
+          w={{ base: '90vw', md: '90%', lg: '80%' }}
+        >
           <Skeleton fadeDuration={1} isLoaded={!isLoading}>
             <Heading
               fontSize={{ base: '2xl', md: '3xl' }}
               fontWeight="500"
-              paddingBottom="0"
+              paddingBottom="5"
               textAlign="center"
             >
-              {isLoading || !accountId ? (
-                <ClipLoader color={eventInfo.styles.title.color} size={50} />
+              {isLoading ? (
+                'Loading ticket...'
               ) : (
                 <VStack>
                   <Heading
                     color={eventInfo.styles.title.color}
                     fontFamily={eventInfo.styles.title.fontFamily}
-                    fontSize={eventInfo.styles.title.fontSize}
+                    fontSize="4xl"
                     fontWeight={eventInfo.styles.title.fontWeight}
                     textAlign="center"
                   >
-                    Scan
+                    SCAN
                   </Heading>
                 </VStack>
               )}
@@ -325,14 +351,16 @@ export default function ScanningPage() {
           </Skeleton>
 
           <IconBox
-            bg={eventInfo.styles.border.color || 'border.box'}
+            bg={eventInfo.styles.border.border || 'border.box'}
+            h={iconBoxHeight}
             icon={
               <Skeleton isLoaded={!isLoading}>
                 {eventInfo.styles.icon.image ? (
                   <Image
-                    height={{ base: '10', md: '12' }}
-                    src={`${CLOUDFLARE_IPFS}/${eventInfo.styles.icon.image}`}
-                    width={{ base: '10', md: '12' }}
+                    borderRadius="full"
+                    boxSize="60px"
+                    src={`/assets/demos/consensus/${eventInfo.styles.icon.image}`}
+                    zIndex="-1"
                   />
                 ) : (
                   <TicketIcon height={{ base: '8', md: '10' }} width={{ base: '8', md: '10' }} />
@@ -341,14 +369,13 @@ export default function ScanningPage() {
             }
             iconBg={eventInfo.styles.icon.bg || 'blue.100'}
             iconBorder={eventInfo.styles.icon.border || 'border.round'}
-            maxW="345px"
             minW={{ base: '90vw', md: '345px' }}
             p="0"
             pb="0"
-            w="90vh"
+            w="full"
           >
-            <Box h="full">
-              <BoxWithShape bg="white" borderTopRadius="8xl" showNotch={false} w="full">
+            <Box h={boxWithShapeHeight}>
+              <BoxWithShape bg="white" borderTopRadius="8xl" h="full" showNotch={false} w="full">
                 {isLoading || !accountId ? (
                   <Flex align="center" h="200px" justify="center" w="full">
                     <ClipLoader color={eventInfo.styles.title.color} size={50} />
@@ -357,7 +384,7 @@ export default function ScanningPage() {
                   <Flex
                     align="center"
                     flexDir="column"
-                    pb={{ base: '3', md: '5' }}
+                    pb={{ base: '2', md: '5' }}
                     pt={{ base: '10', md: '16' }}
                     px={{ base: '10', md: '8' }}
                   >
@@ -421,14 +448,14 @@ export default function ScanningPage() {
                 bg="gray.50"
                 borderBottomRadius="8xl"
                 flexDir="column"
-                pb="2"
-                pt="2"
+                pb="4"
+                pt="4"
                 px="6"
               >
                 <Text
                   color={eventInfo.styles.h1.color}
                   fontFamily={eventInfo.styles.h1.fontFamily}
-                  fontSize={eventInfo.styles.h1.fontSize}
+                  fontSize={fontSize}
                   fontWeight={eventInfo.styles.h1.fontWeight}
                   textAlign="center"
                 >
@@ -437,54 +464,54 @@ export default function ScanningPage() {
                 {/* Start of the grid for Spork Details */}
                 <Grid
                   gap={6} // Space between grid items
-                  py={2} // Padding on the top and bottom
+                  py={4} // Padding on the top and bottom
                   templateColumns={{ base: 'repeat(2, 1fr)' }} // Responsive grid layout
                   width="full" // Full width of the parent container
                 >
                   {/* Left column for earning methods */}
                   <Box>
                     <Text
-                      color={eventInfo.styles.h2.color}
-                      fontFamily={eventInfo.styles.h2.fontFamily}
-                      fontSize={eventInfo.styles.h2.fontSize}
-                      fontWeight={eventInfo.styles.h2.fontWeight}
+                      color={eventInfo?.styles.h2.color}
+                      fontFamily={eventInfo?.styles.h2.fontFamily}
+                      fontSize={eventInfo?.styles.h2.fontSize}
+                      fontWeight={eventInfo?.styles.h2.fontWeight}
                       mb={0}
                       textAlign="left"
                     >
-                      To Earn:
+                      Earn By:
                     </Text>
                     <VStack align="stretch" spacing={1} textAlign="left">
                       <Text
-                        color={eventInfo.styles.h3.color}
-                        fontFamily={eventInfo.styles.h3.fontFamily}
+                        color={eventInfo?.styles.h3.color}
+                        fontFamily={eventInfo?.styles.h3.fontFamily}
                         fontSize="sm"
-                        fontWeight={eventInfo.styles.h3.fontWeight}
+                        fontWeight={eventInfo?.styles.h3.fontWeight}
                       >
-                        Attend talks
+                        Attending Talks
                       </Text>
                       <Text
-                        color={eventInfo.styles.h3.color}
-                        fontFamily={eventInfo.styles.h3.fontFamily}
+                        color={eventInfo?.styles.h3.color}
+                        fontFamily={eventInfo?.styles.h3.fontFamily}
                         fontSize="sm"
-                        fontWeight={eventInfo.styles.h3.fontWeight}
+                        fontWeight={eventInfo?.styles.h3.fontWeight}
                       >
-                        Visit booths
+                        Visiting Booths
                       </Text>
                       <Text
-                        color={eventInfo.styles.h3.color}
-                        fontFamily={eventInfo.styles.h3.fontFamily}
+                        color={eventInfo?.styles.h3.color}
+                        fontFamily={eventInfo?.styles.h3.fontFamily}
                         fontSize="sm"
-                        fontWeight={eventInfo.styles.h3.fontWeight}
+                        fontWeight={eventInfo?.styles.h3.fontWeight}
                       >
-                        Scavenger hunts
+                        Scavenger Hunts
                       </Text>
                       <Text
-                        color={eventInfo.styles.h3.color}
-                        fontFamily={eventInfo.styles.h3.fontFamily}
+                        color={eventInfo?.styles.h3.color}
+                        fontFamily={eventInfo?.styles.h3.fontFamily}
                         fontSize="sm"
-                        fontWeight={eventInfo.styles.h3.fontWeight}
+                        fontWeight={eventInfo?.styles.h3.fontWeight}
                       >
-                        Sponsor quizzes
+                        Sponsor Quizzes
                       </Text>
                     </VStack>
                   </Box>
@@ -492,10 +519,10 @@ export default function ScanningPage() {
                   {/* Right column for spending methods */}
                   <Box>
                     <Text
-                      color={eventInfo.styles.h2.color}
-                      fontFamily={eventInfo.styles.h2.fontFamily}
-                      fontSize={eventInfo.styles.h2.fontSize}
-                      fontWeight={eventInfo.styles.h2.fontWeight}
+                      color={eventInfo?.styles.h2.color}
+                      fontFamily={eventInfo?.styles.h2.fontFamily}
+                      fontSize={eventInfo?.styles.h2.fontSize}
+                      fontWeight={eventInfo?.styles.h2.fontWeight}
                       mb={0}
                       textAlign="right"
                     >
@@ -503,34 +530,34 @@ export default function ScanningPage() {
                     </Text>
                     <VStack align="stretch" spacing={1} textAlign="right">
                       <Text
-                        color={eventInfo.styles.h3.color}
-                        fontFamily={eventInfo.styles.h3.fontFamily}
+                        color={eventInfo?.styles.h3.color}
+                        fontFamily={eventInfo?.styles.h3.fontFamily}
                         fontSize="sm"
-                        fontWeight={eventInfo.styles.h3.fontWeight}
+                        fontWeight={eventInfo?.styles.h3.fontWeight}
                       >
-                        Food Trucks
+                        Food
                       </Text>
                       <Text
-                        color={eventInfo.styles.h3.color}
-                        fontFamily={eventInfo.styles.h3.fontFamily}
+                        color={eventInfo?.styles.h3.color}
+                        fontFamily={eventInfo?.styles.h3.fontFamily}
                         fontSize="sm"
-                        fontWeight={eventInfo.styles.h3.fontWeight}
+                        fontWeight={eventInfo?.styles.h3.fontWeight}
                       >
-                        Merch Booths
+                        Merch
                       </Text>
                       <Text
-                        color={eventInfo.styles.h3.color}
-                        fontFamily={eventInfo.styles.h3.fontFamily}
+                        color={eventInfo?.styles.h3.color}
+                        fontFamily={eventInfo?.styles.h3.fontFamily}
                         fontSize="sm"
-                        fontWeight={eventInfo.styles.h3.fontWeight}
+                        fontWeight={eventInfo?.styles.h3.fontWeight}
                       >
                         Raffles
                       </Text>
                       <Text
-                        color={eventInfo.styles.h3.color}
-                        fontFamily={eventInfo.styles.h3.fontFamily}
+                        color={eventInfo?.styles.h3.color}
+                        fontFamily={eventInfo?.styles.h3.fontFamily}
                         fontSize="sm"
-                        fontWeight={eventInfo.styles.h3.fontWeight}
+                        fontWeight={eventInfo?.styles.h3.fontWeight}
                       >
                         NFTs
                       </Text>

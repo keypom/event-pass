@@ -2,7 +2,6 @@ import { Box, Flex, HStack, Text } from '@chakra-ui/react';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { CLOUDFLARE_IPFS } from '@/constants/common';
 import { conferenceFooterMenuItems, useConferenceContext } from '@/contexts/ConferenceContext';
 
 import ProfilePage from './ProfilePage';
@@ -41,7 +40,7 @@ const InConferenceApp = () => {
   return (
     <Flex
       backgroundImage={
-        eventInfo?.styles?.background && `${CLOUDFLARE_IPFS}/${eventInfo.styles.background}`
+        eventInfo?.styles?.background && `assets/demos/consensus/${eventInfo.styles.background}`
       }
       backgroundPosition="center"
       backgroundRepeat="no-repeat"

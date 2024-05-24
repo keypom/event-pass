@@ -20,7 +20,6 @@ import { accountExists, getPubFromSecret } from 'keypom-js';
 import { IconBox } from '@/components/IconBox';
 import { TicketIcon } from '@/components/Icons';
 import { BoxWithShape } from '@/components/BoxWithShape';
-import { CLOUDFLARE_IPFS } from '@/constants/common';
 import {
   type TicketInfoMetadata,
   type TicketMetadataExtra,
@@ -118,7 +117,7 @@ export default function WelcomePage({
   return (
     <VStack
       backgroundImage={
-        eventInfo?.styles?.background && `${CLOUDFLARE_IPFS}/${eventInfo.styles.background}`
+        eventInfo?.styles?.background && `/assets/demos/consensus/${eventInfo.styles.background}`
       }
       backgroundPosition="center"
       backgroundRepeat="no-repeat"
@@ -161,7 +160,7 @@ export default function WelcomePage({
                 {eventInfo?.styles.icon.image ? (
                   <Image
                     height={{ base: '10', md: '12' }}
-                    src={`${CLOUDFLARE_IPFS}/${eventInfo.styles.icon.image}`}
+                    src={`/assets/demos/consensus/${eventInfo.styles.icon.image}`}
                     width={{ base: '10', md: '12' }}
                   />
                 ) : (
@@ -258,7 +257,7 @@ export default function WelcomePage({
                         height="140px"
                         mb="2"
                         objectFit="contain"
-                        src={`${CLOUDFLARE_IPFS}/${ticketInfo?.media}`}
+                        src={`/assets/demos/consensus/${ticketInfo?.media}`}
                       />
                     </Skeleton>
                     <Heading
@@ -294,7 +293,7 @@ export default function WelcomePage({
                 {/* Start of the grid for Spork Details */}
                 <Grid
                   gap={6} // Space between grid items
-                  py={2} // Padding on the top and bottom
+                  py={4} // Padding on the top and bottom
                   templateColumns={{ base: 'repeat(2, 1fr)' }} // Responsive grid layout
                   width="full" // Full width of the parent container
                 >
@@ -342,14 +341,6 @@ export default function WelcomePage({
                         fontWeight={eventInfo?.styles.h3.fontWeight}
                       >
                         Sponsor Quizzes
-                      </Text>
-                      <Text
-                        color={eventInfo?.styles.h3.color}
-                        fontFamily={eventInfo?.styles.h3.fontFamily}
-                        fontSize="sm"
-                        fontWeight={eventInfo?.styles.h3.fontWeight}
-                      >
-                        Airdrops
                       </Text>
                     </VStack>
                   </Box>
@@ -399,14 +390,6 @@ export default function WelcomePage({
                       >
                         NFTs
                       </Text>
-                      <Text
-                        color={eventInfo?.styles.h3.color}
-                        fontFamily={eventInfo?.styles.h3.fontFamily}
-                        fontSize="sm"
-                        fontWeight={eventInfo?.styles.h3.fontWeight}
-                      >
-                        Discounts
-                      </Text>
                     </VStack>
                   </Box>
                 </Grid>
@@ -414,7 +397,7 @@ export default function WelcomePage({
                   backgroundColor={eventInfo?.styles.buttons.primary.bg}
                   color={eventInfo?.styles.buttons.primary.color}
                   fontFamily={eventInfo?.styles.buttons.primary.fontFamily}
-                  fontSize={eventInfo?.styles.buttons.primary.fontSize}
+                  fontSize="xl"
                   fontWeight={eventInfo?.styles.buttons.primary.fontWeight}
                   h={eventInfo?.styles.buttons.primary.h}
                   isDisabled={!isValidUsername}

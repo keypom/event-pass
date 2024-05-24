@@ -13,7 +13,6 @@ import {
 } from '@chakra-ui/react';
 import { LockIcon } from '@chakra-ui/icons';
 
-import { CLOUDFLARE_IPFS } from '@/constants/common';
 import { IconBox } from '@/components/IconBox';
 import { BoxWithShape } from '@/components/BoxWithShape';
 import { SendIcon } from '@/components/Icons/SendIcon';
@@ -23,6 +22,7 @@ import { useConferenceContext } from '@/contexts/ConferenceContext';
 
 import ProfileTransferModal from '../modals/ProfileTransferModal';
 import ReceiveTokensModal from '../modals/ReceiveTokensModal';
+import { getDynamicHeightPercentage } from '../helpers';
 
 const AssetsHome = () => {
   const { tokensAvailable, eventInfo, isLoading, onSelectTab, ticker } = useConferenceContext();
@@ -48,6 +48,9 @@ const AssetsHome = () => {
     tab: string;
     locked: boolean;
   }) => {
+    const vh = window.innerHeight;
+    const cardHeight = `${getDynamicHeightPercentage(vh, [900, 700, 0], [500, 250, 100])}px`;
+
     const cardStyle = {
       position: 'relative' as const,
       flex: '1',
@@ -55,16 +58,15 @@ const AssetsHome = () => {
       bg: 'gray.100',
       boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.15)',
       overflow: 'hidden',
-      maxH: isLargerThan900 ? '500px' : isLargerThan700 ? '250px' : '100px', // Dynamic height
+      maxH: cardHeight,
     };
 
     const imageContainerStyle = {
       position: 'relative' as const,
       flex: '1',
       h: '100%',
-      maxH: isLargerThan900 ? '500px' : isLargerThan700 ? '250px' : '100px', // Dynamic height
+      maxH: cardHeight,
     };
-    console.log('Card style: ', cardStyle.maxH);
 
     const lockIconStyle = {
       position: 'absolute' as const,
@@ -94,7 +96,7 @@ const AssetsHome = () => {
       p: '2',
     };
 
-    const image = `${CLOUDFLARE_IPFS}/${imageUrl}`;
+    const image = `/assets/demos/consensus/${imageUrl}`;
 
     return (
       <Box
@@ -155,8 +157,12 @@ const AssetsHome = () => {
     );
   }
 
+  const vh = window.innerHeight;
+  const iconBoxHeight = `${getDynamicHeightPercentage(vh, [900, 700, 0], [90, 80, 200])}%`;
+  const boxWithShapeHeight = `${getDynamicHeightPercentage(vh, [900, 700, 0], [77, 62, 100])}%`;
+
   return (
-    <Center h="87vh" w="100vw">
+    <Center h="87vh">
       <ProfileTransferModal
         isOpen={sendDisclosure.isOpen}
         title="Send Tokens"
@@ -166,11 +172,10 @@ const AssetsHome = () => {
       <VStack
         gap={{ base: '16px', md: '24px', lg: '32px' }}
         h="100%"
-        maxW="800px"
         overflowY="auto"
         pt="3"
         spacing="4"
-        w={{ base: '100%', md: '90%', lg: '80%' }}
+        w={{ base: '90vw', md: '90%', lg: '80%' }}
       >
         <Skeleton fadeDuration={1} isLoaded={!isLoading}>
           <Heading
@@ -199,25 +204,24 @@ const AssetsHome = () => {
 
         <IconBox
           bg={eventInfo.styles.border.border || 'border.box'}
-          h={isLargerThan900 ? '90%' : isLargerThan700 ? '89%' : '86%'}
+          h={iconBoxHeight}
           icon={
             <Skeleton isLoaded={!isLoading}>
               <Image
                 height={{ base: '10', md: '12' }}
-                src={`${CLOUDFLARE_IPFS}/${eventInfo.styles.icon.image}`}
+                src={`/assets/demos/consensus/${eventInfo.styles.icon.image}`}
                 width={{ base: '10', md: '12' }}
               />
             </Skeleton>
           }
           iconBg={eventInfo.styles.icon.bg || 'blue.100'}
           iconBorder={eventInfo.styles.icon.border || 'border.round'}
-          maxW="345px"
           minW={{ base: '90vw', md: '345px' }}
           p="0"
           pb="0"
           w="full"
         >
-          <Box h={isLargerThan900 ? '77%' : isLargerThan700 ? '75%' : '65%'}>
+          <Box h={boxWithShapeHeight}>
             <BoxWithShape bg="white" borderTopRadius="8xl" showNotch={false} w="full">
               {isLoading ? (
                 <Skeleton height="200px" width="full" />
@@ -232,7 +236,7 @@ const AssetsHome = () => {
                   <Text
                     color={eventInfo.styles.h1.color}
                     fontFamily={eventInfo.styles.h1.fontFamily}
-                    fontSize={{ base: 'xl', md: '2xl' }}
+                    fontSize={{ base: '2xl', md: '2xl' }}
                     fontWeight={eventInfo.styles.h1.fontWeight}
                     textAlign="center"
                   >
@@ -323,27 +327,17 @@ const AssetsHome = () => {
             >
               <VStack h="100%" spacing="6" w="full">
                 <PageCard
-                  imageUrl="bafkreia3sfwyavkzoe2o7arkshjkepf2yeljzjk77lxevylo4yja6hij4y"
+                  imageUrl="collectibles.jpg"
                   locked={false}
                   tab="collectibles"
                   title="Collectibles"
                 />
                 <HStack flex="1" spacing="6">
-                  <PageCard
-                    imageUrl="bafybeicqe3auvvhqtujlzaue3ibcqjove7qs2vo7nccovol2mscl7vjpju"
-                    locked={true}
-                    tab="raffles"
-                    title="Raffles"
-                  />
-                  <PageCard
-                    imageUrl="bafkreiecyklo4kmorcij5o2gyvfq7lh535zhnryj34sc5z3php2l7x4jj4"
-                    locked={true}
-                    tab="auctions"
-                    title="Auctions"
-                  />
+                  <PageCard imageUrl="raffles.jpg" locked={true} tab="raffles" title="Raffles" />
+                  <PageCard imageUrl="auctions.jpg" locked={true} tab="auctions" title="Auctions" />
                 </HStack>
                 <PageCard
-                  imageUrl="bafybeibm7s666anvtql54c54mz3aeyaitr5wsx4x6j5uhzd5wayyz3atvq"
+                  imageUrl="scavengers.jpg"
                   locked={false}
                   tab="scavengers"
                   title="Scavenger Hunts"

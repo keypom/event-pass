@@ -1,5 +1,22 @@
 import keypomInstance from '@/lib/keypom';
 
+export const getDynamicHeightPercentage = (vh: number, thresholds: number[], values: number[]) => {
+  if (vh > thresholds[0]) return values[0];
+  if (vh > thresholds[1]) {
+    const range = thresholds[0] - thresholds[1];
+    const diff = vh - thresholds[1];
+    const ratio = diff / range;
+    return values[1] + ratio * (values[0] - values[1]);
+  }
+  if (vh > thresholds[2]) {
+    const range = thresholds[1] - thresholds[2];
+    const diff = vh - thresholds[2];
+    const ratio = diff / range;
+    return values[2] + ratio * (values[1] - values[2]);
+  }
+  return values[2];
+};
+
 export const claimEventDrop = async ({
   factoryAccount,
   qrDataSplit,

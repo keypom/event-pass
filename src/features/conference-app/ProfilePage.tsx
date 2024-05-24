@@ -8,6 +8,7 @@ import {
   Image,
   Skeleton,
   Text,
+  useMediaQuery,
   VStack,
 } from '@chakra-ui/react';
 import QRCode from 'react-qr-code';
@@ -15,21 +16,56 @@ import QRCode from 'react-qr-code';
 import { IconBox } from '@/components/IconBox';
 import { TicketIcon } from '@/components/Icons';
 import { BoxWithShape } from '@/components/BoxWithShape';
-import { CLOUDFLARE_IPFS } from '@/constants/common';
 import { useConferenceContext } from '@/contexts/ConferenceContext';
+
+import { getDynamicHeightPercentage } from './helpers';
 
 export default function ProfilePage() {
   const { eventInfo, ticketInfo, isLoading, ticker, accountId, tokensAvailable } =
     useConferenceContext();
 
+  const vh = window.innerHeight;
+  const iconBoxHeight = `${getDynamicHeightPercentage(vh, [900, 700, 70], [90, 80, 70])}%`;
+  const boxWithShapeHeight = `${getDynamicHeightPercentage(vh, [900, 700, 0], [77, 62, 50])}%`;
+  const [isHeightGreaterThan600] = useMediaQuery('(min-height: 600px)');
+  const [isHeightGreaterThan700] = useMediaQuery('(min-height: 700px)');
+  const [isHeightGreaterThan800] = useMediaQuery('(min-height: 800px)');
+  const [isHeightGreaterThan900] = useMediaQuery('(min-height: 900px)');
+  const qrSize = isHeightGreaterThan900
+    ? 190
+    : isHeightGreaterThan800
+    ? 170
+    : isHeightGreaterThan700
+    ? 150
+    : isHeightGreaterThan600
+    ? 120
+    : 100;
+  const imageSize = isHeightGreaterThan900
+    ? '170px'
+    : isHeightGreaterThan800
+    ? '120px'
+    : isHeightGreaterThan700
+    ? '100px'
+    : isHeightGreaterThan600
+    ? '80px'
+    : '50px';
+
   return (
-    <Center>
-      <VStack gap={{ base: 'calc(24px + 8px)', md: 'calc(32px + 10px)' }}>
+    <Center maxH="87vh">
+      <VStack
+        gap={{ base: '16px', md: '24px', lg: '32px' }}
+        h="full"
+        maxH="87vh"
+        overflowY="auto"
+        pt="3"
+        spacing="4"
+        w={{ base: '90vw', md: '90%', lg: '80%' }}
+      >
         <Skeleton fadeDuration={1} isLoaded={!isLoading}>
           <Heading
             fontSize={{ base: '2xl', md: '3xl' }}
             fontWeight="500"
-            paddingBottom="0"
+            paddingBottom="5"
             textAlign="center"
           >
             {isLoading ? (
@@ -39,7 +75,7 @@ export default function ProfilePage() {
                 <Heading
                   color={eventInfo.styles.title.color}
                   fontFamily={eventInfo.styles.title.fontFamily}
-                  fontSize={eventInfo.styles.title.fontSize}
+                  fontSize="4xl"
                   fontWeight={eventInfo.styles.title.fontWeight}
                   textAlign="center"
                 >
@@ -52,13 +88,14 @@ export default function ProfilePage() {
 
         <IconBox
           bg={eventInfo.styles.border.border || 'border.box'}
+          h={iconBoxHeight}
           icon={
             <Skeleton isLoaded={!isLoading}>
               {eventInfo.styles.icon.image ? (
                 <Image
                   borderRadius="full"
                   boxSize="60px"
-                  src={`${CLOUDFLARE_IPFS}/${eventInfo.styles.icon.image}`}
+                  src={`/assets/demos/consensus/${eventInfo.styles.icon.image}`}
                   zIndex="-1"
                 />
               ) : (
@@ -68,13 +105,12 @@ export default function ProfilePage() {
           }
           iconBg={eventInfo.styles.icon.bg || 'blue.100'}
           iconBorder={eventInfo.styles.icon.border || 'border.round'}
-          maxW="345px"
           minW={{ base: '90vw', md: '345px' }}
           p="0"
           pb="0"
-          w="90vh"
+          w="full"
         >
-          <Box h="full">
+          <Box h={boxWithShapeHeight}>
             <BoxWithShape bg="white" borderTopRadius="8xl" showNotch={false} w="full">
               {isLoading ? (
                 <Skeleton height="200px" width="full" />
@@ -82,8 +118,8 @@ export default function ProfilePage() {
                 <Flex
                   align="center"
                   flexDir="column"
-                  pb={{ base: '3', md: '5' }}
-                  pt={{ base: '12', md: '16' }}
+                  pb={{ base: '2', md: '5' }}
+                  pt={{ base: '10', md: '16' }}
                   px={{ base: '10', md: '8' }}
                 >
                   <Text
@@ -97,7 +133,7 @@ export default function ProfilePage() {
                   </Text>
                   <Grid
                     gap={6} // Space between grid items
-                    py={4} // Padding on the top and bottom
+                    py={isHeightGreaterThan800 ? '4' : '2'} // Padding on the top and bottom
                     templateColumns={{ base: 'repeat(2, 1fr)' }} // Responsive grid layout
                     width="full" // Full width of the parent container
                   >
@@ -106,7 +142,7 @@ export default function ProfilePage() {
                       <Text
                         color={eventInfo.styles.h2.color}
                         fontFamily={eventInfo.styles.h2.fontFamily}
-                        fontSize={eventInfo.styles.h2.fontSize}
+                        fontSize={isHeightGreaterThan800 ? 'lg' : 'md'} // Padding on the top and bottom
                         fontWeight={eventInfo.styles.h2.fontWeight}
                         mb={0}
                         textAlign="left"
@@ -120,7 +156,7 @@ export default function ProfilePage() {
                         fontWeight={eventInfo.styles.h3.fontWeight}
                         textAlign="left"
                       >
-                        Benjamin
+                        N/A
                       </Text>
                     </Box>
 
@@ -129,7 +165,7 @@ export default function ProfilePage() {
                       <Text
                         color={eventInfo.styles.h2.color}
                         fontFamily={eventInfo.styles.h2.fontFamily}
-                        fontSize={eventInfo.styles.h2.fontSize}
+                        fontSize={isHeightGreaterThan800 ? 'lg' : 'md'} // Padding on the top and bottom
                         fontWeight={eventInfo.styles.h2.fontWeight}
                         mb={0}
                         textAlign="right"
@@ -143,18 +179,18 @@ export default function ProfilePage() {
                         fontWeight={eventInfo.styles.h3.fontWeight}
                         textAlign="right"
                       >
-                        Kurrek
+                        N/A
                       </Text>
                     </Box>
                   </Grid>
                   <Skeleton borderRadius="12px" isLoaded={!isLoading}>
                     <Image
                       alt={`Event image for ${eventInfo.name}`}
-                      borderRadius="12px"
-                      height="140px"
+                      borderRadius="8px"
+                      height={imageSize}
                       mb="2"
                       objectFit="contain"
-                      src={`${CLOUDFLARE_IPFS}/${ticketInfo.media}`}
+                      src={`/assets/demos/consensus/${ticketInfo.media}`}
                     />
                   </Skeleton>
                   <HStack>
@@ -195,7 +231,8 @@ export default function ProfilePage() {
                 fontFamily={eventInfo.styles.h1.fontFamily}
                 fontSize={eventInfo.styles.h1.fontSize}
                 fontWeight={eventInfo.styles.h1.fontWeight}
-                size={{ base: 'xl', md: '2xl' }}
+                mb={isHeightGreaterThan800 ? '4' : '1'} // Padding on the top and bottom
+                size={{ base: '2xl', md: '2xl' }}
                 textAlign="center"
               >
                 Share Your Profile
@@ -204,15 +241,15 @@ export default function ProfilePage() {
                 border="1px solid"
                 borderColor="gray.200"
                 borderRadius="12px"
-                mb={{ base: '2', md: '2' }}
-                p="5"
+                mb={isHeightGreaterThan800 ? '5' : '1'} // Padding on the top and bottom
+                p="3"
               >
-                <QRCode id="QRCode" size={180} value={`profile:${accountId}`} />
+                <QRCode id="QRCode" size={qrSize} value={`profile:${accountId}`} />
               </Box>
               <Text
                 color={eventInfo.styles.h3.color}
                 fontFamily={eventInfo.styles.h3.fontFamily}
-                fontSize="sm"
+                fontSize="md"
                 fontWeight={eventInfo.styles.h3.fontWeight}
                 textAlign="center"
               >
