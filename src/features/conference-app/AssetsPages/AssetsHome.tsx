@@ -2,7 +2,6 @@ import {
   Box,
   Flex,
   Center,
-  Heading,
   Skeleton,
   Text,
   VStack,
@@ -22,7 +21,20 @@ import { useConferenceContext } from '@/contexts/ConferenceContext';
 
 import ProfileTransferModal from '../modals/ProfileTransferModal';
 import ReceiveTokensModal from '../modals/ReceiveTokensModal';
-import { getDynamicHeightPercentage } from '../helpers';
+
+export const formatTokensAvailable = (tokens: string) => {
+  const [integerPart, decimalPart] = tokens.split('.');
+  if (!decimalPart) {
+    return tokens;
+  }
+  if (decimalPart.length <= 2) {
+    return tokens;
+  }
+  if (decimalPart.slice(2).replace(/0+$/, '').length > 0) {
+    return `${integerPart}.${decimalPart}`;
+  }
+  return `${integerPart}.${decimalPart.slice(0, 2)}`;
+};
 
 const AssetsHome = () => {
   const { tokensAvailable, eventInfo, isLoading, onSelectTab, ticker } = useConferenceContext();
@@ -41,16 +53,17 @@ const AssetsHome = () => {
     title,
     imageUrl,
     tab,
+    color,
+    fontSize,
     locked = false,
   }: {
     title: string;
     imageUrl: string;
     tab: string;
+    color: string;
+    fontSize: string;
     locked: boolean;
   }) => {
-    const vh = window.innerHeight;
-    const cardHeight = `${getDynamicHeightPercentage(vh, [900, 700, 0], [500, 250, 100])}px`;
-
     const cardStyle = {
       position: 'relative' as const,
       flex: '1',
@@ -58,14 +71,12 @@ const AssetsHome = () => {
       bg: 'gray.100',
       boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.15)',
       overflow: 'hidden',
-      maxH: cardHeight,
     };
 
     const imageContainerStyle = {
       position: 'relative' as const,
       flex: '1',
       h: '100%',
-      maxH: cardHeight,
     };
 
     const lockIconStyle = {
@@ -80,7 +91,7 @@ const AssetsHome = () => {
 
     const overlayStyle = {
       position: 'absolute' as const,
-      top: locked ? '2' : '33.33%',
+      top: locked ? '0' : '33.33%',
       left: '50%',
       transform: 'translateX(-50%)',
       width: '100%',
@@ -89,7 +100,7 @@ const AssetsHome = () => {
 
     const comingSoonStyle = {
       position: 'absolute' as const,
-      top: '75%',
+      top: '60%',
       left: '50%',
       transform: 'translateX(-50%)',
       width: '100%',
@@ -123,10 +134,10 @@ const AssetsHome = () => {
           <Box {...overlayStyle}>
             <Text
               bottom="2"
-              color={eventInfo.styles.h3.color}
-              fontFamily={eventInfo.styles.h3.fontFamily}
-              fontSize={isLargerThan900 ? '3xl' : isLargerThan700 ? '2xl' : 'xl'}
-              fontWeight={eventInfo.styles.h3.fontWeight}
+              color={color}
+              fontFamily={eventInfo.styles.h1.fontFamily}
+              fontSize={fontSize}
+              fontWeight={eventInfo.styles.h1.fontWeight}
             >
               {title}
             </Text>
@@ -135,7 +146,7 @@ const AssetsHome = () => {
             <Box {...comingSoonStyle}>
               <Text
                 bottom="2"
-                color={eventInfo.styles.h3.color}
+                color="white"
                 fontFamily={eventInfo.styles.h3.fontFamily}
                 fontSize={isLargerThan900 ? 'xl' : isLargerThan700 ? 'lg' : 'md'}
                 fontWeight={eventInfo.styles.h3.fontWeight}
@@ -157,12 +168,8 @@ const AssetsHome = () => {
     );
   }
 
-  const vh = window.innerHeight;
-  const iconBoxHeight = `${getDynamicHeightPercentage(vh, [900, 700, 0], [90, 80, 200])}%`;
-  const boxWithShapeHeight = `${getDynamicHeightPercentage(vh, [900, 700, 0], [77, 62, 100])}%`;
-
   return (
-    <Center h="87vh">
+    <Center h="80vh">
       <ProfileTransferModal
         isOpen={sendDisclosure.isOpen}
         title="Send Tokens"
@@ -173,38 +180,13 @@ const AssetsHome = () => {
         gap={{ base: '16px', md: '24px', lg: '32px' }}
         h="100%"
         overflowY="auto"
-        pt="3"
+        pt="14"
         spacing="4"
         w={{ base: '90vw', md: '90%', lg: '80%' }}
       >
-        <Skeleton fadeDuration={1} isLoaded={!isLoading}>
-          <Heading
-            fontSize={{ base: '2xl', md: '3xl' }}
-            fontWeight="500"
-            paddingBottom="4"
-            textAlign="center"
-          >
-            {isLoading ? (
-              'Loading ticket...'
-            ) : (
-              <VStack>
-                <Heading
-                  color={eventInfo.styles.title.color}
-                  fontFamily={eventInfo.styles.title.fontFamily}
-                  fontSize={{ base: '4xl', md: '5xl' }}
-                  fontWeight={eventInfo.styles.title.fontWeight}
-                  textAlign="center"
-                >
-                  ASSETS
-                </Heading>
-              </VStack>
-            )}
-          </Heading>
-        </Skeleton>
-
         <IconBox
           bg={eventInfo.styles.border.border || 'border.box'}
-          h={iconBoxHeight}
+          h="full"
           icon={
             <Skeleton isLoaded={!isLoading}>
               <Image
@@ -221,7 +203,7 @@ const AssetsHome = () => {
           pb="0"
           w="full"
         >
-          <Box h={boxWithShapeHeight}>
+          <Box>
             <BoxWithShape bg="white" borderTopRadius="8xl" showNotch={false} w="full">
               {isLoading ? (
                 <Skeleton height="200px" width="full" />
@@ -229,6 +211,7 @@ const AssetsHome = () => {
                 <Flex
                   align="center"
                   flexDir="column"
+                  h="full"
                   pb={{ base: '2', md: '5' }}
                   pt={{ base: '10', md: '16' }}
                   px={{ base: '10', md: '8' }}
@@ -240,7 +223,7 @@ const AssetsHome = () => {
                     fontWeight={eventInfo.styles.h1.fontWeight}
                     textAlign="center"
                   >
-                    {tokensAvailable} ${ticker}
+                    {formatTokensAvailable(tokensAvailable)} ${ticker}
                   </Text>
                   <HStack justify="space-evenly" mt={4} spacing={4} w="100%">
                     <VStack spacing="0">
@@ -315,35 +298,42 @@ const AssetsHome = () => {
               )}
             </BoxWithShape>
 
-            <Flex
-              align="center"
-              bg="gray.50"
-              borderBottomRadius="8xl"
-              flexDir="column"
-              h="full"
-              pb="2"
-              pt="2"
-              px="6"
-            >
-              <VStack h="100%" spacing="6" w="full">
+            <VStack h="50vh" p="6" spacing="6" w="full">
+              <PageCard
+                color="white"
+                fontSize={isLargerThan900 ? '3xl' : isLargerThan700 ? '3xl' : 'xl'}
+                imageUrl="collectibles.jpg"
+                locked={false}
+                tab="collectibles"
+                title="Collectibles"
+              />
+              <HStack flex="1" spacing="6" w="100%" wrap="wrap">
                 <PageCard
-                  imageUrl="collectibles.jpg"
-                  locked={false}
-                  tab="collectibles"
-                  title="Collectibles"
+                  color="white"
+                  fontSize={isLargerThan900 ? '3xl' : isLargerThan700 ? '2xl' : 'xl'}
+                  imageUrl="raffles.jpg"
+                  locked={true}
+                  tab="raffles"
+                  title="Raffles"
                 />
-                <HStack flex="1" spacing="6">
-                  <PageCard imageUrl="raffles.jpg" locked={true} tab="raffles" title="Raffles" />
-                  <PageCard imageUrl="auctions.jpg" locked={true} tab="auctions" title="Auctions" />
-                </HStack>
                 <PageCard
-                  imageUrl="scavengers.jpg"
-                  locked={false}
-                  tab="scavengers"
-                  title="Scavenger Hunts"
+                  color="white"
+                  fontSize={isLargerThan900 ? '3xl' : isLargerThan700 ? '2xl' : 'xl'}
+                  imageUrl="auctions.jpg"
+                  locked={true}
+                  tab="auctions"
+                  title="Auctions"
                 />
-              </VStack>
-            </Flex>
+              </HStack>
+              <PageCard
+                color={eventInfo.styles.h2.color || 'black'}
+                fontSize={isLargerThan900 ? '3xl' : isLargerThan700 ? '3xl' : 'xl'}
+                imageUrl="scavengers.jpg"
+                locked={false}
+                tab="scavengers"
+                title="Scavenger Hunts"
+              />
+            </VStack>
           </Box>
         </IconBox>
       </VStack>

@@ -46,7 +46,7 @@ const InConferenceApp = () => {
       backgroundRepeat="no-repeat"
       backgroundSize="cover"
       direction="column"
-      minH="100vh"
+      h="90vh"
       width="100vw"
     >
       <Box flex="1" overflowY="auto">
