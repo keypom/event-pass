@@ -1,8 +1,6 @@
 import { Box, Center, Image, Progress, Text, VStack, Badge, HStack } from '@chakra-ui/react';
 import { CheckIcon } from '@chakra-ui/icons';
 
-import { CLOUDFLARE_IPFS } from '@/constants/common';
-
 interface ScavengerHunt {
   id: string;
   name: string;
@@ -17,7 +15,7 @@ interface ScavengerCardProps {
 
 export const ScavengerCard: React.FC<ScavengerCardProps> = ({ scavenger }: ScavengerCardProps) => {
   const isCompleted = scavenger.found.length >= scavenger.scavenger_ids.length;
-  const imageUrl = `${CLOUDFLARE_IPFS}/${scavenger.image}`;
+  const imageUrl = `/assets/demos/consensus/${scavenger.image}`;
 
   return (
     <Box
@@ -33,8 +31,8 @@ export const ScavengerCard: React.FC<ScavengerCardProps> = ({ scavenger }: Scave
           <Image
             alt={scavenger.name}
             borderRadius="md"
-            boxSize="60px"
-            objectFit="contain"
+            boxSize="80px"
+            objectFit="cover"
             src={imageUrl}
           />
         </Center>

@@ -95,7 +95,7 @@ const ScavengerHuntsPage: React.FC = () => {
                 <Heading
                   color={eventInfo.styles?.title?.color}
                   fontFamily={eventInfo.styles.title?.fontFamily}
-                  fontSize={{ base: '6xl', md: '8xl' }}
+                  fontSize={{ base: '4xl', md: '8xl' }}
                   fontWeight="500"
                   textAlign="center"
                 >

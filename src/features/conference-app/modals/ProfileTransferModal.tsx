@@ -398,7 +398,7 @@ const ProfileTransferModal = ({
                 fontSize={eventInfo.styles.buttons.primary.fontSize}
                 fontWeight={eventInfo.styles.buttons.primary.fontWeight}
                 h={eventInfo.styles.buttons.primary.h}
-                isDisabled={isSending}
+                isDisabled={isSending || sendTo.length === 0}
                 sx={eventInfo.styles.buttons.primary.sx}
                 variant="outline"
                 w="full"

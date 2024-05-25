@@ -19,6 +19,7 @@ import { BoxWithShape } from '@/components/BoxWithShape';
 import { useConferenceContext } from '@/contexts/ConferenceContext';
 
 import { getDynamicHeightPercentage } from './helpers';
+import { formatTokensAvailable } from './AssetsPages/AssetsHome';
 
 export default function ProfilePage() {
   const { eventInfo, ticketInfo, isLoading, ticker, accountId, tokensAvailable } =
@@ -94,9 +95,9 @@ export default function ProfilePage() {
               {eventInfo.styles.icon.image ? (
                 <Image
                   borderRadius="full"
-                  boxSize="60px"
+                  height={{ base: '14', md: '12' }}
                   src={`/assets/demos/consensus/${eventInfo.styles.icon.image}`}
-                  zIndex="-1"
+                  width={{ base: '20', md: '12' }}
                 />
               ) : (
                 <TicketIcon height={{ base: '8', md: '10' }} width={{ base: '8', md: '10' }} />
@@ -129,7 +130,7 @@ export default function ProfilePage() {
                     fontWeight={eventInfo.styles.h1.fontWeight}
                     textAlign="center"
                   >
-                    {tokensAvailable} ${ticker}
+                    {formatTokensAvailable(tokensAvailable)} ${ticker}
                   </Text>
                   <Grid
                     gap={6} // Space between grid items

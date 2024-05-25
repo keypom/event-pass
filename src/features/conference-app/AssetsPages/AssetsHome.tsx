@@ -190,9 +190,10 @@ const AssetsHome = () => {
           icon={
             <Skeleton isLoaded={!isLoading}>
               <Image
-                height={{ base: '10', md: '12' }}
+                borderRadius="full"
+                height={{ base: '14', md: '12' }}
                 src={`/assets/demos/consensus/${eventInfo.styles.icon.image}`}
-                width={{ base: '10', md: '12' }}
+                width={{ base: '20', md: '12' }}
               />
             </Skeleton>
           }

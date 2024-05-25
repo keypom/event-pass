@@ -4,7 +4,6 @@ import {
   Center,
   Flex,
   Grid,
-  Heading,
   Image,
   Skeleton,
   Text,
@@ -17,7 +16,6 @@ import { useEffect, useRef, useState } from 'react';
 import { ClipLoader } from 'react-spinners';
 
 import { IconBox } from '@/components/IconBox';
-import { TicketIcon } from '@/components/Icons';
 import { BoxWithShape } from '@/components/BoxWithShape';
 import { ViewFinder } from '@/components/ViewFinder';
 import { LoadingOverlay } from '@/features/scanner/components/LoadingOverlay';
@@ -29,7 +27,7 @@ import MerchModal from './modals/MerchModal';
 import RaffleModal from './modals/RaffleModal';
 import SponsorModal from './modals/SponsorModal';
 import ProfileTransferModal from './modals/ProfileTransferModal';
-import { claimEventDrop, getDynamicHeightPercentage } from './helpers';
+import { claimEventDrop } from './helpers';
 import NFTModal from './modals/NFTModal';
 import TokenModal from './modals/TokenModal';
 
@@ -225,9 +223,6 @@ export default function ScanningPage() {
     }
   };
 
-  const vh = window.innerHeight;
-  const iconBoxHeight = `${getDynamicHeightPercentage(vh, [900, 700, 70], [90, 80, 70])}%`;
-  const boxWithShapeHeight = `${getDynamicHeightPercentage(vh, [900, 700, 0], [77, 62, 50])}%`;
   const [isHeightGreaterThan600] = useMediaQuery('(min-height: 600px)');
   const [isHeightGreaterThan700] = useMediaQuery('(min-height: 700px)');
   const [isHeightGreaterThan800] = useMediaQuery('(min-height: 800px)');
@@ -315,66 +310,36 @@ export default function ScanningPage() {
           {...modalProps}
         />
       )}
-      <Center maxH="87vh">
+      <Center h="95vh">
         <VStack
           gap={{ base: '16px', md: '24px', lg: '32px' }}
-          h="full"
-          maxH="87vh"
+          h="100%"
           overflowY="auto"
-          pt="3"
+          pt="14"
           spacing="4"
           w={{ base: '90vw', md: '90%', lg: '80%' }}
         >
-          <Skeleton fadeDuration={1} isLoaded={!isLoading}>
-            <Heading
-              fontSize={{ base: '2xl', md: '3xl' }}
-              fontWeight="500"
-              paddingBottom="5"
-              textAlign="center"
-            >
-              {isLoading ? (
-                'Loading ticket...'
-              ) : (
-                <VStack>
-                  <Heading
-                    color={eventInfo.styles.title.color}
-                    fontFamily={eventInfo.styles.title.fontFamily}
-                    fontSize="4xl"
-                    fontWeight={eventInfo.styles.title.fontWeight}
-                    textAlign="center"
-                  >
-                    SCAN
-                  </Heading>
-                </VStack>
-              )}
-            </Heading>
-          </Skeleton>
-
           <IconBox
             bg={eventInfo.styles.border.border || 'border.box'}
-            h={iconBoxHeight}
             icon={
               <Skeleton isLoaded={!isLoading}>
-                {eventInfo.styles.icon.image ? (
-                  <Image
-                    borderRadius="full"
-                    boxSize="60px"
-                    src={`/assets/demos/consensus/${eventInfo.styles.icon.image}`}
-                    zIndex="-1"
-                  />
-                ) : (
-                  <TicketIcon height={{ base: '8', md: '10' }} width={{ base: '8', md: '10' }} />
-                )}
+                <Image
+                  borderRadius="full"
+                  height={{ base: '14', md: '12' }}
+                  src={`/assets/demos/consensus/${eventInfo.styles.icon.image}`}
+                  width={{ base: '20', md: '12' }}
+                />
               </Skeleton>
             }
             iconBg={eventInfo.styles.icon.bg || 'blue.100'}
             iconBorder={eventInfo.styles.icon.border || 'border.round'}
+            maxW="345px"
             minW={{ base: '90vw', md: '345px' }}
             p="0"
             pb="0"
             w="full"
           >
-            <Box h={boxWithShapeHeight}>
+            <Box maxH="95vh">
               <BoxWithShape bg="white" borderTopRadius="8xl" h="full" showNotch={false} w="full">
                 {isLoading || !accountId ? (
                   <Flex align="center" h="200px" justify="center" w="full">

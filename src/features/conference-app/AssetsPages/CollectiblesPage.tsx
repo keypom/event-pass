@@ -25,7 +25,6 @@ import { CheckIcon, LockIcon } from '@chakra-ui/icons';
 import { IconBox } from '@/components/IconBox';
 import { TicketIcon } from '@/components/Icons';
 import { BoxWithShape } from '@/components/BoxWithShape';
-import { CLOUDFLARE_IPFS } from '@/constants/common';
 import keypomInstance from '@/lib/keypom';
 import { useConferenceContext } from '@/contexts/ConferenceContext';
 import { BackIcon } from '@/components/BackIcon';
@@ -112,7 +111,7 @@ const CollectiblesPage: React.FC = () => {
             boxSize="full"
             filter={isOwned ? 'none' : 'blur(4px)'}
             objectFit="cover"
-            src={`${CLOUDFLARE_IPFS}/${nft.image}`}
+            src={`/assets/demos/consensus/${nft.image}`}
           />
           {!isOwned && <LockIcon {...lockIconStyle} />}
         </Flex>
@@ -170,7 +169,7 @@ const CollectiblesPage: React.FC = () => {
                 <Heading
                   color={eventInfo.styles?.title?.color}
                   fontFamily={eventInfo.styles.title?.fontFamily}
-                  fontSize={{ base: '6xl', md: '8xl' }}
+                  fontSize={{ base: '4xl', md: '8xl' }}
                   fontWeight="500"
                   textAlign="center"
                 >

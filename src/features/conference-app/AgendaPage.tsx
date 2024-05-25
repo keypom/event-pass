@@ -2,7 +2,6 @@ import {
   Box,
   Center,
   Flex,
-  Heading,
   VStack,
   HStack,
   Skeleton,
@@ -19,7 +18,6 @@ import { FaThList, FaTh } from 'react-icons/fa';
 import { useConferenceContext } from '@/contexts/ConferenceContext';
 import { IconBox } from '@/components/IconBox';
 import { BoxWithShape } from '@/components/BoxWithShape';
-import { CLOUDFLARE_IPFS } from '@/constants/common';
 import GroupedAgendaItems from '@/components/AgendaItem/GroupedAgendaItems';
 import AgendaItemCard from '@/components/AgendaItem/AgendaItemCard';
 
@@ -224,131 +222,112 @@ const AgendaPage: React.FC = () => {
   };
 
   return (
-    <Box h="calc(100vh - 100px)" overflowY="auto">
-      <Center>
-        <VStack gap={{ base: 'calc(24px + 8px)', md: 'calc(32px + 10px)' }} w="full">
-          <Skeleton fadeDuration={1} isLoaded={!isLoading}>
-            <Heading
-              fontSize={{ base: '2xl', md: '3xl' }}
-              fontWeight="500"
-              paddingBottom="0"
-              textAlign="center"
-            >
+    <Center h="80vh">
+      <VStack
+        gap={{ base: '16px', md: '24px', lg: '32px' }}
+        h="100%"
+        overflowY="auto"
+        pt="14"
+        spacing="4"
+        w={{ base: '90vw', md: '90%', lg: '80%' }}
+      >
+        <IconBox
+          bg={eventInfo.styles.border.border || 'border.box'}
+          icon={
+            <Skeleton isLoaded={!isLoading}>
+              <Image
+                borderRadius="full"
+                height={{ base: '14', md: '12' }}
+                src={`/assets/demos/consensus/${eventInfo.styles.icon.image}`}
+                width={{ base: '20', md: '12' }}
+              />
+            </Skeleton>
+          }
+          iconBg={eventInfo.styles.icon.bg || 'blue.100'}
+          iconBorder={eventInfo.styles.icon.border || 'border.round'}
+          maxW="345px"
+          minW={{ base: '90vw', md: '345px' }}
+          p="0"
+          pb="0"
+          w="full"
+        >
+          <Box h="full" maxH="70vh">
+            <BoxWithShape bg="white" borderTopRadius="8xl" showNotch={false} w="full">
               {isLoading ? (
-                'Loading agenda...'
+                <Skeleton height="200px" width="full" />
               ) : (
-                <VStack>
-                  <Heading
-                    color={eventInfo.styles.title.color}
-                    fontFamily={eventInfo.styles.title.fontFamily}
-                    fontSize={eventInfo.styles.title.fontSize}
-                    fontWeight={eventInfo.styles.title.fontWeight}
-                    textAlign="center"
-                  >
-                    AGENDA
-                  </Heading>
-                </VStack>
-              )}
-            </Heading>
-          </Skeleton>
-
-          <IconBox
-            bg={eventInfo.styles.border.border || 'border.box'}
-            icon={
-              <Skeleton isLoaded={!isLoading}>
-                <Image
-                  height={{ base: '10', md: '12' }}
-                  src={`${CLOUDFLARE_IPFS}/${eventInfo.styles.icon.image}`}
-                  width={{ base: '10', md: '12' }}
-                />
-              </Skeleton>
-            }
-            iconBg={eventInfo.styles.icon.bg || 'blue.100'}
-            iconBorder={eventInfo.styles.icon.border || 'border.round'}
-            maxW="345px"
-            minW={{ base: '90vw', md: '345px' }}
-            p="0"
-            pb="0"
-            w="full"
-          >
-            <Box h="full" maxH="70vh">
-              <BoxWithShape bg="white" borderTopRadius="8xl" showNotch={false} w="full">
-                {isLoading ? (
-                  <Skeleton height="200px" width="full" />
-                ) : (
-                  <Flex
-                    align="center"
-                    flexDir="column"
-                    pb={{ base: '3', md: '5' }}
-                    pt={{ base: '12', md: '16' }}
-                    px={{ base: '4', md: '8' }}
-                  >
-                    <VStack w="100%">
-                      <HStack borderBottom="2px solid" borderColor="gray.400" w="full">
-                        <SearchIcon color="gray.500" />
-                        <Input
-                          _placeholder={{
-                            color: eventInfo.styles.h3.color,
-                            fontFamily: eventInfo.styles.h3.fontFamily,
-                            fontSize: 'md',
-                            fontWeight: eventInfo.styles.h3.fontWeight,
-                          }}
-                          color={eventInfo.styles.h3.color}
-                          fontFamily={eventInfo.styles.h3.fontFamily}
-                          fontSize="md"
-                          fontWeight={eventInfo.styles.h3.fontWeight}
-                          h="30px"
-                          placeholder="Search Agenda"
-                          value={searchQuery}
-                          variant="unstyled"
-                          onChange={(e) => {
-                            setSearchQuery(e.target.value);
+                <Flex
+                  align="center"
+                  flexDir="column"
+                  pb={{ base: '3', md: '5' }}
+                  pt={{ base: '12', md: '16' }}
+                  px={{ base: '4', md: '8' }}
+                >
+                  <VStack w="100%">
+                    <HStack borderBottom="2px solid" borderColor="gray.400" w="full">
+                      <SearchIcon color="gray.500" />
+                      <Input
+                        _placeholder={{
+                          color: eventInfo.styles.h3.color,
+                          fontFamily: eventInfo.styles.h3.fontFamily,
+                          fontSize: 'md',
+                          fontWeight: eventInfo.styles.h3.fontWeight,
+                        }}
+                        color={eventInfo.styles.h3.color}
+                        fontFamily={eventInfo.styles.h3.fontFamily}
+                        fontSize="md"
+                        fontWeight={eventInfo.styles.h3.fontWeight}
+                        h="30px"
+                        placeholder="Search Agenda"
+                        value={searchQuery}
+                        variant="unstyled"
+                        onChange={(e) => {
+                          setSearchQuery(e.target.value);
+                        }}
+                      />
+                    </HStack>
+                    <Divider />
+                    <HStack alignItems="center" justifyContent="flex-end" mb={0} w="full">
+                      <ButtonGroup isAttached spacing={0} variant="outline">
+                        <IconButton
+                          _active={{ bg: eventInfo.styles.buttons.secondary.bg }}
+                          _focus={{ bg: eventInfo.styles.buttons.secondary.bg }}
+                          _hover={{ bg: eventInfo.styles.buttons.secondary.bg }}
+                          aria-label="List view"
+                          bg={eventInfo.styles.buttons.secondary.bg}
+                          borderRadius="8px"
+                          color={viewOption === 'list' ? 'black' : 'gray.400'}
+                          icon={<FaThList />}
+                          onClick={() => {
+                            setViewOption('list');
                           }}
                         />
-                      </HStack>
-                      <Divider />
-                      <HStack alignItems="center" justifyContent="flex-end" mb={0} w="full">
-                        <ButtonGroup isAttached spacing={0} variant="outline">
-                          <IconButton
-                            _active={{ bg: eventInfo.styles.buttons.secondary.bg }}
-                            _focus={{ bg: eventInfo.styles.buttons.secondary.bg }}
-                            _hover={{ bg: eventInfo.styles.buttons.secondary.bg }}
-                            aria-label="List view"
-                            bg={eventInfo.styles.buttons.secondary.bg}
-                            borderRadius="8px"
-                            color={viewOption === 'list' ? 'black' : 'gray.400'}
-                            icon={<FaThList />}
-                            onClick={() => {
-                              setViewOption('list');
-                            }}
-                          />
-                          <IconButton
-                            _active={{ bg: eventInfo.styles.buttons.secondary.bg }}
-                            _focus={{ bg: eventInfo.styles.buttons.secondary.bg }}
-                            _hover={{ bg: eventInfo.styles.buttons.secondary.bg }}
-                            aria-label="Grid view"
-                            bg={eventInfo.styles.buttons.secondary.bg}
-                            borderRadius="8px"
-                            color={viewOption === 'grid' ? 'black' : 'gray.400'}
-                            icon={<FaTh />}
-                            onClick={() => {
-                              setViewOption('grid');
-                            }}
-                          />
-                        </ButtonGroup>
-                      </HStack>
-                    </VStack>
-                    <VStack spacing={4} w="full">
-                      {viewOption === 'list' ? renderAgendaItems() : renderGroupedAgendaItems()}
-                    </VStack>
-                  </Flex>
-                )}
-              </BoxWithShape>
-            </Box>
-          </IconBox>
-        </VStack>
-      </Center>
-    </Box>
+                        <IconButton
+                          _active={{ bg: eventInfo.styles.buttons.secondary.bg }}
+                          _focus={{ bg: eventInfo.styles.buttons.secondary.bg }}
+                          _hover={{ bg: eventInfo.styles.buttons.secondary.bg }}
+                          aria-label="Grid view"
+                          bg={eventInfo.styles.buttons.secondary.bg}
+                          borderRadius="8px"
+                          color={viewOption === 'grid' ? 'black' : 'gray.400'}
+                          icon={<FaTh />}
+                          onClick={() => {
+                            setViewOption('grid');
+                          }}
+                        />
+                      </ButtonGroup>
+                    </HStack>
+                  </VStack>
+                  <VStack spacing={4} w="full">
+                    {viewOption === 'list' ? renderAgendaItems() : renderGroupedAgendaItems()}
+                  </VStack>
+                </Flex>
+              )}
+            </BoxWithShape>
+          </Box>
+        </IconBox>
+      </VStack>
+    </Center>
   );
 };
 
