@@ -34,7 +34,7 @@ const InConferenceApp = () => {
       h="95vh"
       width="100vw"
     >
-      <Box flex="1" overflowY="auto">
+      <Box flex="1" overflowY="hidden">
         {currentTab()}
       </Box>
       <HStack

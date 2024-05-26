@@ -180,7 +180,6 @@ const AssetsHome = () => {
       <ReceiveTokensModal isOpen={receiveDisclosure.isOpen} onClose={receiveDisclosure.onClose} />
       <VStack
         gap={{ base: '16px', md: '24px', lg: '32px' }}
-        h="100%"
         overflowY="auto"
         pt="14"
         spacing="4"

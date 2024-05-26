@@ -73,39 +73,14 @@ const ScavengerHuntsPage: React.FC = () => {
     scavengerHunts.length > 0 ? (completedScavengers.length / scavengerHunts.length) * 100 : 0;
 
   return (
-    <Center>
+    <Center h="78vh">
       <VStack
-        gap={{ base: 'calc(24px + 8px)', md: 'calc(32px + 10px)' }}
-        maxW="1200px"
-        p={4}
-        pb="96px"
-        width="full"
+        gap={{ base: '16px', md: '24px', lg: '32px' }}
+        overflowY="auto"
+        pt="14"
+        spacing="4"
+        w={{ base: '90vw', md: '90%', lg: '80%' }}
       >
-        <Skeleton fadeDuration={1} isLoaded={!isLoading}>
-          <Heading
-            fontSize={{ base: '2xl', md: '3xl' }}
-            fontWeight="500"
-            paddingBottom="0"
-            textAlign="center"
-          >
-            {isLoading ? (
-              'Loading scavenger hunts...'
-            ) : (
-              <VStack>
-                <Heading
-                  color={eventInfo.styles?.title?.color}
-                  fontFamily={eventInfo.styles.title?.fontFamily}
-                  fontSize={{ base: '4xl', md: '8xl' }}
-                  fontWeight="500"
-                  textAlign="center"
-                >
-                  SCAVENGER HUNTS
-                </Heading>
-              </VStack>
-            )}
-          </Heading>
-        </Skeleton>
-
         <IconBox
           bg={eventInfo.styles.border.border || 'border.box'}
           icon={
@@ -134,13 +109,12 @@ const ScavengerHuntsPage: React.FC = () => {
           }
           iconBg={eventInfo.styles.icon.bg || 'blue.100'}
           iconBorder={eventInfo.styles.icon.border || 'border.round'}
-          maxW="345px"
           minW={{ base: '90vw', md: '345px' }}
           p="0"
           pb="0"
-          w="90vh"
+          w="full"
         >
-          <Box h="full" overflowY="auto" position="relative">
+          <Box>
             <BackIcon eventInfo={eventInfo} onSelectTab={onSelectTab} />
             <BoxWithShape bg="white" borderTopRadius="8xl" showNotch={false} w="full">
               {isLoading ? (
@@ -226,7 +200,15 @@ const ScavengerHuntsPage: React.FC = () => {
                 </Flex>
               )}
             </BoxWithShape>
-            <Flex align="center" bg="gray.50" borderRadius="8xl" direction="column" px="6">
+            <Flex
+              flexDir="column"
+              h="calc(78vh - 40vh)"
+              justifyContent="space-between"
+              overflowY="auto"
+              px="6"
+              py="4"
+              w="full"
+            >
               <Accordion allowMultiple defaultIndex={[0]} w="100%">
                 <AccordionItem border="none">
                   <AccordionButton>

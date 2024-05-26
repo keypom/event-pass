@@ -59,7 +59,6 @@ const ChatPage: React.FC = () => {
     <Center h="78vh">
       <VStack
         gap={{ base: '16px', md: '24px', lg: '32px' }}
-        h="100%"
         overflowY="auto"
         pt="14"
         spacing="4"

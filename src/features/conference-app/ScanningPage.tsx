@@ -1,9 +1,9 @@
 import {
   Box,
-  Button,
   Center,
   Flex,
   Grid,
+  IconButton,
   Image,
   Skeleton,
   Text,
@@ -14,13 +14,14 @@ import {
 import { QrReader } from 'react-qr-reader';
 import { useEffect, useRef, useState } from 'react';
 import { ClipLoader } from 'react-spinners';
+import { RepeatIcon } from '@chakra-ui/icons';
 
 import { IconBox } from '@/components/IconBox';
 import { BoxWithShape } from '@/components/BoxWithShape';
 import { ViewFinder } from '@/components/ViewFinder';
 import { LoadingOverlay } from '@/features/scanner/components/LoadingOverlay';
 import keypomInstance from '@/lib/keypom';
-import { conferenceFooterMenuIndexes, useConferenceContext } from '@/contexts/ConferenceContext';
+import { useConferenceContext } from '@/contexts/ConferenceContext';
 
 import ScavengerModal from './modals/ScavengerModal';
 import MerchModal from './modals/MerchModal';
@@ -38,15 +39,8 @@ interface StateRefObject {
 }
 
 export default function ScanningPage() {
-  const {
-    eventInfo,
-    factoryAccount,
-    isLoading,
-    setTriggerRefetch,
-    accountId,
-    onSelectTab,
-    secretKey,
-  } = useConferenceContext();
+  const { eventInfo, factoryAccount, isLoading, setTriggerRefetch, accountId, secretKey } =
+    useConferenceContext();
 
   const toast = useToast();
 
@@ -310,10 +304,9 @@ export default function ScanningPage() {
           {...modalProps}
         />
       )}
-      <Center h="95vh">
+      <Center h="78vh">
         <VStack
           gap={{ base: '16px', md: '24px', lg: '32px' }}
-          h="100%"
           overflowY="auto"
           pt="14"
           spacing="4"
@@ -321,6 +314,7 @@ export default function ScanningPage() {
         >
           <IconBox
             bg={eventInfo.styles.border.border || 'border.box'}
+            h="full"
             icon={
               <Skeleton isLoaded={!isLoading}>
                 <Image
@@ -333,13 +327,12 @@ export default function ScanningPage() {
             }
             iconBg={eventInfo.styles.icon.bg || 'blue.100'}
             iconBorder={eventInfo.styles.icon.border || 'border.round'}
-            maxW="345px"
             minW={{ base: '90vw', md: '345px' }}
             p="0"
             pb="0"
             w="full"
           >
-            <Box maxH="95vh">
+            <Box>
               <BoxWithShape bg="white" borderTopRadius="8xl" h="full" showNotch={false} w="full">
                 {isLoading || !accountId ? (
                   <Flex align="center" h="200px" justify="center" w="full">
@@ -353,14 +346,27 @@ export default function ScanningPage() {
                     pt={{ base: '10', md: '16' }}
                     px={{ base: '10', md: '8' }}
                   >
-                    <VStack w="100%">
+                    <VStack position="relative" w="100%">
+                      <IconButton
+                        aria-label="Flip Camera"
+                        icon={<RepeatIcon />}
+                        position="absolute"
+                        right="40px"
+                        top="10px"
+                        zIndex="2"
+                        onClick={() => {
+                          setFacingMode((prevMode) =>
+                            prevMode === 'environment' ? 'user' : 'environment',
+                          );
+                        }}
+                      />
                       {facingMode === 'environment' && (
                         <QrReader
                           key="environmentQR"
                           constraints={{ facingMode: 'environment' }}
                           containerStyle={{
-                            width: '100%',
-                            height: '100%',
+                            width: '80%',
+                            height: '80%',
                             borderRadius: '24px',
                           }}
                           scanDelay={1000}
@@ -388,164 +394,138 @@ export default function ScanningPage() {
                       )}
                       {/* Overlay Component */}
                       <LoadingOverlay isVisible={isOnCooldown || isScanning} status={scanStatus} />
-                      <Button
-                        backgroundColor={eventInfo.styles.buttons.primary.bg}
-                        color={eventInfo.styles.buttons.primary.color}
-                        fontFamily={eventInfo.styles.buttons.primary.fontFamily}
-                        fontSize={eventInfo.styles.buttons.primary.fontSize}
-                        fontWeight={eventInfo.styles.buttons.primary.fontWeight}
-                        h={eventInfo.styles.buttons.primary.h}
-                        sx={eventInfo.styles.buttons.primary.sx}
-                        variant="outline"
-                        w="full"
-                        onClick={() => {
-                          setFacingMode((prevMode) =>
-                            prevMode === 'environment' ? 'user' : 'environment',
-                          );
-                        }}
-                      >
-                        FLIP
-                      </Button>
                     </VStack>
                   </Flex>
                 )}
               </BoxWithShape>
               <Flex
-                align="center"
-                bg="gray.50"
-                borderBottomRadius="8xl"
                 flexDir="column"
-                pb="4"
-                pt="4"
+                h="calc(78vh - 50vh)"
+                justifyContent="space-between"
                 px="6"
+                py="4"
+                w="full"
               >
-                <Text
-                  color={eventInfo.styles.h1.color}
-                  fontFamily={eventInfo.styles.h1.fontFamily}
-                  fontSize={fontSize}
-                  fontWeight={eventInfo.styles.h1.fontWeight}
-                  textAlign="center"
+                <VStack
+                  h="full"
+                  justifyContent="space-between"
+                  overflowY="auto"
+                  spacing="2"
+                  w="full"
                 >
-                  Scan to participate
-                </Text>
-                {/* Start of the grid for Spork Details */}
-                <Grid
-                  gap={6} // Space between grid items
-                  py={4} // Padding on the top and bottom
-                  templateColumns={{ base: 'repeat(2, 1fr)' }} // Responsive grid layout
-                  width="full" // Full width of the parent container
-                >
-                  {/* Left column for earning methods */}
-                  <Box>
-                    <Text
-                      color={eventInfo?.styles.h2.color}
-                      fontFamily={eventInfo?.styles.h2.fontFamily}
-                      fontSize={eventInfo?.styles.h2.fontSize}
-                      fontWeight={eventInfo?.styles.h2.fontWeight}
-                      mb={0}
-                      textAlign="left"
-                    >
-                      Earn By:
-                    </Text>
-                    <VStack align="stretch" spacing={1} textAlign="left">
+                  <Text
+                    color={eventInfo.styles.h1.color}
+                    fontFamily={eventInfo.styles.h1.fontFamily}
+                    fontSize={fontSize}
+                    fontWeight={eventInfo.styles.h1.fontWeight}
+                    textAlign="center"
+                  >
+                    Scan to participate
+                  </Text>
+                  {/* Start of the grid for Spork Details */}
+                  <Grid
+                    gap={6} // Space between grid items
+                    py={4} // Padding on the top and bottom
+                    templateColumns={{ base: 'repeat(2, 1fr)' }} // Responsive grid layout
+                    width="full" // Full width of the parent container
+                  >
+                    {/* Left column for earning methods */}
+                    <Box>
                       <Text
-                        color={eventInfo?.styles.h3.color}
-                        fontFamily={eventInfo?.styles.h3.fontFamily}
-                        fontSize="sm"
-                        fontWeight={eventInfo?.styles.h3.fontWeight}
+                        color={eventInfo?.styles.h2.color}
+                        fontFamily={eventInfo?.styles.h2.fontFamily}
+                        fontSize={eventInfo?.styles.h2.fontSize}
+                        fontWeight={eventInfo?.styles.h2.fontWeight}
+                        mb={0}
+                        textAlign="left"
                       >
-                        Attending Talks
+                        Earn By:
                       </Text>
-                      <Text
-                        color={eventInfo?.styles.h3.color}
-                        fontFamily={eventInfo?.styles.h3.fontFamily}
-                        fontSize="sm"
-                        fontWeight={eventInfo?.styles.h3.fontWeight}
-                      >
-                        Visiting Booths
-                      </Text>
-                      <Text
-                        color={eventInfo?.styles.h3.color}
-                        fontFamily={eventInfo?.styles.h3.fontFamily}
-                        fontSize="sm"
-                        fontWeight={eventInfo?.styles.h3.fontWeight}
-                      >
-                        Scavenger Hunts
-                      </Text>
-                      <Text
-                        color={eventInfo?.styles.h3.color}
-                        fontFamily={eventInfo?.styles.h3.fontFamily}
-                        fontSize="sm"
-                        fontWeight={eventInfo?.styles.h3.fontWeight}
-                      >
-                        Sponsor Quizzes
-                      </Text>
-                    </VStack>
-                  </Box>
+                      <VStack align="stretch" spacing={1} textAlign="left">
+                        <Text
+                          color={eventInfo?.styles.h3.color}
+                          fontFamily={eventInfo?.styles.h3.fontFamily}
+                          fontSize="sm"
+                          fontWeight={eventInfo?.styles.h3.fontWeight}
+                        >
+                          Attending Talks
+                        </Text>
+                        <Text
+                          color={eventInfo?.styles.h3.color}
+                          fontFamily={eventInfo?.styles.h3.fontFamily}
+                          fontSize="sm"
+                          fontWeight={eventInfo?.styles.h3.fontWeight}
+                        >
+                          Visiting Booths
+                        </Text>
+                        <Text
+                          color={eventInfo?.styles.h3.color}
+                          fontFamily={eventInfo?.styles.h3.fontFamily}
+                          fontSize="sm"
+                          fontWeight={eventInfo?.styles.h3.fontWeight}
+                        >
+                          Scavenger Hunts
+                        </Text>
+                        <Text
+                          color={eventInfo?.styles.h3.color}
+                          fontFamily={eventInfo?.styles.h3.fontFamily}
+                          fontSize="sm"
+                          fontWeight={eventInfo?.styles.h3.fontWeight}
+                        >
+                          Sponsor Quizzes
+                        </Text>
+                      </VStack>
+                    </Box>
 
-                  {/* Right column for spending methods */}
-                  <Box>
-                    <Text
-                      color={eventInfo?.styles.h2.color}
-                      fontFamily={eventInfo?.styles.h2.fontFamily}
-                      fontSize={eventInfo?.styles.h2.fontSize}
-                      fontWeight={eventInfo?.styles.h2.fontWeight}
-                      mb={0}
-                      textAlign="right"
-                    >
-                      Spend On:
-                    </Text>
-                    <VStack align="stretch" spacing={1} textAlign="right">
+                    {/* Right column for spending methods */}
+                    <Box>
                       <Text
-                        color={eventInfo?.styles.h3.color}
-                        fontFamily={eventInfo?.styles.h3.fontFamily}
-                        fontSize="sm"
-                        fontWeight={eventInfo?.styles.h3.fontWeight}
+                        color={eventInfo?.styles.h2.color}
+                        fontFamily={eventInfo?.styles.h2.fontFamily}
+                        fontSize={eventInfo?.styles.h2.fontSize}
+                        fontWeight={eventInfo?.styles.h2.fontWeight}
+                        mb={0}
+                        textAlign="right"
                       >
-                        Food
+                        Spend On:
                       </Text>
-                      <Text
-                        color={eventInfo?.styles.h3.color}
-                        fontFamily={eventInfo?.styles.h3.fontFamily}
-                        fontSize="sm"
-                        fontWeight={eventInfo?.styles.h3.fontWeight}
-                      >
-                        Merch
-                      </Text>
-                      <Text
-                        color={eventInfo?.styles.h3.color}
-                        fontFamily={eventInfo?.styles.h3.fontFamily}
-                        fontSize="sm"
-                        fontWeight={eventInfo?.styles.h3.fontWeight}
-                      >
-                        Raffles
-                      </Text>
-                      <Text
-                        color={eventInfo?.styles.h3.color}
-                        fontFamily={eventInfo?.styles.h3.fontFamily}
-                        fontSize="sm"
-                        fontWeight={eventInfo?.styles.h3.fontWeight}
-                      >
-                        NFTs
-                      </Text>
-                    </VStack>
-                  </Box>
-                </Grid>
-                <Text
-                  _hover={{
-                    textDecoration: 'underline', // Underline on hover like a typical hyperlink
-                    color: 'blue.600', // Optional: Change color on hover for better user feedback
-                  }}
-                  color="gray.600" // Use your theme's blue or any color that indicates interactivity
-                  cursor="pointer" // Makes the text behave like a clickable link
-                  textDecoration="underline" // Remove underline from text
-                  transition="color 0.2s, text-decoration 0.2s" // Smooth transition for hover effects
-                  onClick={() => {
-                    onSelectTab(conferenceFooterMenuIndexes.profile);
-                  }}
-                >
-                  View Profile QR Code
-                </Text>
+                      <VStack align="stretch" spacing={1} textAlign="right">
+                        <Text
+                          color={eventInfo?.styles.h3.color}
+                          fontFamily={eventInfo?.styles.h3.fontFamily}
+                          fontSize="sm"
+                          fontWeight={eventInfo?.styles.h3.fontWeight}
+                        >
+                          Food
+                        </Text>
+                        <Text
+                          color={eventInfo?.styles.h3.color}
+                          fontFamily={eventInfo?.styles.h3.fontFamily}
+                          fontSize="sm"
+                          fontWeight={eventInfo?.styles.h3.fontWeight}
+                        >
+                          Merch
+                        </Text>
+                        <Text
+                          color={eventInfo?.styles.h3.color}
+                          fontFamily={eventInfo?.styles.h3.fontFamily}
+                          fontSize="sm"
+                          fontWeight={eventInfo?.styles.h3.fontWeight}
+                        >
+                          Raffles
+                        </Text>
+                        <Text
+                          color={eventInfo?.styles.h3.color}
+                          fontFamily={eventInfo?.styles.h3.fontFamily}
+                          fontSize="sm"
+                          fontWeight={eventInfo?.styles.h3.fontWeight}
+                        >
+                          NFTs
+                        </Text>
+                      </VStack>
+                    </Box>
+                  </Grid>
+                </VStack>
               </Flex>
             </Box>
           </IconBox>

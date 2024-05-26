@@ -106,7 +106,7 @@ const ReceiveTokensModal = ({ isOpen, onClose }: ReceiveTokensModalProps) => {
                   p="3"
                   verticalAlign="center"
                 >
-                  <Avatar bg="blue.800" mr="3" name={curAccountId} size="sm" />
+                  <Avatar bg="blue.800" color="white" mr="3" name={curAccountId} size="sm" />
                   <Text
                     color={eventInfo?.styles.h2.color}
                     fontFamily={eventInfo?.styles.h2.fontFamily}

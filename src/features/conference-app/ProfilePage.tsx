@@ -16,16 +16,12 @@ import { IconBox } from '@/components/IconBox';
 import { BoxWithShape } from '@/components/BoxWithShape';
 import { useConferenceContext } from '@/contexts/ConferenceContext';
 
-import { getDynamicHeightPercentage } from './helpers';
 import { formatTokensAvailable } from './AssetsPages/AssetsHome';
 
 export default function ProfilePage() {
   const { eventInfo, ticketInfo, isLoading, ticker, accountId, tokensAvailable } =
     useConferenceContext();
 
-  const vh = window.innerHeight;
-  const iconBoxHeight = `${getDynamicHeightPercentage(vh, [900, 700, 70], [90, 80, 70])}%`;
-  const boxWithShapeHeight = `${getDynamicHeightPercentage(vh, [900, 700, 0], [77, 62, 50])}%`;
   const [isHeightGreaterThan600] = useMediaQuery('(min-height: 600px)');
   const [isHeightGreaterThan700] = useMediaQuery('(min-height: 700px)');
   const [isHeightGreaterThan800] = useMediaQuery('(min-height: 800px)');
@@ -53,7 +49,6 @@ export default function ProfilePage() {
     <Center h="78vh">
       <VStack
         gap={{ base: '16px', md: '24px', lg: '32px' }}
-        h="100%"
         overflowY="auto"
         pt="14"
         spacing="4"
