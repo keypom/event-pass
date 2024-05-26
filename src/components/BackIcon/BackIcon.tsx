@@ -1,6 +1,7 @@
 import { Box, Flex, Text } from '@chakra-ui/react';
 
 import { type FunderEventMetadata } from '@/lib/eventsHelpers';
+import { conferenceFooterMenuIndexes } from '@/contexts/ConferenceContext';
 
 const CustomArrowIcon = ({ color = 'black', size = 20 }: { color?: string; size?: number }) => (
   <svg
@@ -38,7 +39,7 @@ export const BackIcon = ({
         p="2"
         w={{ base: '80px', md: '100px' }}
         onClick={() => {
-          onSelectTab(1, 'home');
+          onSelectTab(conferenceFooterMenuIndexes.assets, 'home');
         }}
       >
         <CustomArrowIcon color="black" size={16} />

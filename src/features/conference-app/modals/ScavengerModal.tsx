@@ -17,7 +17,7 @@ import Confetti from 'react-confetti';
 
 import { type FunderEventMetadata } from '@/lib/eventsHelpers';
 import { CLOUDFLARE_IPFS } from '@/constants/common';
-import { useConferenceContext } from '@/contexts/ConferenceContext';
+import { conferenceFooterMenuIndexes, useConferenceContext } from '@/contexts/ConferenceContext';
 
 interface ScavengerModalProps {
   isOpen: boolean;
@@ -138,7 +138,7 @@ const ScavengerModal = ({
               variant="outline"
               w="full"
               onClick={() => {
-                onSelectTab(1, 'scavengers');
+                onSelectTab(conferenceFooterMenuIndexes.assets, 'scavengers');
               }}
             >
               MY ASSETS

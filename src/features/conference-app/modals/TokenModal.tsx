@@ -17,7 +17,7 @@ import Confetti from 'react-confetti';
 
 import { type FunderEventMetadata } from '@/lib/eventsHelpers';
 import { CLOUDFLARE_IPFS } from '@/constants/common';
-import { useConferenceContext } from '@/contexts/ConferenceContext';
+import { conferenceFooterMenuIndexes, useConferenceContext } from '@/contexts/ConferenceContext';
 
 interface TokenModalProps {
   isOpen: boolean;
@@ -108,7 +108,7 @@ const TokenModal = ({ isOpen, onClose, tokenAmount, image, name, eventInfo }: To
               variant="outline"
               w="full"
               onClick={() => {
-                onSelectTab(1);
+                onSelectTab(conferenceFooterMenuIndexes.assets);
               }}
             >
               MY ASSETS

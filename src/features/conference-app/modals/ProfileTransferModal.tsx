@@ -25,7 +25,7 @@ import { accountExists } from 'keypom-js';
 
 import keypomInstance from '@/lib/keypom';
 import { DeleteTextIcon } from '@/components/Icons/DeleteTextIcon';
-import { useConferenceContext } from '@/contexts/ConferenceContext';
+import { conferenceFooterMenuIndexes, useConferenceContext } from '@/contexts/ConferenceContext';
 import { CameraIcon } from '@/components/Icons/CameraIcon';
 
 import { formatTokensAvailable } from '../AssetsPages/AssetsHome';
@@ -311,7 +311,7 @@ const ProfileTransferModal = ({
                       height="100%"
                       justifyContent="center"
                       onClick={() => {
-                        onSelectTab(3);
+                        onSelectTab(conferenceFooterMenuIndexes.scan);
                       }}
                     >
                       <CameraIcon color="black" h="18px" strokeWidth="2" w="28px" />

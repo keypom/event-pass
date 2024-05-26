@@ -17,7 +17,7 @@ import Confetti from 'react-confetti';
 
 import { type FunderEventMetadata } from '@/lib/eventsHelpers';
 import { CLOUDFLARE_IPFS } from '@/constants/common';
-import { useConferenceContext } from '@/contexts/ConferenceContext';
+import { conferenceFooterMenuIndexes, useConferenceContext } from '@/contexts/ConferenceContext';
 
 interface NFTModalProps {
   isOpen: boolean;
@@ -107,7 +107,7 @@ const NFTModal = ({ isOpen, onClose, name, image, eventInfo }: NFTModalProps) =>
               variant="outline"
               w="full"
               onClick={() => {
-                onSelectTab(1, 'collectibles');
+                onSelectTab(conferenceFooterMenuIndexes.assets, 'collectibles');
               }}
             >
               MY ASSETS

@@ -20,7 +20,7 @@ import { BoxWithShape } from '@/components/BoxWithShape';
 import { ViewFinder } from '@/components/ViewFinder';
 import { LoadingOverlay } from '@/features/scanner/components/LoadingOverlay';
 import keypomInstance from '@/lib/keypom';
-import { useConferenceContext } from '@/contexts/ConferenceContext';
+import { conferenceFooterMenuIndexes, useConferenceContext } from '@/contexts/ConferenceContext';
 
 import ScavengerModal from './modals/ScavengerModal';
 import MerchModal from './modals/MerchModal';
@@ -541,7 +541,7 @@ export default function ScanningPage() {
                   textDecoration="underline" // Remove underline from text
                   transition="color 0.2s, text-decoration 0.2s" // Smooth transition for hover effects
                   onClick={() => {
-                    onSelectTab(0);
+                    onSelectTab(conferenceFooterMenuIndexes.profile);
                   }}
                 >
                   View Profile QR Code

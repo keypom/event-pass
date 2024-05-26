@@ -17,7 +17,7 @@ import { BoxWithShape } from '@/components/BoxWithShape';
 import { SendIcon } from '@/components/Icons/SendIcon';
 import { ReceiveIcon } from '@/components/Icons/ReceiveIcon';
 import { CameraIcon } from '@/components/Icons/CameraIcon';
-import { useConferenceContext } from '@/contexts/ConferenceContext';
+import { conferenceFooterMenuIndexes, useConferenceContext } from '@/contexts/ConferenceContext';
 
 import ProfileTransferModal from '../modals/ProfileTransferModal';
 import ReceiveTokensModal from '../modals/ReceiveTokensModal';
@@ -46,7 +46,7 @@ const AssetsHome = () => {
   const [isLargerThan900] = useMediaQuery('(min-height: 900px)');
 
   const handleCardClick = (tab: string) => {
-    onSelectTab(1, tab);
+    onSelectTab(conferenceFooterMenuIndexes.assets, tab);
   };
 
   const PageCard = ({
@@ -275,7 +275,7 @@ const AssetsHome = () => {
                         borderRadius="0.75em"
                         p="2"
                         onClick={() => {
-                          onSelectTab(3);
+                          onSelectTab(conferenceFooterMenuIndexes.scan);
                         }}
                       >
                         <CameraIcon

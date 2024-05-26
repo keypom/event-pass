@@ -1,13 +1,8 @@
-import { Box, Flex, HStack, Text } from '@chakra-ui/react';
+import { Box, Flex, HStack } from '@chakra-ui/react';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { conferenceFooterMenuItems, useConferenceContext } from '@/contexts/ConferenceContext';
-
-import ProfilePage from './ProfilePage';
-import ScanningPage from './ScanningPage';
-import AssetsPageManager from './AssetsPages/AssetsPageManager';
-import AgendaPage from './AgendaPage';
 
 const selectedColor = 'black';
 const unselectedColor = 'white';
@@ -23,18 +18,8 @@ const InConferenceApp = () => {
   }, [selectedTab, queryString, navigate]);
 
   const currentTab = () => {
-    switch (selectedTab) {
-      case 0:
-        return <ProfilePage />;
-      case 1:
-        return <AssetsPageManager />;
-      case 2:
-        return <AgendaPage />;
-      case 3:
-        return <ScanningPage />;
-      default:
-        return <div />;
-    }
+    const Component = conferenceFooterMenuItems[selectedTab].component;
+    return <Component />;
   };
 
   return (
@@ -46,7 +31,7 @@ const InConferenceApp = () => {
       backgroundRepeat="no-repeat"
       backgroundSize="cover"
       direction="column"
-      h="90vh"
+      h="95vh"
       width="100vw"
     >
       <Box flex="1" overflowY="auto">
@@ -57,7 +42,7 @@ const InConferenceApp = () => {
         backgroundColor={eventInfo?.styles?.h1.color}
         bottom="0"
         boxShadow="0 -2px 10px rgba(0,0,0,0.05)"
-        h="12vh"
+        h="8vh"
         justifyContent="space-evenly"
         left="0"
         paddingY="2"
@@ -81,17 +66,9 @@ const InConferenceApp = () => {
                 <IconComponent
                   color={isActive ? selectedColor : unselectedColor}
                   h="40px"
+                  strokeWidth="1"
                   w="40px"
                 />
-                <Text
-                  color={isActive ? selectedColor : unselectedColor}
-                  fontFamily={eventInfo?.styles?.h3.fontFamily}
-                  fontSize="md"
-                  fontWeight={eventInfo?.styles?.h3.fontWeight}
-                  marginTop="2"
-                >
-                  {item.label}
-                </Text>
               </Box>
             </Flex>
           );
