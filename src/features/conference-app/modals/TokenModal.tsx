@@ -16,7 +16,6 @@ import {
 import Confetti from 'react-confetti';
 
 import { type FunderEventMetadata } from '@/lib/eventsHelpers';
-import { CLOUDFLARE_IPFS } from '@/constants/common';
 import { conferenceFooterMenuIndexes, useConferenceContext } from '@/contexts/ConferenceContext';
 
 interface TokenModalProps {
@@ -30,7 +29,7 @@ interface TokenModalProps {
 
 const TokenModal = ({ isOpen, onClose, tokenAmount, image, name, eventInfo }: TokenModalProps) => {
   const { onSelectTab } = useConferenceContext();
-  const imageUrl = `${CLOUDFLARE_IPFS}/${image}`;
+  const imageUrl = `/assets/demos/consensus/${image}`;
   const modalBackground = useColorModeValue('white', 'gray.700');
   const modalPadding = { base: '6', md: '8' };
   const imageBoxSize = { base: '70%', md: '50%', lg: '40%' }; // Responsive image sizing

@@ -381,8 +381,8 @@ export default function ScanningPage() {
                           key="userQR"
                           constraints={{ facingMode: 'user' }}
                           containerStyle={{
-                            width: '100%',
-                            height: '100%',
+                            width: '80%',
+                            height: '80%',
                             borderRadius: '24px',
                           }}
                           scanDelay={1000}

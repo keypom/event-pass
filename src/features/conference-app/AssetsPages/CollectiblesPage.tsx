@@ -13,11 +13,6 @@ import {
   CircularProgress,
   CircularProgressLabel,
   Tooltip,
-  Accordion,
-  AccordionItem,
-  AccordionButton,
-  AccordionPanel,
-  AccordionIcon,
   Divider,
 } from '@chakra-ui/react';
 import { CheckIcon, LockIcon } from '@chakra-ui/icons';
@@ -214,100 +209,67 @@ const CollectiblesPage: React.FC = () => {
                     </Text>
                   </Tooltip>
                   <Divider my="2" />
-                  <Text
-                    color={eventInfo.styles.h3.color}
-                    fontFamily={eventInfo.styles.h3.fontFamily}
-                    fontSize="sm"
-                    fontWeight={eventInfo.styles.h3.fontWeight}
-                    pb="2"
-                    textAlign="center"
-                  >
-                    Collect exclusive assets by participating in various activities.
-                  </Text>
-
-                  <Accordion allowMultiple defaultIndex={[0]} width="100%">
-                    <AccordionItem border="none" width="100%">
-                      <AccordionButton
-                        _expanded={{ bg: 'none', borderBottom: 'none' }}
-                        _focus={{ boxShadow: 'none' }}
-                        _hover={{ bg: 'none' }}
-                        pb={ownedNFTs.length > 0 ? '2' : '0'}
-                        width="100%"
-                      >
-                        <Box flex="1" textAlign="left" width="100%">
-                          <Heading
-                            color={eventInfo.styles.h1.color}
-                            fontFamily={eventInfo.styles.h1.fontFamily}
-                            fontSize="2xl"
-                            fontWeight={eventInfo.styles.h1.fontWeight}
-                            textAlign="center"
-                          >
-                            Found
-                          </Heading>
-                        </Box>
-                        <AccordionIcon />
-                      </AccordionButton>
-                      <AccordionPanel pb={4} pt={ownedNFTs.length > 0 ? '2' : '0'} width="100%">
-                        {ownedNFTs.length > 0 ? (
-                          <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} spacing={4} width="100%">
-                            {ownedNFTs.map((nft) => (
-                              <NFTCard key={nft.nft.name} isOwned={nft.owned} nft={nft.nft} />
-                            ))}
-                          </SimpleGrid>
-                        ) : (
-                          <Center>
-                            <Text
-                              color={eventInfo.styles.h3.color}
-                              fontFamily={eventInfo.styles.h3.fontFamily}
-                              fontSize="sm"
-                              fontWeight={eventInfo.styles.h3.fontWeight}
-                              textAlign="center"
-                            >
-                              You haven't found any collectibles yet.
-                            </Text>
-                          </Center>
-                        )}
-                      </AccordionPanel>
-                    </AccordionItem>
-                  </Accordion>
+                  <Box flex="1" textAlign="left" width="100%">
+                    <Heading
+                      color={eventInfo.styles.h1.color}
+                      fontFamily={eventInfo.styles.h1.fontFamily}
+                      fontSize="2xl"
+                      fontWeight={eventInfo.styles.h1.fontWeight}
+                      textAlign="center"
+                    >
+                      Found ({ownedNFTs.length})
+                    </Heading>
+                  </Box>
+                  <Box h="calc(78vh - 55vh)" overflowY="auto">
+                    {ownedNFTs.length > 0 ? (
+                      <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} spacing={4} width="100%">
+                        {ownedNFTs.map((nft) => (
+                          <NFTCard key={nft.nft.name} isOwned={nft.owned} nft={nft.nft} />
+                        ))}
+                      </SimpleGrid>
+                    ) : (
+                      <Center>
+                        <Text
+                          color={eventInfo.styles.h3.color}
+                          fontFamily={eventInfo.styles.h3.fontFamily}
+                          fontSize="sm"
+                          fontWeight={eventInfo.styles.h3.fontWeight}
+                          textAlign="center"
+                        >
+                          You haven't found any collectibles yet.
+                        </Text>
+                      </Center>
+                    )}
+                  </Box>
                 </Flex>
               )}
             </BoxWithShape>
 
             <Flex
               flexDir="column"
-              h="calc(78vh - 40vh)"
+              h="calc(78vh - 44vh)"
               justifyContent="space-between"
               overflowY="auto"
               px="6"
               py="4"
               w="full"
             >
-              <Accordion allowMultiple defaultIndex={[0]} w="100%">
-                <AccordionItem border="none">
-                  <AccordionButton>
-                    <Box flex="1" textAlign="left">
-                      <Heading
-                        color={eventInfo.styles.h1.color}
-                        fontFamily={eventInfo.styles.h1.fontFamily}
-                        fontSize="2xl"
-                        fontWeight={eventInfo.styles.h1.fontWeight}
-                        textAlign="center"
-                      >
-                        Not Found
-                      </Heading>
-                    </Box>
-                    <AccordionIcon />
-                  </AccordionButton>
-                  <AccordionPanel pb={4}>
-                    <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} spacing={4} w="full">
-                      {unownedNFTs.map((nft) => (
-                        <NFTCard key={nft.nft.name} isOwned={nft.owned} nft={nft.nft} />
-                      ))}
-                    </SimpleGrid>
-                  </AccordionPanel>
-                </AccordionItem>
-              </Accordion>
+              <Box flex="1" textAlign="left">
+                <Heading
+                  color={eventInfo.styles.h1.color}
+                  fontFamily={eventInfo.styles.h1.fontFamily}
+                  fontSize="2xl"
+                  fontWeight={eventInfo.styles.h1.fontWeight}
+                  textAlign="center"
+                >
+                  Not Found ({unownedNFTs.length})
+                </Heading>
+              </Box>
+              <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} spacing={4} w="full">
+                {unownedNFTs.map((nft) => (
+                  <NFTCard key={nft.nft.name} isOwned={nft.owned} nft={nft.nft} />
+                ))}
+              </SimpleGrid>
             </Flex>
           </Box>
         </IconBox>

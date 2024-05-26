@@ -9,11 +9,6 @@ import {
   Text,
   VStack,
   SimpleGrid,
-  Accordion,
-  AccordionItem,
-  AccordionButton,
-  AccordionPanel,
-  AccordionIcon,
   Divider,
   CircularProgress,
   CircularProgressLabel,
@@ -141,99 +136,66 @@ const ScavengerHuntsPage: React.FC = () => {
                     </Text>
                   </Tooltip>
                   <Divider my="2" />
-                  <Text
-                    color={eventInfo.styles.h3.color}
-                    fontFamily={eventInfo.styles.h3.fontFamily}
-                    fontSize="sm"
-                    fontWeight={eventInfo.styles.h3.fontWeight}
-                    pb="2"
-                    textAlign="center"
-                  >
-                    Find all the pieces to unlock tokens, NFTs, and more!
-                  </Text>
-
-                  <Accordion allowMultiple defaultIndex={[0]} width="100%">
-                    <AccordionItem border="none" width="100%">
-                      <AccordionButton
-                        _expanded={{ bg: 'none', borderBottom: 'none' }}
-                        _focus={{ boxShadow: 'none' }}
-                        _hover={{ bg: 'none' }}
-                        pb="0"
-                        width="100%"
-                      >
-                        <Box flex="1" textAlign="left" width="100%">
-                          <Heading
-                            color={eventInfo.styles.h1.color}
-                            fontFamily={eventInfo.styles.h1.fontFamily}
-                            fontSize="2xl"
-                            fontWeight={eventInfo.styles.h1.fontWeight}
-                            textAlign="center"
-                          >
-                            Active
-                          </Heading>
-                        </Box>
-                        <AccordionIcon />
-                      </AccordionButton>
-                      <AccordionPanel pb={4} pt={liveScavengers.length > 0 ? 4 : 0} width="100%">
-                        {liveScavengers.length > 0 ? (
-                          <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} spacing={4} width="100%">
-                            {liveScavengers.map((scavenger) => (
-                              <ScavengerCard key={scavenger.id} scavenger={scavenger} />
-                            ))}
-                          </SimpleGrid>
-                        ) : (
-                          <Center pt="0">
-                            <Text
-                              color={eventInfo.styles.h3.color}
-                              fontFamily={eventInfo.styles.h3.fontFamily}
-                              fontSize="sm"
-                              fontWeight={eventInfo.styles.h3.fontWeight}
-                              textAlign="center"
-                            >
-                              No active scavenger hunts found.
-                            </Text>
-                          </Center>
-                        )}
-                      </AccordionPanel>
-                    </AccordionItem>
-                  </Accordion>
+                  <Box flex="1" textAlign="left" width="100%">
+                    <Heading
+                      color={eventInfo.styles.h1.color}
+                      fontFamily={eventInfo.styles.h1.fontFamily}
+                      fontSize="2xl"
+                      fontWeight={eventInfo.styles.h1.fontWeight}
+                      textAlign="center"
+                    >
+                      Active ({liveScavengers.length})
+                    </Heading>
+                  </Box>
+                  <Box h="calc(78vh - 55vh)" overflowY="auto">
+                    {liveScavengers.length > 0 ? (
+                      <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} spacing={4} width="100%">
+                        {liveScavengers.map((scavenger) => (
+                          <ScavengerCard key={scavenger.id} scavenger={scavenger} />
+                        ))}
+                      </SimpleGrid>
+                    ) : (
+                      <Center pt="0">
+                        <Text
+                          color={eventInfo.styles.h3.color}
+                          fontFamily={eventInfo.styles.h3.fontFamily}
+                          fontSize="sm"
+                          fontWeight={eventInfo.styles.h3.fontWeight}
+                          textAlign="center"
+                        >
+                          No active scavenger hunts found.
+                        </Text>
+                      </Center>
+                    )}
+                  </Box>
                 </Flex>
               )}
             </BoxWithShape>
             <Flex
               flexDir="column"
-              h="calc(78vh - 40vh)"
+              h="calc(78vh - 45vh)"
               justifyContent="space-between"
               overflowY="auto"
               px="6"
               py="4"
               w="full"
             >
-              <Accordion allowMultiple defaultIndex={[0]} w="100%">
-                <AccordionItem border="none">
-                  <AccordionButton>
-                    <Box flex="1" textAlign="left">
-                      <Heading
-                        color={eventInfo.styles.h1.color}
-                        fontFamily={eventInfo.styles.h1.fontFamily}
-                        fontSize="2xl"
-                        fontWeight={eventInfo.styles.h1.fontWeight}
-                        textAlign="center"
-                      >
-                        Not Started
-                      </Heading>
-                    </Box>
-                    <AccordionIcon />
-                  </AccordionButton>
-                  <AccordionPanel pb={4}>
-                    <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} spacing={4} w="full">
-                      {notFoundScavengers.map((scavenger) => (
-                        <ScavengerCard key={scavenger.id} scavenger={scavenger} />
-                      ))}
-                    </SimpleGrid>
-                  </AccordionPanel>
-                </AccordionItem>
-              </Accordion>
+              <Box flex="1" textAlign="left">
+                <Heading
+                  color={eventInfo.styles.h1.color}
+                  fontFamily={eventInfo.styles.h1.fontFamily}
+                  fontSize="2xl"
+                  fontWeight={eventInfo.styles.h1.fontWeight}
+                  textAlign="center"
+                >
+                  Not Started ({notFoundScavengers.length})
+                </Heading>
+              </Box>
+              <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} spacing={4} w="full">
+                {notFoundScavengers.map((scavenger) => (
+                  <ScavengerCard key={scavenger.id} scavenger={scavenger} />
+                ))}
+              </SimpleGrid>
             </Flex>
           </Box>
         </IconBox>
