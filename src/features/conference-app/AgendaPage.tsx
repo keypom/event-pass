@@ -7,7 +7,6 @@ import {
   Skeleton,
   Input,
   IconButton,
-  Divider,
   ButtonGroup,
   Image,
 } from '@chakra-ui/react';
@@ -222,7 +221,7 @@ const AgendaPage: React.FC = () => {
   };
 
   return (
-    <Center h="80vh">
+    <Center h="78vh">
       <VStack
         gap={{ base: '16px', md: '24px', lg: '32px' }}
         h="100%"
@@ -233,6 +232,7 @@ const AgendaPage: React.FC = () => {
       >
         <IconBox
           bg={eventInfo.styles.border.border || 'border.box'}
+          h="full"
           icon={
             <Skeleton isLoaded={!isLoading}>
               <Image
@@ -245,13 +245,12 @@ const AgendaPage: React.FC = () => {
           }
           iconBg={eventInfo.styles.icon.bg || 'blue.100'}
           iconBorder={eventInfo.styles.icon.border || 'border.round'}
-          maxW="345px"
           minW={{ base: '90vw', md: '345px' }}
           p="0"
           pb="0"
           w="full"
         >
-          <Box h="full" maxH="70vh">
+          <Box>
             <BoxWithShape bg="white" borderTopRadius="8xl" showNotch={false} w="full">
               {isLoading ? (
                 <Skeleton height="200px" width="full" />
@@ -259,71 +258,82 @@ const AgendaPage: React.FC = () => {
                 <Flex
                   align="center"
                   flexDir="column"
-                  pb={{ base: '3', md: '5' }}
-                  pt={{ base: '12', md: '16' }}
-                  px={{ base: '4', md: '8' }}
+                  pb={{ base: '2', md: '5' }}
+                  pt={{ base: '10', md: '16' }}
+                  px={{ base: '10', md: '8' }}
                 >
-                  <VStack w="100%">
-                    <HStack borderBottom="2px solid" borderColor="gray.400" w="full">
-                      <SearchIcon color="gray.500" />
-                      <Input
-                        _placeholder={{
-                          color: eventInfo.styles.h3.color,
-                          fontFamily: eventInfo.styles.h3.fontFamily,
-                          fontSize: 'md',
-                          fontWeight: eventInfo.styles.h3.fontWeight,
-                        }}
-                        color={eventInfo.styles.h3.color}
-                        fontFamily={eventInfo.styles.h3.fontFamily}
-                        fontSize="md"
-                        fontWeight={eventInfo.styles.h3.fontWeight}
-                        h="30px"
-                        placeholder="Search Agenda"
-                        value={searchQuery}
-                        variant="unstyled"
-                        onChange={(e) => {
-                          setSearchQuery(e.target.value);
-                        }}
-                      />
-                    </HStack>
-                    <Divider />
-                    <HStack alignItems="center" justifyContent="flex-end" mb={0} w="full">
-                      <ButtonGroup isAttached spacing={0} variant="outline">
-                        <IconButton
-                          _active={{ bg: eventInfo.styles.buttons.secondary.bg }}
-                          _focus={{ bg: eventInfo.styles.buttons.secondary.bg }}
-                          _hover={{ bg: eventInfo.styles.buttons.secondary.bg }}
-                          aria-label="List view"
-                          bg={eventInfo.styles.buttons.secondary.bg}
-                          borderRadius="8px"
-                          color={viewOption === 'list' ? 'black' : 'gray.400'}
-                          icon={<FaThList />}
-                          onClick={() => {
-                            setViewOption('list');
-                          }}
-                        />
-                        <IconButton
-                          _active={{ bg: eventInfo.styles.buttons.secondary.bg }}
-                          _focus={{ bg: eventInfo.styles.buttons.secondary.bg }}
-                          _hover={{ bg: eventInfo.styles.buttons.secondary.bg }}
-                          aria-label="Grid view"
-                          bg={eventInfo.styles.buttons.secondary.bg}
-                          borderRadius="8px"
-                          color={viewOption === 'grid' ? 'black' : 'gray.400'}
-                          icon={<FaTh />}
-                          onClick={() => {
-                            setViewOption('grid');
-                          }}
-                        />
-                      </ButtonGroup>
-                    </HStack>
-                  </VStack>
-                  <VStack spacing={4} w="full">
-                    {viewOption === 'list' ? renderAgendaItems() : renderGroupedAgendaItems()}
-                  </VStack>
+                  <HStack borderBottom="2px solid" borderColor="gray.400" w="full">
+                    <SearchIcon color="gray.500" />
+                    <Input
+                      _placeholder={{
+                        color: eventInfo.styles.h3.color,
+                        fontFamily: eventInfo.styles.h3.fontFamily,
+                        fontSize: 'md',
+                        fontWeight: eventInfo.styles.h3.fontWeight,
+                      }}
+                      color={eventInfo.styles.h3.color}
+                      fontFamily={eventInfo.styles.h3.fontFamily}
+                      fontSize="md"
+                      fontWeight={eventInfo.styles.h3.fontWeight}
+                      h="30px"
+                      placeholder="Search Agenda"
+                      value={searchQuery}
+                      variant="unstyled"
+                      onChange={(e) => {
+                        setSearchQuery(e.target.value);
+                      }}
+                    />
+                  </HStack>
                 </Flex>
               )}
             </BoxWithShape>
+
+            <Flex
+              flexDir="column"
+              h="calc(78vh - 170px)"
+              justifyContent="space-between"
+              px="6"
+              py="4"
+              w="full"
+            >
+              <VStack h="full" overflowY="auto" w="full">
+                <VStack w="100%">
+                  <HStack alignItems="center" justifyContent="flex-end" mb={0} w="full">
+                    <ButtonGroup isAttached spacing={0} variant="outline">
+                      <IconButton
+                        _active={{ bg: eventInfo.styles.buttons.secondary.bg }}
+                        _focus={{ bg: eventInfo.styles.buttons.secondary.bg }}
+                        _hover={{ bg: eventInfo.styles.buttons.secondary.bg }}
+                        aria-label="List view"
+                        bg={eventInfo.styles.buttons.secondary.bg}
+                        borderRadius="8px"
+                        color={viewOption === 'list' ? 'black' : 'gray.400'}
+                        icon={<FaThList />}
+                        onClick={() => {
+                          setViewOption('list');
+                        }}
+                      />
+                      <IconButton
+                        _active={{ bg: eventInfo.styles.buttons.secondary.bg }}
+                        _focus={{ bg: eventInfo.styles.buttons.secondary.bg }}
+                        _hover={{ bg: eventInfo.styles.buttons.secondary.bg }}
+                        aria-label="Grid view"
+                        bg={eventInfo.styles.buttons.secondary.bg}
+                        borderRadius="8px"
+                        color={viewOption === 'grid' ? 'black' : 'gray.400'}
+                        icon={<FaTh />}
+                        onClick={() => {
+                          setViewOption('grid');
+                        }}
+                      />
+                    </ButtonGroup>
+                  </HStack>
+                </VStack>
+                <VStack spacing={4} w="full">
+                  {viewOption === 'list' ? renderAgendaItems() : renderGroupedAgendaItems()}
+                </VStack>
+              </VStack>
+            </Flex>
           </Box>
         </IconBox>
       </VStack>

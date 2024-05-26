@@ -67,16 +67,17 @@ const AssetsHome = () => {
     const cardStyle = {
       position: 'relative' as const,
       flex: '1',
-      w: '100%',
       bg: 'gray.100',
       boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.15)',
       overflow: 'hidden',
+      borderRadius: '12px',
+      display: 'flex',
+      flexDirection: 'column',
     };
 
     const imageContainerStyle = {
-      position: 'relative' as const,
       flex: '1',
-      h: '100%',
+      width: '100%',
     };
 
     const lockIconStyle = {
@@ -91,7 +92,7 @@ const AssetsHome = () => {
 
     const overlayStyle = {
       position: 'absolute' as const,
-      top: locked ? '0' : '33.33%',
+      top: locked ? '5%' : '33.33%',
       left: '50%',
       transform: 'translateX(-50%)',
       width: '100%',
@@ -100,7 +101,7 @@ const AssetsHome = () => {
 
     const comingSoonStyle = {
       position: 'absolute' as const,
-      top: '60%',
+      top: '70%',
       left: '50%',
       transform: 'translateX(-50%)',
       width: '100%',
@@ -120,14 +121,15 @@ const AssetsHome = () => {
             : handleCardClick.bind(null, tab)
         }
       >
-        <Flex {...imageContainerStyle}>
+        <Box {...imageContainerStyle}>
           <Image
             alt={title}
             borderRadius="md"
             filter={!locked ? 'none' : 'blur(4px)'}
+            h="100%"
             objectFit="cover"
             src={image}
-            w="full"
+            w="100%"
           />
 
           {locked && <LockIcon {...lockIconStyle} />}
@@ -155,7 +157,7 @@ const AssetsHome = () => {
               </Text>
             </Box>
           )}
-        </Flex>
+        </Box>
       </Box>
     );
   };
@@ -169,7 +171,7 @@ const AssetsHome = () => {
   }
 
   return (
-    <Center h="80vh">
+    <Center h="78vh">
       <ProfileTransferModal
         isOpen={sendDisclosure.isOpen}
         title="Send Tokens"
@@ -299,42 +301,51 @@ const AssetsHome = () => {
               )}
             </BoxWithShape>
 
-            <VStack h="50vh" p="6" spacing="6" w="full">
-              <PageCard
-                color="white"
-                fontSize={isLargerThan900 ? '3xl' : isLargerThan700 ? '3xl' : 'xl'}
-                imageUrl="collectibles.jpg"
-                locked={false}
-                tab="collectibles"
-                title="Collectibles"
-              />
-              <HStack flex="1" spacing="6" w="100%" wrap="wrap">
+            <Flex
+              flexDir="column"
+              h="calc(78vh - 250px)"
+              justifyContent="space-between"
+              px="6"
+              py="4"
+              w="full"
+            >
+              <VStack h="full" justifyContent="space-between" overflowY="auto" spacing="2" w="full">
                 <PageCard
                   color="white"
-                  fontSize={isLargerThan900 ? '3xl' : isLargerThan700 ? '2xl' : 'xl'}
-                  imageUrl="raffles.jpg"
-                  locked={true}
-                  tab="raffles"
-                  title="Raffles"
+                  fontSize={isLargerThan900 ? '3xl' : isLargerThan700 ? '3xl' : 'xl'}
+                  imageUrl="collectibles_2.png"
+                  locked={false}
+                  tab="collectibles"
+                  title="Collectibles"
                 />
+                <HStack h="33%" w="100%">
+                  <PageCard
+                    color="white"
+                    fontSize={isLargerThan900 ? '3xl' : isLargerThan700 ? '2xl' : 'xl'}
+                    imageUrl="raffles.jpg"
+                    locked={true}
+                    tab="raffles"
+                    title="Raffles"
+                  />
+                  <PageCard
+                    color="white"
+                    fontSize={isLargerThan900 ? '3xl' : isLargerThan700 ? '2xl' : 'xl'}
+                    imageUrl="auctions.jpg"
+                    locked={true}
+                    tab="auctions"
+                    title="Auctions"
+                  />
+                </HStack>
                 <PageCard
-                  color="white"
-                  fontSize={isLargerThan900 ? '3xl' : isLargerThan700 ? '2xl' : 'xl'}
-                  imageUrl="auctions.jpg"
-                  locked={true}
-                  tab="auctions"
-                  title="Auctions"
+                  color={eventInfo.styles.h2.color || 'black'}
+                  fontSize={isLargerThan900 ? '3xl' : isLargerThan700 ? '3xl' : 'xl'}
+                  imageUrl="scavengers_2.png"
+                  locked={false}
+                  tab="scavengers"
+                  title="Scavenger Hunts"
                 />
-              </HStack>
-              <PageCard
-                color={eventInfo.styles.h2.color || 'black'}
-                fontSize={isLargerThan900 ? '3xl' : isLargerThan700 ? '3xl' : 'xl'}
-                imageUrl="scavengers.jpg"
-                locked={false}
-                tab="scavengers"
-                title="Scavenger Hunts"
-              />
-            </VStack>
+              </VStack>
+            </Flex>
           </Box>
         </IconBox>
       </VStack>

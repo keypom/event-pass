@@ -8,14 +8,16 @@ import {
   Text,
   HStack,
   Input,
-  Button,
+  IconButton,
 } from '@chakra-ui/react';
 import { useState, useEffect } from 'react';
-import { LockIcon, PhoneIcon } from '@chakra-ui/icons';
+import { LockIcon } from '@chakra-ui/icons';
 
 import { useConferenceContext } from '@/contexts/ConferenceContext';
 import { IconBox } from '@/components/IconBox';
 import { BoxWithShape } from '@/components/BoxWithShape';
+import { CameraIcon } from '@/components/Icons/CameraIcon';
+import { SendIcon } from '@/components/Icons/SendIcon';
 
 export interface User {
   username: string;
@@ -54,7 +56,7 @@ const ChatPage: React.FC = () => {
   };
 
   return (
-    <Center h="90vh">
+    <Center h="78vh">
       <VStack
         gap={{ base: '16px', md: '24px', lg: '32px' }}
         h="100%"
@@ -86,7 +88,7 @@ const ChatPage: React.FC = () => {
           <Box>
             <BoxWithShape
               bg={eventInfo.styles.h1.color}
-              borderTopRadius="8xl"
+              borderTopRadius="6xl"
               showNotch={false}
               w="full"
             >
@@ -130,33 +132,20 @@ const ChatPage: React.FC = () => {
                         </Text>
                       </VStack>
                     </HStack>
-                    <Box
-                      as="button"
-                      backgroundColor="#98d9d8"
-                      borderRadius="12px"
-                      boxShadow="md"
-                      color="white"
-                      h="40px"
-                      w="40px"
-                    >
-                      <PhoneIcon h="14px" w="14px" />
-                    </Box>
                   </HStack>
                 </Flex>
               )}
             </BoxWithShape>
 
-            <VStack h="100%" justifyContent="space-between" p="6" spacing="6" w="full">
-              <VStack h="100%" spacing={8} w="full">
-                <VStack
-                  align="stretch"
-                  flex="1"
-                  h="100%"
-                  overflowY="auto"
-                  py="2"
-                  spacing="8"
-                  w="full"
-                >
+            <Flex
+              flexDir="column"
+              h="calc(78vh - 170px)"
+              justifyContent="space-between"
+              p="6"
+              w="full"
+            >
+              <VStack h="full" overflowY="auto" spacing={8} w="full">
+                <VStack align="stretch" flex="1" spacing="8" w="full">
                   {messages.map((message, index) => (
                     <Flex
                       key={index}
@@ -209,55 +198,67 @@ const ChatPage: React.FC = () => {
                     </Flex>
                   ))}
                 </VStack>
+              </VStack>
 
-                <VStack
-                  align="stretch"
-                  bg="white"
-                  borderRadius="md"
-                  justifyContent="flex-end"
-                  p="4"
+              <VStack align="stretch" bg="white" borderRadius="md" position="relative" w="full">
+                <HStack
+                  bg="blue.100"
+                  borderRadius="12px"
                   position="relative"
+                  px="2"
+                  py="1"
+                  spacing="1"
                   w="full"
                 >
-                  <HStack>
-                    <Button isDisabled colorScheme="blue">
-                      <LockIcon />
-                    </Button>
-                    <Input
-                      isDisabled
-                      placeholder="Coming soon..."
-                      value={newMessage}
-                      onChange={handleInputChange}
-                    />
-                    <Button
-                      isDisabled
-                      colorScheme="blue"
-                      position="absolute"
-                      right="4"
-                      top="50%"
-                      transform="translateY(-50%)"
-                    >
-                      Send
-                    </Button>
-                  </HStack>
-                  <Flex
-                    align="center"
-                    bg="rgba(255, 255, 255, 0.8)"
-                    borderRadius="md"
-                    h="full"
-                    justify="center"
-                    left="0"
-                    position="absolute"
-                    top="0"
-                    w="full"
-                    zIndex="1"
-                  >
-                    <LockIcon mr="2" />
-                    <Text fontWeight="bold">Coming Soon</Text>
-                  </Flex>
-                </VStack>
+                  <IconButton
+                    aria-label="Attach"
+                    borderRadius="full"
+                    boxSize="40px"
+                    icon={
+                      <CameraIcon
+                        color={eventInfo.styles.h1.color}
+                        h="24px"
+                        pt="0.5"
+                        strokeWidth="2"
+                      />
+                    }
+                    variant="ghost"
+                  />
+                  <Input
+                    isDisabled
+                    _placeholder={{ color: eventInfo.styles.h3.color }}
+                    borderRadius="full"
+                    color={eventInfo.styles.h3.color}
+                    fontFamily={eventInfo.styles.h3.fontFamily}
+                    fontWeight={eventInfo.styles.h3.fontWeight}
+                    placeholder="Type Your Message"
+                    variant="unstyled"
+                  />
+                  <IconButton
+                    aria-label="Send"
+                    backgroundColor={eventInfo.styles.h1.color}
+                    borderRadius="12px"
+                    boxSize="40px"
+                    icon={<SendIcon color="white" h="20px" strokeWidth="2" />}
+                  />
+                </HStack>
+                <Flex
+                  align="center"
+                  bg="rgba(255, 255, 255, 0.7)"
+                  borderRadius="md"
+                  h="full"
+                  justify="center"
+                  left="0"
+                  position="absolute"
+                  top="0"
+                  w="full"
+                  zIndex="1"
+                >
+                  <LockIcon mr="2" />
+                  <Text fontWeight="bold">Coming Soon</Text>
+                </Flex>
               </VStack>
-            </VStack>
+            </Flex>
           </Box>
         </IconBox>
       </VStack>
