@@ -221,7 +221,14 @@ const CollectiblesPage: React.FC = () => {
                     </Heading>
                   </Box>
                   {ownedNFTs.length > 0 ? (
-                    <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} spacing={4} width="100%">
+                    <SimpleGrid
+                      columns={{ base: 2, md: 3, lg: 4 }}
+                      justifyContent="center"
+                      justifyItems="center"
+                      px={{ base: 2, md: 4, lg: 6 }}
+                      spacing={4}
+                      width="100%"
+                    >
                       {ownedNFTs.map((nft) => (
                         <NFTCard key={nft.nft.name} isOwned={nft.owned} nft={nft.nft} />
                       ))}
@@ -255,7 +262,14 @@ const CollectiblesPage: React.FC = () => {
                   Not Found ({unownedNFTs.length})
                 </Heading>
               </Box>
-              <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} spacing={4} w="full">
+              <SimpleGrid
+                columns={{ base: 2, md: 3, lg: 4 }}
+                justifyContent="center"
+                justifyItems="center"
+                px={{ base: 2, md: 4, lg: 6 }}
+                spacing={4}
+                width="100%"
+              >
                 {unownedNFTs.map((nft) => (
                   <NFTCard key={nft.nft.name} isOwned={nft.owned} nft={nft.nft} />
                 ))}

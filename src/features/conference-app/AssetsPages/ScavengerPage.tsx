@@ -148,7 +148,14 @@ const ScavengerHuntsPage: React.FC = () => {
                     </Heading>
                   </Box>
                   {liveScavengers.length > 0 ? (
-                    <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} spacing={4} width="100%">
+                    <SimpleGrid
+                      columns={{ base: 2, md: 3, lg: 4 }}
+                      justifyContent="center"
+                      justifyItems="center"
+                      px={{ base: 2, md: 4, lg: 6 }}
+                      spacing={4}
+                      width="100%"
+                    >
                       {liveScavengers.map((scavenger) => (
                         <ScavengerCard key={scavenger.id} scavenger={scavenger} />
                       ))}
@@ -169,7 +176,7 @@ const ScavengerHuntsPage: React.FC = () => {
                 </Flex>
               )}
             </BoxWithShape>
-            <Flex flexDir="column" justifyContent="space-between" px="6" py="4" w="full">
+            <Flex flexDir="column" px="6" py="4" w="full">
               <Box flex="1" textAlign="left">
                 <Heading
                   color={eventInfo.styles.h1.color}
@@ -181,7 +188,14 @@ const ScavengerHuntsPage: React.FC = () => {
                   Not Started ({notFoundScavengers.length})
                 </Heading>
               </Box>
-              <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} spacing={4} w="full">
+              <SimpleGrid
+                columns={{ base: 2, md: 3, lg: 4 }}
+                justifyContent="center"
+                justifyItems="center"
+                px={{ base: 2, md: 4, lg: 6 }}
+                spacing={4}
+                width="100%"
+              >
                 {notFoundScavengers.map((scavenger) => (
                   <ScavengerCard key={scavenger.id} scavenger={scavenger} />
                 ))}
