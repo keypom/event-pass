@@ -82,7 +82,7 @@ const AssetsHome = () => {
 
     const lockIconStyle = {
       position: 'absolute' as const,
-      top: '50%',
+      top: '55%',
       left: '50%',
       transform: 'translate(-50%, -50%)',
       color: 'gray.500',
@@ -101,7 +101,7 @@ const AssetsHome = () => {
 
     const comingSoonStyle = {
       position: 'absolute' as const,
-      top: '70%',
+      top: '60%',
       left: '50%',
       transform: 'translateX(-50%)',
       width: '100%',
@@ -149,9 +149,9 @@ const AssetsHome = () => {
               <Text
                 bottom="2"
                 color="white"
-                fontFamily={eventInfo.styles.h3.fontFamily}
+                fontFamily={eventInfo.styles.h1.fontFamily}
                 fontSize={isLargerThan900 ? 'xl' : isLargerThan700 ? 'lg' : 'md'}
-                fontWeight={eventInfo.styles.h3.fontWeight}
+                fontWeight={eventInfo.styles.h1.fontWeight}
               >
                 Coming Soon
               </Text>

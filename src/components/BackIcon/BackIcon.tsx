@@ -27,16 +27,21 @@ export const BackIcon = ({
   eventInfo: FunderEventMetadata;
 }) => {
   return (
-    <Box left="2" position="absolute" top="4" zIndex="1">
+    <Box
+      bg="white"
+      borderTopLeftRadius="24"
+      borderTopRightRadius="24"
+      position="absolute"
+      w="100%"
+      zIndex="1"
+    >
       <Flex
         align="center"
         as="button"
-        backgroundColor="white"
-        border="1px solid white"
         borderRadius="md"
-        h={{ base: '35px', md: '40px' }}
         justify="center"
         p="2"
+        pt="2"
         w={{ base: '80px', md: '100px' }}
         onClick={() => {
           onSelectTab(conferenceFooterMenuIndexes.assets, 'home');
