@@ -74,9 +74,9 @@ export const QrDetails = ({
       </Box>
       {eventInfo.qrPage?.dateUnderQR && (
         <Text
-          color="#844AFF"
-          fontFamily="denverBody"
-          fontWeight="600"
+          color={eventInfo.styles.h1.color}
+          fontFamily={eventInfo.styles.h1.fontFamily}
+          fontWeight={eventInfo.styles.h1.fontWeight}
           mb="1"
           size={{ base: 'lg', md: '2xl' }}
           textAlign="center"
@@ -86,8 +86,8 @@ export const QrDetails = ({
       )}
       <Text
         color="gray.600"
-        fontFamily="denverBody"
-        fontWeight="400"
+        fontFamily={eventInfo.styles.h3.fontFamily}
+        fontWeight={eventInfo.styles.h3.fontWeight}
         mb="6"
         size={{ base: 'sm', md: 'sm' }}
         textAlign="center"

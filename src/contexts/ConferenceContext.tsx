@@ -19,14 +19,59 @@ import {
 import { ProfileIcon } from '@/components/Icons/ProfileIcon';
 import { WalletIcon } from '@/components/Icons/WalletIcon';
 import { FooterCalendarIcon } from '@/components/Icons/FooterCalendarIcon';
-import { ScanIcon } from '@/components/Icons/ScanIcon';
+import { MessageIcon } from '@/components/Icons/MessageIcon';
+import ProfilePage from '@/features/conference-app/ProfilePage';
+import AgendaPage from '@/features/conference-app/AgendaPage';
+import ScanningPage from '@/features/conference-app/ScanningPage';
+import AssetsPageManager from '@/features/conference-app/AssetsPages/AssetsPageManager';
+import { CameraIcon } from '@/components/Icons/CameraIcon';
+import ChatPage from '@/features/conference-app/ChatPage';
 
 export const conferenceFooterMenuItems = [
-  { label: 'Profile', icon: ProfileIcon, path: '/conference/app/profile' },
-  { label: 'Assets', icon: WalletIcon, path: '/conference/app/assets' },
-  { label: 'Agenda', icon: FooterCalendarIcon, path: '/conference/app/agenda' },
-  { label: 'Scan', icon: ScanIcon, path: '/conference/app/scan' },
+  {
+    label: 'Chat',
+    icon: MessageIcon,
+    path: '/conference/app/chat',
+    locked: true,
+    component: ChatPage,
+  },
+  {
+    label: 'Agenda',
+    icon: FooterCalendarIcon,
+    path: '/conference/app/agenda',
+    locked: false,
+    component: AgendaPage,
+  },
+  {
+    label: 'Scan',
+    icon: CameraIcon,
+    path: '/conference/app/scan',
+    locked: false,
+    component: ScanningPage,
+  },
+  {
+    label: 'Assets',
+    icon: WalletIcon,
+    path: '/conference/app/assets',
+    locked: false,
+    component: AssetsPageManager,
+  },
+  {
+    label: 'Profile',
+    icon: ProfileIcon,
+    path: '/conference/app/profile',
+    locked: false,
+    component: ProfilePage,
+  },
 ];
+
+export const conferenceFooterMenuIndexes = {
+  profile: 4,
+  assets: 3,
+  agenda: 1,
+  scan: 2,
+  chat: 0,
+};
 
 interface ConferenceContextProps {
   eventInfo: FunderEventMetadata;
@@ -75,7 +120,9 @@ export const ConferenceProvider = ({
   const [queryString, setQueryString] = useState<URLSearchParams>(query);
 
   const initialTab = conferenceFooterMenuItems.findIndex((item) => item.path.includes(path));
-  const [selectedTab, setSelectedTab] = useState<number>(initialTab !== -1 ? initialTab : 0); // Initialized to 0
+  const [selectedTab, setSelectedTab] = useState<number>(
+    initialTab !== -1 ? initialTab : conferenceFooterMenuIndexes.profile,
+  ); // Initialized to profile
   const { dropInfo, factoryAccount, isLoading, secretKey } = initialData;
 
   const onSelectTab = (tab: number, subtab?: string) => {
@@ -111,7 +158,7 @@ export const ConferenceProvider = ({
       }
     };
     recoverAccount();
-  }, [dropInfo, factoryAccount, isLoading, secretKey, triggerRefetch]);
+  }, [dropInfo, factoryAccount, isLoading, secretKey, triggerRefetch, selectedTab]);
 
   return (
     <ConferenceContext.Provider

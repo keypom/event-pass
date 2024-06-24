@@ -2,26 +2,39 @@ import {
   Box,
   Flex,
   Center,
-  Heading,
   Skeleton,
   Text,
   VStack,
   HStack,
   Image,
   useDisclosure,
+  useMediaQuery,
 } from '@chakra-ui/react';
 import { LockIcon } from '@chakra-ui/icons';
 
-import { CLOUDFLARE_IPFS } from '@/constants/common';
 import { IconBox } from '@/components/IconBox';
 import { BoxWithShape } from '@/components/BoxWithShape';
 import { SendIcon } from '@/components/Icons/SendIcon';
 import { ReceiveIcon } from '@/components/Icons/ReceiveIcon';
 import { CameraIcon } from '@/components/Icons/CameraIcon';
-import { useConferenceContext } from '@/contexts/ConferenceContext';
+import { conferenceFooterMenuIndexes, useConferenceContext } from '@/contexts/ConferenceContext';
 
 import ProfileTransferModal from '../modals/ProfileTransferModal';
 import ReceiveTokensModal from '../modals/ReceiveTokensModal';
+
+export const formatTokensAvailable = (tokens: string) => {
+  const [integerPart, decimalPart] = tokens.split('.');
+  if (!decimalPart) {
+    return tokens;
+  }
+  if (decimalPart.length <= 2) {
+    return tokens;
+  }
+  if (decimalPart.slice(2).replace(/0+$/, '').length > 0) {
+    return `${integerPart}.${decimalPart}`;
+  }
+  return `${integerPart}.${decimalPart.slice(0, 2)}`;
+};
 
 const AssetsHome = () => {
   const { tokensAvailable, eventInfo, isLoading, onSelectTab, ticker } = useConferenceContext();
@@ -29,38 +42,47 @@ const AssetsHome = () => {
   const sendDisclosure = useDisclosure();
   const receiveDisclosure = useDisclosure();
 
+  const [isLargerThan700] = useMediaQuery('(min-height: 700px)');
+  const [isLargerThan900] = useMediaQuery('(min-height: 900px)');
+
   const handleCardClick = (tab: string) => {
-    onSelectTab(1, tab);
+    onSelectTab(conferenceFooterMenuIndexes.assets, tab);
   };
 
   const PageCard = ({
     title,
     imageUrl,
     tab,
+    color,
+    fontSize,
     locked = false,
   }: {
     title: string;
     imageUrl: string;
     tab: string;
+    color: string;
+    fontSize: string;
     locked: boolean;
   }) => {
     const cardStyle = {
       position: 'relative' as const,
-      w: '100%',
+      flex: '1',
       bg: 'gray.100',
       boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.15)',
       overflow: 'hidden',
+      borderRadius: '12px',
+      display: 'flex',
+      flexDirection: 'column',
     };
 
     const imageContainerStyle = {
-      position: 'relative' as const,
-      w: '100%', // Full width of the card
-      h: '120px',
+      flex: '1',
+      width: '100%',
     };
 
     const lockIconStyle = {
       position: 'absolute' as const,
-      top: '50%',
+      top: '55%',
       left: '50%',
       transform: 'translate(-50%, -50%)',
       color: 'gray.500',
@@ -70,22 +92,23 @@ const AssetsHome = () => {
 
     const overlayStyle = {
       position: 'absolute' as const,
-      top: locked ? '2' : '33.33%', // Position at the top
+      top: locked ? '5%' : '33.33%',
       left: '50%',
-      transform: 'translateX(-50%)', // Center horizontally
-      width: '100%',
-      p: '2',
-    };
-    const comingSoonStyle = {
-      position: 'absolute' as const,
-      top: '75',
-      left: '50%',
-      transform: 'translateX(-50%)', // Center horizontally
+      transform: 'translateX(-50%)',
       width: '100%',
       p: '2',
     };
 
-    const image = `${CLOUDFLARE_IPFS}/${imageUrl}`;
+    const comingSoonStyle = {
+      position: 'absolute' as const,
+      top: '60%',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      width: '100%',
+      p: '2',
+    };
+
+    const image = `/assets/demos/consensus/${imageUrl}`;
 
     return (
       <Box
@@ -98,24 +121,25 @@ const AssetsHome = () => {
             : handleCardClick.bind(null, tab)
         }
       >
-        <Flex {...imageContainerStyle}>
+        <Box {...imageContainerStyle}>
           <Image
             alt={title}
             borderRadius="md"
-            boxSize="full" // Use 'full' instead of specific pixel size for responsiveness
             filter={!locked ? 'none' : 'blur(4px)'}
+            h="100%"
             objectFit="cover"
             src={image}
+            w="100%"
           />
 
           {locked && <LockIcon {...lockIconStyle} />}
           <Box {...overlayStyle}>
             <Text
               bottom="2"
-              color="gray.600"
-              fontFamily={eventInfo.styles.h2.fontFamily}
-              fontSize="3xl"
-              fontWeight={eventInfo.styles.h2.fontWeight}
+              color={color}
+              fontFamily={eventInfo.styles.h1.fontFamily}
+              fontSize={fontSize}
+              fontWeight={eventInfo.styles.h1.fontWeight}
             >
               {title}
             </Text>
@@ -124,16 +148,16 @@ const AssetsHome = () => {
             <Box {...comingSoonStyle}>
               <Text
                 bottom="2"
-                color="gray.600"
-                fontFamily={eventInfo.styles.h2.fontFamily}
-                fontSize="xl"
-                fontWeight={eventInfo.styles.h2.fontWeight}
+                color="white"
+                fontFamily={eventInfo.styles.h1.fontFamily}
+                fontSize={isLargerThan900 ? 'xl' : isLargerThan700 ? 'lg' : 'md'}
+                fontWeight={eventInfo.styles.h1.fontWeight}
               >
                 Coming Soon
               </Text>
             </Box>
           )}
-        </Flex>
+        </Box>
       </Box>
     );
   };
@@ -147,59 +171,41 @@ const AssetsHome = () => {
   }
 
   return (
-    <Center>
+    <Center h="78vh">
       <ProfileTransferModal
         isOpen={sendDisclosure.isOpen}
         title="Send Tokens"
         onClose={sendDisclosure.onClose}
       />
       <ReceiveTokensModal isOpen={receiveDisclosure.isOpen} onClose={receiveDisclosure.onClose} />
-      <VStack gap={{ base: 'calc(24px + 8px)', md: 'calc(32px + 10px)' }}>
-        <Skeleton fadeDuration={1} isLoaded={!isLoading}>
-          <Heading
-            fontSize={{ base: '2xl', md: '3xl' }}
-            fontWeight="500"
-            paddingBottom="0"
-            textAlign="center"
-          >
-            {isLoading ? (
-              'Loading ticket...'
-            ) : (
-              <VStack>
-                <Heading
-                  color={eventInfo.styles.title.color}
-                  fontFamily={eventInfo.styles.title.fontFamily}
-                  fontSize={eventInfo.styles.title.fontSize}
-                  fontWeight={eventInfo.styles.title.fontWeight}
-                  textAlign="center"
-                >
-                  ASSETS
-                </Heading>
-              </VStack>
-            )}
-          </Heading>
-        </Skeleton>
-
+      <VStack
+        gap={{ base: '16px', md: '24px', lg: '32px' }}
+        overflowY="auto"
+        pt="14"
+        spacing="4"
+        w={{ base: '90vw', md: '90%', lg: '80%' }}
+      >
         <IconBox
           bg={eventInfo.styles.border.border || 'border.box'}
+          h="full"
           icon={
             <Skeleton isLoaded={!isLoading}>
               <Image
-                height={{ base: '10', md: '12' }}
-                src={`${CLOUDFLARE_IPFS}/${eventInfo.styles.icon.image}`}
-                width={{ base: '10', md: '12' }}
+                borderRadius="full"
+                height={{ base: '14', md: '12' }}
+                src={`/assets/demos/consensus/${eventInfo.styles.icon.image}`}
+                width={{ base: '20', md: '12' }}
               />
             </Skeleton>
           }
           iconBg={eventInfo.styles.icon.bg || 'blue.100'}
           iconBorder={eventInfo.styles.icon.border || 'border.round'}
-          maxW="345px"
           minW={{ base: '90vw', md: '345px' }}
           p="0"
           pb="0"
-          w="90vh"
+          w="full"
         >
-          <Box h="full">
+          <Box>
             <BoxWithShape bg="white" borderTopRadius="8xl" showNotch={false} w="full">
               {isLoading ? (
                 <Skeleton height="200px" width="full" />
@@ -207,73 +213,82 @@ const AssetsHome = () => {
                 <Flex
                   align="center"
                   flexDir="column"
-                  pb={{ base: '3', md: '5' }}
-                  pt={{ base: '12', md: '16' }}
+                  h="full"
+                  pb={{ base: '2', md: '5' }}
+                  pt={{ base: '10', md: '16' }}
                   px={{ base: '10', md: '8' }}
                 >
                   <Text
                     color={eventInfo.styles.h1.color}
                     fontFamily={eventInfo.styles.h1.fontFamily}
-                    fontSize="2xl"
+                    fontSize={{ base: '2xl', md: '2xl' }}
                     fontWeight={eventInfo.styles.h1.fontWeight}
                     textAlign="center"
                   >
-                    {tokensAvailable} ${ticker}
+                    {formatTokensAvailable(tokensAvailable)} ${ticker}
                   </Text>
                   <HStack justify="space-evenly" mt={4} spacing={4} w="100%">
-                    <VStack>
+                    <VStack spacing="0">
                       <Box
                         bg={eventInfo.styles.buttons.secondary.color}
                         borderRadius="0.75em"
                         p="2"
                         onClick={sendDisclosure.onOpen}
                       >
-                        <SendIcon color="white" h="24px" strokeWidth="1" />
+                        <SendIcon color="white" h={{ base: '20px', md: '24px' }} strokeWidth="1" />
                       </Box>
                       <Text
                         color={eventInfo.styles.h3.color}
                         fontFamily={eventInfo.styles.h3.fontFamily}
-                        fontSize="sm"
+                        fontSize={{ base: 'xs', md: 'sm' }}
                         fontWeight={eventInfo.styles.h3.fontWeight}
                         textAlign="center"
                       >
                         Send
                       </Text>
                     </VStack>
-                    <VStack>
+                    <VStack spacing="0">
                       <Box
                         bg={eventInfo.styles.buttons.secondary.color}
                         borderRadius="0.75em"
                         p="2"
                         onClick={receiveDisclosure.onOpen}
                       >
-                        <ReceiveIcon color="white" h="24px" strokeWidth="1" />
+                        <ReceiveIcon
+                          color="white"
+                          h={{ base: '20px', md: '24px' }}
+                          strokeWidth="1"
+                        />
                       </Box>
                       <Text
                         color={eventInfo.styles.h3.color}
                         fontFamily={eventInfo.styles.h3.fontFamily}
-                        fontSize="sm"
+                        fontSize={{ base: 'xs', md: 'sm' }}
                         fontWeight={eventInfo.styles.h3.fontWeight}
                         textAlign="center"
                       >
                         Receive
                       </Text>
                     </VStack>
-                    <VStack>
+                    <VStack spacing="0">
                       <Box
                         bg={eventInfo.styles.buttons.secondary.color}
                         borderRadius="0.75em"
                         p="2"
                         onClick={() => {
-                          onSelectTab(3);
+                          onSelectTab(conferenceFooterMenuIndexes.scan);
                         }}
                       >
-                        <CameraIcon color="white" h="24px" strokeWidth="1" />
+                        <CameraIcon
+                          color="white"
+                          h={{ base: '20px', md: '24px' }}
+                          strokeWidth="1"
+                        />
                       </Box>
                       <Text
                         color={eventInfo.styles.h3.color}
                         fontFamily={eventInfo.styles.h3.fontFamily}
-                        fontSize="sm"
+                        fontSize={{ base: 'xs', md: 'sm' }}
                         fontWeight={eventInfo.styles.h3.fontWeight}
                         textAlign="center"
                       >
@@ -286,37 +301,44 @@ const AssetsHome = () => {
             </BoxWithShape>
 
             <Flex
-              align="center"
-              bg="gray.50"
-              borderBottomRadius="8xl"
               flexDir="column"
-              pb="2"
-              pt="2"
+              h="calc(78vh - 250px)"
+              justifyContent="space-between"
               px="6"
+              py="4"
+              w="full"
             >
-              <VStack spacing="6" w="full">
+              <VStack h="full" justifyContent="space-between" overflowY="auto" spacing="2" w="full">
                 <PageCard
-                  imageUrl="bafkreia3sfwyavkzoe2o7arkshjkepf2yeljzjk77lxevylo4yja6hij4y"
+                  color="white"
+                  fontSize={isLargerThan900 ? '3xl' : isLargerThan700 ? '3xl' : 'xl'}
+                  imageUrl="collectibles_2.png"
                   locked={false}
                   tab="collectibles"
                   title="Collectibles"
                 />
-                <HStack spacing="6" w="full">
+                <HStack h="33%" w="100%">
                   <PageCard
-                    imageUrl="bafybeicqe3auvvhqtujlzaue3ibcqjove7qs2vo7nccovol2mscl7vjpju"
+                    color="white"
+                    fontSize={isLargerThan900 ? '3xl' : isLargerThan700 ? '2xl' : 'xl'}
+                    imageUrl="raffles.jpg"
                     locked={true}
                     tab="raffles"
                     title="Raffles"
                   />
                   <PageCard
-                    imageUrl="bafkreiecyklo4kmorcij5o2gyvfq7lh535zhnryj34sc5z3php2l7x4jj4"
+                    color="white"
+                    fontSize={isLargerThan900 ? '3xl' : isLargerThan700 ? '2xl' : 'xl'}
+                    imageUrl="auctions.jpg"
                     locked={true}
                     tab="auctions"
                     title="Auctions"
                   />
                 </HStack>
                 <PageCard
-                  imageUrl="bafybeibm7s666anvtql54c54mz3aeyaitr5wsx4x6j5uhzd5wayyz3atvq"
+                  color={eventInfo.styles.h2.color || 'black'}
+                  fontSize={isLargerThan900 ? '3xl' : isLargerThan700 ? '3xl' : 'xl'}
+                  imageUrl="scavengers_2.png"
                   locked={false}
                   tab="scavengers"
                   title="Scavenger Hunts"

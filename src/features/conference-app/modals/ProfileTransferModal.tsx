@@ -20,13 +20,15 @@ import {
   FormErrorMessage,
   InputRightElement,
 } from '@chakra-ui/react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { accountExists } from 'keypom-js';
 
 import keypomInstance from '@/lib/keypom';
 import { DeleteTextIcon } from '@/components/Icons/DeleteTextIcon';
-import { useConferenceContext } from '@/contexts/ConferenceContext';
+import { conferenceFooterMenuIndexes, useConferenceContext } from '@/contexts/ConferenceContext';
 import { CameraIcon } from '@/components/Icons/CameraIcon';
+
+import { formatTokensAvailable } from '../AssetsPages/AssetsHome';
 
 interface ProfileTransferModalProps {
   isOpen: boolean;
@@ -52,7 +54,6 @@ const ProfileTransferModal = ({
   } = useConferenceContext();
 
   const [sendTo, setSendTo] = useState(initialSendTo);
-
   const [amount, setAmount] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [tokensAvailable, setTokensAvailable] = useState('0');
@@ -60,6 +61,8 @@ const ProfileTransferModal = ({
   const [isOversend, setIsOversend] = useState(false);
   const [isInvalidNumber, setIsInvalidNumber] = useState(false);
   const toast = useToast();
+
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const fetchBalance = async () => {
     const balance = await keypomInstance.viewCall({
@@ -73,6 +76,11 @@ const ProfileTransferModal = ({
   useEffect(() => {
     if (isOpen) {
       fetchBalance();
+      setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.blur(); // Remove focus from the input when modal opens
+        }
+      }, 100); // Delay to ensure modal is fully open
     }
   }, [isOpen]);
 
@@ -216,6 +224,13 @@ const ProfileTransferModal = ({
     return true;
   };
 
+  // Function to make the phone vibrate
+  const vibratePhone = () => {
+    if ('vibrate' in navigator) {
+      navigator.vibrate(100); // vibrates for 100ms
+    }
+  };
+
   return (
     <Modal isCentered isOpen={isOpen} onClose={closeModal}>
       <ModalOverlay backdropFilter="blur(0px)" bg="blackAlpha.600" opacity="1" />
@@ -245,7 +260,7 @@ const ProfileTransferModal = ({
                 textAlign="center"
                 w="full"
               >
-                Available Balance: {tokensAvailable} ${ticker}
+                Available Balance: {formatTokensAvailable(tokensAvailable)} ${ticker}
               </Text>
             </VStack>
           </ModalHeader>
@@ -263,13 +278,15 @@ const ProfileTransferModal = ({
               <FormControl isInvalid={!isValidAccount} mb="5">
                 <InputGroup>
                   <Input
+                    ref={inputRef}
+                    autoComplete="off"
                     backgroundColor="white"
                     border="1px solid"
                     borderColor={!isValidAccount ? 'red.500' : eventInfo?.styles.h1.color}
                     borderRadius="12px"
                     color="black"
                     fontFamily={eventInfo?.styles.h3.fontFamily}
-                    fontSize={{ base: 'sm', md: 'md' }}
+                    fontSize={{ base: '16px', md: 'md' }} // Ensure a base font size of 16px to prevent zooming
                     fontWeight={eventInfo?.styles.h3.fontWeight}
                     height={{ base: '38px', md: '48px' }}
                     id="username"
@@ -282,7 +299,10 @@ const ProfileTransferModal = ({
                     }}
                     value={sendTo}
                     onBlur={checkUsernameAvailable}
-                    onChange={handleChangeUsername}
+                    onChange={(event) => {
+                      handleChangeUsername(event);
+                      vibratePhone();
+                    }}
                   />
                   <InputRightElement height="100%" width="3rem">
                     <Box
@@ -291,7 +311,7 @@ const ProfileTransferModal = ({
                       height="100%"
                       justifyContent="center"
                       onClick={() => {
-                        onSelectTab(3);
+                        onSelectTab(conferenceFooterMenuIndexes.scan);
                       }}
                     >
                       <CameraIcon color="black" h="18px" strokeWidth="2" w="28px" />
@@ -378,7 +398,7 @@ const ProfileTransferModal = ({
                 fontSize={eventInfo.styles.buttons.primary.fontSize}
                 fontWeight={eventInfo.styles.buttons.primary.fontWeight}
                 h={eventInfo.styles.buttons.primary.h}
-                isDisabled={isSending}
+                isDisabled={isSending || sendTo.length === 0}
                 sx={eventInfo.styles.buttons.primary.sx}
                 variant="outline"
                 w="full"

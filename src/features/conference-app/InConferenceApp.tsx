@@ -1,14 +1,8 @@
-import { Box, Flex, HStack, Text, VStack } from '@chakra-ui/react';
+import { Box, Flex, HStack } from '@chakra-ui/react';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { CLOUDFLARE_IPFS } from '@/constants/common';
 import { conferenceFooterMenuItems, useConferenceContext } from '@/contexts/ConferenceContext';
-
-import ProfilePage from './ProfilePage';
-import ScanningPage from './ScanningPage';
-import AssetsPageManager from './AssetsPages/AssetsPageManager';
-import AgendaPage from './AgendaPage';
 
 const selectedColor = 'black';
 const unselectedColor = 'white';
@@ -24,44 +18,37 @@ const InConferenceApp = () => {
   }, [selectedTab, queryString, navigate]);
 
   const currentTab = () => {
-    switch (selectedTab) {
-      case 0:
-        return <ProfilePage />;
-      case 1:
-        return <AssetsPageManager />;
-      case 2:
-        return <AgendaPage />;
-      case 3:
-        return <ScanningPage />;
-      default:
-        return <div />;
-    }
+    const Component = conferenceFooterMenuItems[selectedTab].component;
+    return <Component />;
   };
 
   return (
-    <VStack
+    <Flex
       backgroundImage={
-        eventInfo?.styles?.background && `${CLOUDFLARE_IPFS}/${eventInfo.styles.background}`
+        eventInfo?.styles?.background && `assets/demos/consensus/${eventInfo.styles.background}`
       }
       backgroundPosition="center"
       backgroundRepeat="no-repeat"
       backgroundSize="cover"
-      minH="100vh"
-      py="2"
+      direction="column"
+      h="95vh"
       width="100vw"
     >
-      {currentTab()}
+      <Box flex="1" overflowY="hidden">
+        {currentTab()}
+      </Box>
       <HStack
         as="footer"
         backgroundColor={eventInfo?.styles?.h1.color}
         bottom="0"
         boxShadow="0 -2px 10px rgba(0,0,0,0.05)"
+        h="8vh"
         justifyContent="space-evenly"
         left="0"
         paddingY="2"
         position="fixed"
-        spacing="24px"
         width="full"
+        zIndex="1000" // Ensure footer stays above other content
       >
         {conferenceFooterMenuItems.map((item, index) => {
           const IconComponent = item.icon;
@@ -79,23 +66,15 @@ const InConferenceApp = () => {
                 <IconComponent
                   color={isActive ? selectedColor : unselectedColor}
                   h="40px"
+                  strokeWidth="1"
                   w="40px"
                 />
-                <Text
-                  color={isActive ? selectedColor : unselectedColor}
-                  fontFamily={eventInfo?.styles?.h3.fontFamily}
-                  fontSize="md"
-                  fontWeight={eventInfo?.styles?.h3.fontWeight}
-                  marginTop="2"
-                >
-                  {item.label}
-                </Text>
               </Box>
             </Flex>
           );
         })}
       </HStack>
-    </VStack>
+    </Flex>
   );
 };
 

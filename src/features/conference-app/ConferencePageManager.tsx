@@ -48,19 +48,29 @@ export default function ConferencePageManager() {
           methodName: 'get_key_information',
           args: { key: pubKey },
         });
+        console.log('Key Info: ', keyInfo);
         const drop = await keypomInstance.viewCall({
           methodName: 'get_drop_information',
           args: { drop_id: keyInfo.drop_id },
         });
+        console.log('Drop Info: ', drop);
         setDropInfo(drop);
-        setCurKeyStep(drop.max_key_uses - keyInfo.uses_remaining + 1);
+        let curKeyStep;
+        let factory;
+        if (drop.max_key_uses === 2) {
+          curKeyStep = drop.max_key_uses - keyInfo.uses_remaining + 2;
+          factory = drop?.asset_data[0].config.root_account_id;
+        } else {
+          curKeyStep = drop.max_key_uses - keyInfo.uses_remaining + 1;
+          factory = drop?.asset_data[1].config.root_account_id;
+        }
+        setCurKeyStep(curKeyStep);
 
-        const factory = drop?.asset_data[1].config.root_account_id;
         setFactoryAcccount(factory);
         const tokenInfo = await keypomInstance.viewCall({
           contractId: factory,
           methodName: 'ft_metadata',
-          args: { drop_id: 'foo' },
+          args: { drop_id: drop.drop_id },
         });
         console.log('Token info:', tokenInfo);
         setTicker(tokenInfo.symbol);

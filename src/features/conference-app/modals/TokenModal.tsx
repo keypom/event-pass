@@ -16,8 +16,7 @@ import {
 import Confetti from 'react-confetti';
 
 import { type FunderEventMetadata } from '@/lib/eventsHelpers';
-import { CLOUDFLARE_IPFS } from '@/constants/common';
-import { useConferenceContext } from '@/contexts/ConferenceContext';
+import { conferenceFooterMenuIndexes, useConferenceContext } from '@/contexts/ConferenceContext';
 
 interface TokenModalProps {
   isOpen: boolean;
@@ -30,7 +29,7 @@ interface TokenModalProps {
 
 const TokenModal = ({ isOpen, onClose, tokenAmount, image, name, eventInfo }: TokenModalProps) => {
   const { onSelectTab } = useConferenceContext();
-  const imageUrl = `${CLOUDFLARE_IPFS}/${image}`;
+  const imageUrl = `/assets/demos/consensus/${image}`;
   const modalBackground = useColorModeValue('white', 'gray.700');
   const modalPadding = { base: '6', md: '8' };
   const imageBoxSize = { base: '70%', md: '50%', lg: '40%' }; // Responsive image sizing
@@ -84,9 +83,9 @@ const TokenModal = ({ isOpen, onClose, tokenAmount, image, name, eventInfo }: To
 
                 <Text
                   color="black"
-                  fontFamily="denverBody"
+                  fontFamily={eventInfo.styles.h3.fontFamily}
                   fontSize="sm"
-                  fontWeight="400"
+                  fontWeight={eventInfo.styles.h3.fontWeight}
                   textAlign="left"
                 >
                   {name}
@@ -108,7 +107,7 @@ const TokenModal = ({ isOpen, onClose, tokenAmount, image, name, eventInfo }: To
               variant="outline"
               w="full"
               onClick={() => {
-                onSelectTab(1);
+                onSelectTab(conferenceFooterMenuIndexes.assets);
               }}
             >
               MY ASSETS

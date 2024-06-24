@@ -26,7 +26,6 @@ export const CoreLayout = () => {
       bg={layoutBg}
       bgBlendMode="overlay, normal, normal"
       flexDir="column"
-      minH="100vh"
       overflow="hidden"
       position="relative"
     >

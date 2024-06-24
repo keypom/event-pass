@@ -53,6 +53,34 @@ export const Fonts = () => (
         src: url(./assets/fonts/denver/rocgrotesk-black.otf) format('opentype')
       }
 
+
+      /* Consensus */
+      @font-face {
+        font-family: 'ConsensusTitle';
+        src: url(./assets/fonts/consensus/Montserrat-ExtraBold.otf) format('opentype')
+      }
+      @font-face {
+        font-family: 'ConsensusHeading';
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url(./assets/fonts/consensus/Montserrat-Regular.otf) format('opentype')
+      }
+      @font-face {
+        font-family: 'ConsensusHeading';
+        font-style: normal;
+        font-weight: 500;
+        font-display: swap;
+        src: url(./assets/fonts/consensus/Montserrat-Light.otf) format('opentype')
+      }
+      @font-face {
+        font-family: 'ConsensusHeading';
+        font-style: normal;
+        font-weight: 600;
+        font-display: swap;
+        src: url(./assets/fonts/consensus/Montserrat-Black.otf) format('opentype')
+      }
+
       /* Inter */
       @font-face {
         font-family: 'Inter';

@@ -9,11 +9,6 @@ import {
   Text,
   VStack,
   SimpleGrid,
-  Accordion,
-  AccordionItem,
-  AccordionButton,
-  AccordionPanel,
-  AccordionIcon,
   Divider,
   CircularProgress,
   CircularProgressLabel,
@@ -36,14 +31,14 @@ interface ScavengerHunt {
 }
 
 const ScavengerHuntsPage: React.FC = () => {
-  const { accountId, eventInfo, dropInfo, isLoading, onSelectTab } = useConferenceContext();
+  const { accountId, eventInfo, dropInfo, isLoading, onSelectTab, factoryAccount } =
+    useConferenceContext();
   const [scavengerHunts, setScavengerHunts] = useState<ScavengerHunt[]>([]);
 
   useEffect(() => {
     if (!accountId) return;
 
     const getScavengerHunts = async () => {
-      const factoryAccount = dropInfo?.asset_data[1].config.root_account_id;
       const scavs: ScavengerHunt[] = await keypomInstance.viewCall({
         contractId: factoryAccount,
         methodName: 'get_scavengers_for_account',
@@ -73,39 +68,14 @@ const ScavengerHuntsPage: React.FC = () => {
     scavengerHunts.length > 0 ? (completedScavengers.length / scavengerHunts.length) * 100 : 0;
 
   return (
-    <Center>
+    <Center h="78vh">
       <VStack
-        gap={{ base: 'calc(24px + 8px)', md: 'calc(32px + 10px)' }}
-        maxW="1200px"
-        p={4}
-        pb="96px"
-        width="full"
+        gap={{ base: '16px', md: '24px', lg: '32px' }}
+        overflowY="auto"
+        pt="14"
+        spacing="4"
+        w={{ base: '90vw', md: '90%', lg: '80%' }}
       >
-        <Skeleton fadeDuration={1} isLoaded={!isLoading}>
-          <Heading
-            fontSize={{ base: '2xl', md: '3xl' }}
-            fontWeight="500"
-            paddingBottom="0"
-            textAlign="center"
-          >
-            {isLoading ? (
-              'Loading scavenger hunts...'
-            ) : (
-              <VStack>
-                <Heading
-                  color={eventInfo.styles?.title?.color}
-                  fontFamily={eventInfo.styles.title?.fontFamily}
-                  fontSize={{ base: '6xl', md: '8xl' }}
-                  fontWeight="500"
-                  textAlign="center"
-                >
-                  SCAVENGER HUNTS
-                </Heading>
-              </VStack>
-            )}
-          </Heading>
-        </Skeleton>
-
         <IconBox
           bg={eventInfo.styles.border.border || 'border.box'}
           icon={
@@ -119,7 +89,7 @@ const ScavengerHuntsPage: React.FC = () => {
                   value={progressValue}
                 >
                   <CircularProgressLabel
-                    color={eventInfo.styles.h2.color}
+                    color={eventInfo.styles.h1.color}
                     fontFamily={eventInfo.styles.h2.fontFamily}
                     fontSize="lg"
                     fontWeight={eventInfo.styles.h2.fontWeight}
@@ -134,13 +104,12 @@ const ScavengerHuntsPage: React.FC = () => {
           }
           iconBg={eventInfo.styles.icon.bg || 'blue.100'}
           iconBorder={eventInfo.styles.icon.border || 'border.round'}
-          maxW="345px"
           minW={{ base: '90vw', md: '345px' }}
           p="0"
           pb="0"
-          w="90vh"
+          w="full"
         >
-          <Box h="full" overflowY="auto" position="relative">
+          <Box h="calc(78vh - 10vh)" overflowY="auto">
             <BackIcon eventInfo={eventInfo} onSelectTab={onSelectTab} />
             <BoxWithShape bg="white" borderTopRadius="8xl" showNotch={false} w="full">
               {isLoading ? (
@@ -167,91 +136,70 @@ const ScavengerHuntsPage: React.FC = () => {
                     </Text>
                   </Tooltip>
                   <Divider my="2" />
-                  <Text
-                    color={eventInfo.styles.h3.color}
-                    fontFamily={eventInfo.styles.h3.fontFamily}
-                    fontSize="sm"
-                    fontWeight={eventInfo.styles.h3.fontWeight}
-                    pb="2"
-                    textAlign="center"
-                  >
-                    Find all the pieces to unlock tokens, NFTs, and more!
-                  </Text>
-
-                  <Accordion allowMultiple defaultIndex={[0]} width="100%">
-                    <AccordionItem border="none" width="100%">
-                      <AccordionButton
-                        _expanded={{ bg: 'none', borderBottom: 'none' }}
-                        _focus={{ boxShadow: 'none' }}
-                        _hover={{ bg: 'none' }}
-                        pb="0"
-                        width="100%"
-                      >
-                        <Box flex="1" textAlign="left" width="100%">
-                          <Heading
-                            color={eventInfo.styles.h1.color}
-                            fontFamily={eventInfo.styles.h1.fontFamily}
-                            fontSize="2xl"
-                            fontWeight={eventInfo.styles.h1.fontWeight}
-                            textAlign="center"
-                          >
-                            Active
-                          </Heading>
-                        </Box>
-                        <AccordionIcon />
-                      </AccordionButton>
-                      <AccordionPanel pb={4} pt={liveScavengers.length > 0 ? 4 : 0} width="100%">
-                        {liveScavengers.length > 0 ? (
-                          <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} spacing={4} width="100%">
-                            {liveScavengers.map((scavenger) => (
-                              <ScavengerCard key={scavenger.id} scavenger={scavenger} />
-                            ))}
-                          </SimpleGrid>
-                        ) : (
-                          <Center pt="0">
-                            <Text
-                              color={eventInfo.styles.h3.color}
-                              fontFamily={eventInfo.styles.h3.fontFamily}
-                              fontSize="sm"
-                              fontWeight={eventInfo.styles.h3.fontWeight}
-                              textAlign="center"
-                            >
-                              No active scavenger hunts found.
-                            </Text>
-                          </Center>
-                        )}
-                      </AccordionPanel>
-                    </AccordionItem>
-                  </Accordion>
-                </Flex>
-              )}
-            </BoxWithShape>
-            <Flex align="center" bg="gray.50" borderRadius="8xl" direction="column" px="6">
-              <Accordion allowMultiple defaultIndex={[0]} w="100%">
-                <AccordionItem border="none">
-                  <AccordionButton>
-                    <Box flex="1" textAlign="left">
-                      <Heading
-                        color={eventInfo.styles.h1.color}
-                        fontFamily={eventInfo.styles.h1.fontFamily}
-                        fontSize="2xl"
-                        fontWeight={eventInfo.styles.h1.fontWeight}
-                        textAlign="center"
-                      >
-                        Not Started
-                      </Heading>
-                    </Box>
-                    <AccordionIcon />
-                  </AccordionButton>
-                  <AccordionPanel pb={4}>
-                    <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} spacing={4} w="full">
-                      {notFoundScavengers.map((scavenger) => (
+                  <Box flex="1" textAlign="left" width="100%">
+                    <Heading
+                      color={eventInfo.styles.h1.color}
+                      fontFamily={eventInfo.styles.h1.fontFamily}
+                      fontSize="2xl"
+                      fontWeight={eventInfo.styles.h1.fontWeight}
+                      textAlign="center"
+                    >
+                      Active ({liveScavengers.length})
+                    </Heading>
+                  </Box>
+                  {liveScavengers.length > 0 ? (
+                    <SimpleGrid
+                      columns={{ base: 2, md: 3, lg: 4 }}
+                      justifyContent="center"
+                      justifyItems="center"
+                      px={{ base: 2, md: 4, lg: 6 }}
+                      spacing={4}
+                      width="100%"
+                    >
+                      {liveScavengers.map((scavenger) => (
                         <ScavengerCard key={scavenger.id} scavenger={scavenger} />
                       ))}
                     </SimpleGrid>
-                  </AccordionPanel>
-                </AccordionItem>
-              </Accordion>
+                  ) : (
+                    <Center pt="0">
+                      <Text
+                        color={eventInfo.styles.h3.color}
+                        fontFamily={eventInfo.styles.h3.fontFamily}
+                        fontSize="sm"
+                        fontWeight={eventInfo.styles.h3.fontWeight}
+                        textAlign="center"
+                      >
+                        No active scavenger hunts found.
+                      </Text>
+                    </Center>
+                  )}
+                </Flex>
+              )}
+            </BoxWithShape>
+            <Flex flexDir="column" px="6" py="4" w="full">
+              <Box flex="1" textAlign="left">
+                <Heading
+                  color={eventInfo.styles.h1.color}
+                  fontFamily={eventInfo.styles.h1.fontFamily}
+                  fontSize="2xl"
+                  fontWeight={eventInfo.styles.h1.fontWeight}
+                  textAlign="center"
+                >
+                  Not Started ({notFoundScavengers.length})
+                </Heading>
+              </Box>
+              <SimpleGrid
+                columns={{ base: 2, md: 3, lg: 4 }}
+                justifyContent="center"
+                justifyItems="center"
+                px={{ base: 2, md: 4, lg: 6 }}
+                spacing={4}
+                width="100%"
+              >
+                {notFoundScavengers.map((scavenger) => (
+                  <ScavengerCard key={scavenger.id} scavenger={scavenger} />
+                ))}
+              </SimpleGrid>
             </Flex>
           </Box>
         </IconBox>

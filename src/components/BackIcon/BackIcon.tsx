@@ -1,6 +1,7 @@
 import { Box, Flex, Text } from '@chakra-ui/react';
 
 import { type FunderEventMetadata } from '@/lib/eventsHelpers';
+import { conferenceFooterMenuIndexes } from '@/contexts/ConferenceContext';
 
 const CustomArrowIcon = ({ color = 'black', size = 20 }: { color?: string; size?: number }) => (
   <svg
@@ -26,27 +27,32 @@ export const BackIcon = ({
   eventInfo: FunderEventMetadata;
 }) => {
   return (
-    <Box left="2" position="absolute" top="4" zIndex="1">
+    <Box
+      bg="white"
+      borderTopLeftRadius="24"
+      borderTopRightRadius="24"
+      position="absolute"
+      w="100%"
+      zIndex="1"
+    >
       <Flex
         align="center"
         as="button"
-        backgroundColor="white"
-        border="1px solid white"
         borderRadius="md"
-        h={{ base: '35px', md: '40px' }}
         justify="center"
         p="2"
+        pt="2"
         w={{ base: '80px', md: '100px' }}
         onClick={() => {
-          onSelectTab(1, 'home');
+          onSelectTab(conferenceFooterMenuIndexes.assets, 'home');
         }}
       >
         <CustomArrowIcon color="black" size={16} />
         <Text
           color={eventInfo.styles.h3.color}
-          fontFamily={eventInfo.styles.h3.fontFamily}
-          fontSize="sm"
-          fontWeight={eventInfo.styles.h3.fontWeight}
+          fontFamily={eventInfo.styles.h1.fontFamily}
+          fontSize="md"
+          fontWeight={eventInfo.styles.h1.fontWeight}
           ml="0"
           mt="0.5"
         >

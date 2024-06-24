@@ -13,11 +13,6 @@ import {
   CircularProgress,
   CircularProgressLabel,
   Tooltip,
-  Accordion,
-  AccordionItem,
-  AccordionButton,
-  AccordionPanel,
-  AccordionIcon,
   Divider,
 } from '@chakra-ui/react';
 import { CheckIcon, LockIcon } from '@chakra-ui/icons';
@@ -25,7 +20,6 @@ import { CheckIcon, LockIcon } from '@chakra-ui/icons';
 import { IconBox } from '@/components/IconBox';
 import { TicketIcon } from '@/components/Icons';
 import { BoxWithShape } from '@/components/BoxWithShape';
-import { CLOUDFLARE_IPFS } from '@/constants/common';
 import keypomInstance from '@/lib/keypom';
 import { useConferenceContext } from '@/contexts/ConferenceContext';
 import { BackIcon } from '@/components/BackIcon';
@@ -46,14 +40,14 @@ interface NFTCardProps {
 }
 
 const CollectiblesPage: React.FC = () => {
-  const { accountId, eventInfo, dropInfo, isLoading, onSelectTab } = useConferenceContext();
+  const { accountId, factoryAccount, eventInfo, dropInfo, isLoading, onSelectTab } =
+    useConferenceContext();
   const [nfts, setNFTs] = useState<NFTData[]>([]);
 
   useEffect(() => {
     if (!accountId) return;
 
     const getNFTs = async () => {
-      const factoryAccount = dropInfo?.asset_data[1].config.root_account_id;
       const nftDrops = await keypomInstance.viewCall({
         contractId: factoryAccount,
         methodName: 'get_nfts_for_account',
@@ -112,7 +106,7 @@ const CollectiblesPage: React.FC = () => {
             boxSize="full"
             filter={isOwned ? 'none' : 'blur(4px)'}
             objectFit="cover"
-            src={`${CLOUDFLARE_IPFS}/${nft.image}`}
+            src={`/assets/demos/consensus/${nft.image}`}
           />
           {!isOwned && <LockIcon {...lockIconStyle} />}
         </Flex>
@@ -148,39 +142,14 @@ const CollectiblesPage: React.FC = () => {
   const progressValue = nfts.length > 0 ? (ownedNFTs.length / nfts.length) * 100 : 0;
 
   return (
-    <Center>
+    <Center h="78vh">
       <VStack
-        gap={{ base: 'calc(24px + 8px)', md: 'calc(32px + 10px)' }}
-        maxW="1200px"
-        p={4}
-        pb="96px"
-        width="full"
+        gap={{ base: '16px', md: '24px', lg: '32px' }}
+        overflowY="auto"
+        pt="14"
+        spacing="4"
+        w={{ base: '90vw', md: '90%', lg: '80%' }}
       >
-        <Skeleton fadeDuration={1} isLoaded={!isLoading}>
-          <Heading
-            fontSize={{ base: '2xl', md: '3xl' }}
-            fontWeight="500"
-            paddingBottom="0"
-            textAlign="center"
-          >
-            {isLoading ? (
-              'Loading ticket...'
-            ) : (
-              <VStack>
-                <Heading
-                  color={eventInfo.styles?.title?.color}
-                  fontFamily={eventInfo.styles.title?.fontFamily}
-                  fontSize={{ base: '6xl', md: '8xl' }}
-                  fontWeight="500"
-                  textAlign="center"
-                >
-                  COLLECTIBLES
-                </Heading>
-              </VStack>
-            )}
-          </Heading>
-        </Skeleton>
-
         <IconBox
           bg={eventInfo.styles.border.border || 'border.box'}
           icon={
@@ -194,7 +163,7 @@ const CollectiblesPage: React.FC = () => {
                   value={progressValue}
                 >
                   <CircularProgressLabel
-                    color={eventInfo.styles.h2.color}
+                    color={eventInfo.styles.h1.color}
                     fontFamily={eventInfo.styles.h2.fontFamily}
                     fontSize="lg"
                     fontWeight={eventInfo.styles.h2.fontWeight}
@@ -209,13 +178,12 @@ const CollectiblesPage: React.FC = () => {
           }
           iconBg={eventInfo.styles.icon.bg || 'blue.100'}
           iconBorder={eventInfo.styles.icon.border || 'border.round'}
-          maxW="345px"
           minW={{ base: '90vw', md: '345px' }}
           p="0"
           pb="0"
-          w="90vh"
+          w="full"
         >
-          <Box h="full" overflowY="auto" position="relative">
+          <Box h="calc(78vh - 10vh)" overflowY="auto">
             <BackIcon eventInfo={eventInfo} onSelectTab={onSelectTab} />
             <BoxWithShape bg="white" borderTopRadius="8xl" showNotch={false} w="full">
               {isLoading ? (
@@ -224,9 +192,10 @@ const CollectiblesPage: React.FC = () => {
                 <Flex
                   align="center"
                   flexDir="column"
-                  pb={{ base: '3', md: '5' }}
+                  h="full"
+                  pb={{ base: '2', md: '5' }}
                   pt={{ base: '10', md: '16' }}
-                  px={{ base: '6', md: '8' }}
+                  px={{ base: '10', md: '8' }}
                 >
                   <Tooltip label={`You have ${ownedNFTs.length} of ${nfts.length} collectibles`}>
                     <Text
@@ -240,91 +209,71 @@ const CollectiblesPage: React.FC = () => {
                     </Text>
                   </Tooltip>
                   <Divider my="2" />
-                  <Text
-                    color={eventInfo.styles.h3.color}
-                    fontFamily={eventInfo.styles.h3.fontFamily}
-                    fontSize="sm"
-                    fontWeight={eventInfo.styles.h3.fontWeight}
-                    pb="2"
-                    textAlign="center"
-                  >
-                    Collect exclusive assets by participating in various activities.
-                  </Text>
-
-                  <Accordion allowMultiple defaultIndex={[0]} width="100%">
-                    <AccordionItem border="none" width="100%">
-                      <AccordionButton
-                        _expanded={{ bg: 'none', borderBottom: 'none' }}
-                        _focus={{ boxShadow: 'none' }}
-                        _hover={{ bg: 'none' }}
-                        pb={ownedNFTs.length > 0 ? '2' : '0'}
-                        width="100%"
-                      >
-                        <Box flex="1" textAlign="left" width="100%">
-                          <Heading
-                            color={eventInfo.styles.h1.color}
-                            fontFamily={eventInfo.styles.h1.fontFamily}
-                            fontSize="2xl"
-                            fontWeight={eventInfo.styles.h1.fontWeight}
-                            textAlign="center"
-                          >
-                            Found
-                          </Heading>
-                        </Box>
-                        <AccordionIcon />
-                      </AccordionButton>
-                      <AccordionPanel pb={4} pt={ownedNFTs.length > 0 ? '2' : '0'} width="100%">
-                        {ownedNFTs.length > 0 ? (
-                          <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} spacing={4} width="100%">
-                            {ownedNFTs.map((nft) => (
-                              <NFTCard key={nft.nft.name} isOwned={nft.owned} nft={nft.nft} />
-                            ))}
-                          </SimpleGrid>
-                        ) : (
-                          <Center>
-                            <Text
-                              color={eventInfo.styles.h3.color}
-                              fontFamily={eventInfo.styles.h3.fontFamily}
-                              fontSize="sm"
-                              fontWeight={eventInfo.styles.h3.fontWeight}
-                              textAlign="center"
-                            >
-                              You haven't found any collectibles yet.
-                            </Text>
-                          </Center>
-                        )}
-                      </AccordionPanel>
-                    </AccordionItem>
-                  </Accordion>
-                </Flex>
-              )}
-            </BoxWithShape>
-            <Flex align="center" bg="gray.50" borderRadius="8xl" direction="column" px="6">
-              <Accordion allowMultiple defaultIndex={[0]} w="100%">
-                <AccordionItem border="none">
-                  <AccordionButton>
-                    <Box flex="1" textAlign="left">
-                      <Heading
-                        color={eventInfo.styles.h1.color}
-                        fontFamily={eventInfo.styles.h1.fontFamily}
-                        fontSize="2xl"
-                        fontWeight={eventInfo.styles.h1.fontWeight}
-                        textAlign="center"
-                      >
-                        Not Found
-                      </Heading>
-                    </Box>
-                    <AccordionIcon />
-                  </AccordionButton>
-                  <AccordionPanel pb={4}>
-                    <SimpleGrid columns={{ base: 2, md: 3, lg: 4 }} spacing={4} w="full">
-                      {unownedNFTs.map((nft) => (
+                  <Box flex="1" textAlign="left" width="100%">
+                    <Heading
+                      color={eventInfo.styles.h1.color}
+                      fontFamily={eventInfo.styles.h1.fontFamily}
+                      fontSize="2xl"
+                      fontWeight={eventInfo.styles.h1.fontWeight}
+                      textAlign="center"
+                    >
+                      Found ({ownedNFTs.length})
+                    </Heading>
+                  </Box>
+                  {ownedNFTs.length > 0 ? (
+                    <SimpleGrid
+                      columns={{ base: 2, md: 3, lg: 4 }}
+                      justifyContent="center"
+                      justifyItems="center"
+                      px={{ base: 2, md: 4, lg: 6 }}
+                      spacing={4}
+                      width="100%"
+                    >
+                      {ownedNFTs.map((nft) => (
                         <NFTCard key={nft.nft.name} isOwned={nft.owned} nft={nft.nft} />
                       ))}
                     </SimpleGrid>
-                  </AccordionPanel>
-                </AccordionItem>
-              </Accordion>
+                  ) : (
+                    <Center>
+                      <Text
+                        color={eventInfo.styles.h3.color}
+                        fontFamily={eventInfo.styles.h3.fontFamily}
+                        fontSize="sm"
+                        fontWeight={eventInfo.styles.h3.fontWeight}
+                        textAlign="center"
+                      >
+                        You haven't found any collectibles yet.
+                      </Text>
+                    </Center>
+                  )}
+                </Flex>
+              )}
+            </BoxWithShape>
+
+            <Flex flexDir="column" justifyContent="space-between" px="6" py="4" w="full">
+              <Box flex="1" textAlign="left">
+                <Heading
+                  color={eventInfo.styles.h1.color}
+                  fontFamily={eventInfo.styles.h1.fontFamily}
+                  fontSize="2xl"
+                  fontWeight={eventInfo.styles.h1.fontWeight}
+                  textAlign="center"
+                >
+                  Not Found ({unownedNFTs.length})
+                </Heading>
+              </Box>
+              <SimpleGrid
+                columns={{ base: 2, md: 3, lg: 4 }}
+                justifyContent="center"
+                justifyItems="center"
+                px={{ base: 2, md: 4, lg: 6 }}
+                spacing={4}
+                width="100%"
+              >
+                {unownedNFTs.map((nft) => (
+                  <NFTCard key={nft.nft.name} isOwned={nft.owned} nft={nft.nft} />
+                ))}
+              </SimpleGrid>
             </Flex>
           </Box>
         </IconBox>

@@ -21,7 +21,6 @@ const AuctionsPage = ({ dropInfo, accountId }) => {
 
   useEffect(() => {
     const fetchAuctions = async () => {
-      const factoryAccount = dropInfo?.asset_data[1].config.root_account_id;
       const auctions = await keypomInstance.viewCall({
         contractId: factoryAccount,
         methodName: 'get_auctions_for_account',

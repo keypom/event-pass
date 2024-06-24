@@ -94,7 +94,7 @@ export default function TicketQRPage({
   return (
     <VStack
       backgroundImage={
-        eventInfo?.styles?.background && `${CLOUDFLARE_IPFS}/${eventInfo.styles.background}`
+        eventInfo?.styles?.background && `/assets/demos/consensus/${eventInfo.styles.background}`
       }
       backgroundPosition="center"
       backgroundRepeat="no-repeat"

@@ -116,14 +116,14 @@ const AgendaItemCard: React.FC<AgendaItemCardProps> = ({ item, key }: AgendaItem
                     boxSize="50px"
                     src={speaker.image}
                   />
-                  <VStack align="start" h="50px" spacing={0} verticalAlign="middle">
+                  <VStack align="start" h="60px" spacing={0} verticalAlign="middle">
                     <Text
                       isTruncated
                       color="gray.600"
                       fontFamily={eventInfo.styles.h1.fontFamily}
                       fontSize="sm"
                       fontWeight={eventInfo.styles.h1.fontWeight}
-                      h="16px"
+                      h="20px"
                     >
                       {speaker.name}
                     </Text>
@@ -133,7 +133,7 @@ const AgendaItemCard: React.FC<AgendaItemCardProps> = ({ item, key }: AgendaItem
                       fontFamily={eventInfo.styles.h3.fontFamily}
                       fontSize="xs"
                       fontWeight={eventInfo.styles.h3.fontWeight}
-                      h="16px"
+                      h="20px"
                     >
                       {speaker.title && `${speaker.title}`}
                     </Text>
@@ -143,7 +143,7 @@ const AgendaItemCard: React.FC<AgendaItemCardProps> = ({ item, key }: AgendaItem
                       fontFamily={eventInfo.styles.h1.fontFamily}
                       fontSize="sm"
                       fontWeight={eventInfo.styles.h1.fontWeight}
-                      h="16px"
+                      h="20px"
                     >
                       {speaker.company && `${speaker.company}`}
                     </Text>
